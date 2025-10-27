@@ -23,6 +23,7 @@ wwwroot/dist/
 wwwroot/lib/
 
 # Secret files
+appsettings.json
 appsettings.Development.json
 appsettings.Local.json
 

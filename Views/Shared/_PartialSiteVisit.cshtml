@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+<!---------Thống kê---------->
+<div class="card border-0 site-visit card-style-one">
+    <div class="card-header rounded-0">
+        @Localizer["AccessStatistics"]
+    </div>
+    <div class="card-body pl-0 pt-1 pb-0 pr-0 mb-2">
+        <p><i class="fas fa-calendar-alt"></i> @Localizer["Today"]: <span id="SiteVisit_DateNow"></span></p>
+        <p><i class="fas fa-calendar-check"></i> @Localizer["Yesterday"]: <span id="SiteVisit_Yesterday"></span></p>
+        <p><i class="fas fa-calendar-week"></i> @Localizer["InWeek"]: <span id="SiteVisit_DateOfWeek"></span></p>
+        <p><i class="fas fa-users"></i> @Localizer["AccessStatisticsAll"]: <span id="SiteVisit_Total"></span></p>
+    </div>
+</div>

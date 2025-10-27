@@ -1,0 +1,57 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+}
+<footer class="container text-white">
+    <div class="row">
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 footer-left">
+            <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+            <div class="list-info">
+                <div>Địa chỉ: @ItemCoQuan.Address</div>
+                <div>
+                    Điện thoại: @ItemCoQuan.Telephone
+                    @if (@ItemCoQuan.Fax != null && @ItemCoQuan.Fax != "")
+                    {
+                        <span>; Fax:</span> @ItemCoQuan.Fax
+                    }
+                </div>
+                @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                {
+                    <div>Email: @ItemCoQuan.Email</div>
+                }
+                @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                {
+                    <div>@ItemCoQuan.CTNC</div>
+                }
+                @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                {
+                    <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 text-right text-xs-center footer-right">
+            <div><a href="@Model.CopyrightLink" target="_blank" class="text-white">Phát triển bởi: <span class="font-weight-bold">@Model.CopyrightTitle</span> </a></div>
+            <div>Điện thoại : @Model.CopyrightPhone</div>
+            <p>
+                <img src="/images/vnpt-logo.png" style="margin-top:5px">
+            </p>
+        </div>
+    </div>
+</footer>
+
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<input id="token_recaptcha" type="hidden" />
+<input type="hidden" id="RecaptchaSettings_SiteKey" value="@Configuration["RecaptchaSettings:SiteKey"]" />

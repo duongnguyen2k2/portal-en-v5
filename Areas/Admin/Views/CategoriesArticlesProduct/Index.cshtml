@@ -1,0 +1,120 @@
+﻿@model API.Areas.Admin.Models.CategoriesArticlesProduct.CategoriesArticlesProductModel
+@using Microsoft.AspNetCore.Http
+@{
+	Layout = "_layoutAdmin";
+	ViewData["Title"] = "Danh mục loại tin tức sản phẩm";
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+	int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+}
+
+<div class="card">
+	<div class="card-header">
+		<h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+	</div>
+	<div class="card-body">
+		<partial name="_PartialMsgInfoAdmin" />
+
+		<div class="row">
+			<div class="col-lg-12">
+
+				<table class="table table-bordered table-striped table-hover ">
+					<thead>
+						<tr>
+							<th width="50px" class="text-center">STT</th>
+							<th class="text-center">Id</th>
+							<th>Tên danh mục</th>
+							<th class="text-center">Thứ tự</th>
+							<th class="text-center">Trạng thái</th>
+
+							<th class="btn-contain text-center">
+								@*								@if (IdUser == 1)
+								{*@
+								<a asp-controller="@ControllerName" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+								@*								}
+								else
+								{
+								<span>Thao Tác</span>
+								}*@
+							</th>
+
+
+						</tr>
+					</thead>
+
+					<tbody>
+						@if (Model.ListItems == null || Model.ListItems.Count() == 0)
+						{
+							<tr>
+								<td colspan="7" class="text-center">
+									<label>Không có dữ liệu!</label>
+								</td>
+							</tr>
+						}
+						else
+						{
+							for (int i = 0; i < Model.ListItems.Count(); i++)
+							{
+								<tr>
+									<td width="50px" class="text-center">@((Model.Pagination.CurrentPage - 1) * Model.Pagination.ItemsPerPage + i + 1)</td>
+									<td class="text-center">@Model.ListItems[i].Id</td>
+									<td>
+										@Model.ListItems[i].Title
+										(<span>Alias</span>: @Model.ListItems[i].Alias) <br />
+										<code>@("/categories/" + Model.ListItems[i].Alias + "-" + Model.ListItems[i].Id + ".html")</code>
+									</td>
+
+									<td class="text-center">
+										@Model.ListItems[i].Ordering
+									</td>
+									<td class="text-center">
+										@if (@Model.ListItems[i].Status == true)
+										{
+											<span class="fas fa-check-circle text-primary" aria-hidden="true"></span>
+										}
+										else
+										{
+											<span class="far fa-times-circle text-danger" aria-hidden="true"></span>
+										}
+									</td>
+									@if (IdGroup == 1)
+									{
+										<td class="text-center">
+											<ul class="list-inline action">
+												<li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+												@if (@Model.ListItems[i].Id != 1)
+												{
+													<li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+												}
+											</ul>
+										</td>
+									}
+									else
+									{
+										<td class="text-center">
+											<ul class="list-inline action text-center">
+												<li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItemInfo" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+											</ul>
+										</td>
+									}
+								</tr>
+							}
+						}
+
+					</tbody>
+
+				</table>
+				<form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+			</div>
+			<div class="col-lg-12">
+				@await Html.PartialAsync("_PartialPagination", Model.Pagination)
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+	<script type="text/javascript">
+
+	</script>
+}

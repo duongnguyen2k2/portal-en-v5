@@ -1,0 +1,165 @@
+﻿@model API.Areas.Admin.Models.Audios.AudiosModel
+@using Microsoft.AspNetCore.Http
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = (Model.Item.Title);
+
+    ViewData["Url"] = Domain + "/truyen-thanh/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Images;
+    ViewData["Alias"] = Model.Item.Alias;
+    ViewData["Type"] = "music.playlist";
+
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/truyen-thanh/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+
+}
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v5.0&appId=1511988695606372&autoLogAppEvents=1"></script>
+<div class="row PageDetail PageDetail-@Model.Item.Alias" id="PageDetail">
+
+    <div class="col-lg-8 col-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white pl-0">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="Audios" asp-action="Index" asp-route-id="@Model.Categories.Id" asp-route-alias="@Model.Categories.Alias">@(Model.Categories.Title)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-4 col-4 text-end">
+        <span class="date"><span class="mobile-none">Cập nhật lúc:</span> @Model.Item.CreatedDate</span>
+    </div>
+
+
+    <div class="col-md-12 full-text article-content">
+        <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+        @if (Model.Item.LinkSv != null && Model.Item.LinkSv != "")
+        {
+            <div class="detail-audio">
+                <audio controls autoplay style="width:100%">
+                    <source src="@Model.Item.LinkSv" type="audio/mpeg">
+                </audio>
+            </div>
+        }
+        @Html.Raw(Model.Item.Description)
+    </div>
+    
+
+
+</div>
+<div class="social" style="display:none">
+    <div class="container">
+        <div class="item-social">
+            <div class="fb-icon-bg"><i class="fa fa-facebook" aria-hidden="true"></i></div>
+            <div class="fb-bg"></div>
+        </div>
+        <div class="item-social">
+            <div class="twi-icon-bg"></div>
+            <div class="twi-bg"></div>
+        </div>
+
+    </div>
+</div>
+<a onclick="PrintArticle()" id="article-print">
+    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-printer-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5z" />
+        <path fill-rule="evenodd" d="M11 9H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z" />
+        <path fill-rule="evenodd" d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+    </svg> In
+</a>
+<a href="mailto:?subject=@Model.Item.Title&body=@bodyMail" id="article-email">
+    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-envelope-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z" />
+    </svg> Gửi Email
+</a>
+<div id="social">
+    <div class="fb-share-button" data-href="@ViewData["Url"]" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@ViewData["Url"];src=sdkpreparse" class="fb-xfbml-parse-ignore">Chia sẻ</a></div>
+</div>
+
+
+@section Scripts{
+    <script>
+        function PrintArticle() {
+            //shop-detail-container
+            var divName = "PageDetail";
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+    <script type="text/javascript">
+        $('#PageDetail img').each(function () {
+            var src = $(this).attr('src');
+            $(this).after('<a class="fancybox" data-fancybox="group" href="' + src + '"><img src="' + src + '"></a>');
+            $(this).hide();
+        })
+
+        $("[data-fancybox]").fancybox({
+            // Options will go here
+        });
+
+        // Disable copy content, prevent blacked out text, prevent "I" key, "J" key, "S" key + macOS, "U" key, "F12" key
+        jQuery(document).ready(function () {
+            jQuery(function () {
+                jQuery(this).bind("contextmenu", function (event) {
+                    event.preventDefault();
+                    //alert('Right click disable in this site! Chuột phải đã được vô hiệu hóa trên site này !')
+                });
+            });
+            (function () {
+                'use strict';
+                let style = document.createElement('style');
+                style.innerHTML = '*{ user-select: none !important; }';
+
+                document.body.appendChild(style);
+            })();
+            window.onload = function () {
+                document.addEventListener("contextmenu", function (e) {
+                    e.preventDefault();
+                }, false);
+                document.addEventListener("keydown", function (e) {
+
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                        disabledEvent(e);
+                    }
+
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+                        disabledEvent(e);
+                    }
+
+                    if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                        disabledEvent(e);
+                    }
+
+                    if (e.ctrlKey && e.keyCode == 85) {
+                        disabledEvent(e);
+                    }
+
+                    if (event.keyCode == 123) {
+                        disabledEvent(e);
+                    }
+                }, false);
+                function disabledEvent(e) {
+                    if (e.stopPropagation) {
+                        e.stopPropagation();
+                    } else if (window.event) {
+                        window.event.cancelBubble = true;
+                    }
+                    e.preventDefault();
+                    return false;
+
+                }
+            }
+        });
+    </script>
+}

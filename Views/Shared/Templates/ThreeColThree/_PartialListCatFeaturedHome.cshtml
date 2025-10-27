@@ -1,0 +1,129 @@
+﻿@model API.Models.Home.PartialListCatFeaturedHome;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.CategoriesArticles.CategoriesArticles> ListCatFeaturedHome = Model.ListCatFeaturedHome;
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticleByCat = new List<API.Areas.Admin.Models.Articles.Articles>();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    int countBanner3 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 3)
+            {
+                countBanner3 = countBanner3 + 1;
+            }
+        }
+    }
+}
+@if (ListCatFeaturedHome != null && ListCatFeaturedHome.Count() > 0)
+{
+    @for (int i = 0; i < ListCatFeaturedHome.Count(); i++)
+    {
+        if (countBanner3 > 0)
+        {
+            <section id="banner-home-top" class="">
+                @if (ListCatFeaturedHome[i].Id == ItemCoQuan.PositionBannerHome)
+                {
+                    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+                    {
+                        @for (int bn = 0; bn < Model.ListBanners.Count(); bn++)
+                        {
+                            if (Model.ListBanners[bn].CatId == 3)
+                            {
+                                <div class="baner-home-item mb-2 @(bn == 0 ? "active" : "")">
+                                    <img src="@Model.ListBanners[bn].Image" alt="@Model.ListBanners[bn].Title" class="d-block w-100">
+                                </div>
+                            }
+                        }
+                    }
+                }
+            </section>
+
+        }
+
+
+        ListArticleByCat = null;
+        if (ListCatFeaturedHome[i].ParentId == 0)
+        {
+            ListArticleByCat = API.Areas.Admin.Models.Articles.ArticlesService.GetListNew(ListCatFeaturedHome[i].Id, 5, IdCoQuan);
+            <div class="category-list">
+                <div class="card border-0 cat-item">
+                    <div class="card-header">
+                        <ul class="list-inline">
+                            <li>
+                                <a class="text-white text-uppercase font-weight-bold float-left" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[i].Id" asp-route-alias="@ListCatFeaturedHome[i].Alias">
+                                    <span class="pl-2 @ListCatFeaturedHome[i].Alias">@ListCatFeaturedHome[i].Title</span>
+                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                           
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @if (ListArticleByCat != null && ListArticleByCat.Count() > 0)
+                            {
+
+
+                                <div class="col-12">
+
+                                    <div class="first-article-item">
+                                        <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" title="@ListArticleByCat[0].Title">
+                                            @if (@ListArticleByCat[0].Images == null || @ListArticleByCat[0].Images == "" || ListArticleByCat[0].Images.ToLower() == "/cms/content/tintuc/")
+                                            {
+                                                <img src="~/images/no-image.png" style="width: 180px; height: 120px;" class="img-responsive">
+                                            }
+                                            else
+                                            {
+                                                <img src="@ListArticleByCat[0].Images" style="width: 180px; height: 120px;" class="img-responsive">
+                                            }
+                                        </a>
+                                        <div class="first-article-body">
+                                            <p class="text-justify m-0 title">
+                                                <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" title="@ListArticleByCat[0].Title">
+                                                    @ListArticleByCat[0].Title
+                                                </a>
+                                            </p>
+                                            <p class="text-justify cat-desc">
+                                                @API.Models.MyHelper.StringHelper.StringReadmore(@ListArticleByCat[0].IntroText, 200)
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                               
+                                <div class="col-12">
+                                    <ul class="list-unstyled sub-article-list">
+                                        @if (ListArticleByCat != null && ListArticleByCat.Count() > 1)
+                                        {
+                                            @for (int m = 1; m < ListArticleByCat.Count(); m++)
+                                            {
+                                                <li>
+                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[m].Id" asp-route-alias="@ListArticleByCat[m].Alias" title="@ListArticleByCat[m].Title">
+                                                        <i class="far fa-arrow-alt-circle-right pr-2"></i>@ListArticleByCat[m].Title
+                                                    </a>
+                                                    <span class="date">(@ListArticleByCat[m].PublishUpShow)</span>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        }
+    }
+}

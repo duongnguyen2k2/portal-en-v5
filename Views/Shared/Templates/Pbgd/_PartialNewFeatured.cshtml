@@ -1,0 +1,202 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.AspNetCore.Http;
+@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+    
+    // ************* Menu Dọc **************
+    string KeySessionMenuDoc = "MenuDoc_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenuDoc = Context.Session.GetString(KeySessionMenuDoc);
+    List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = new List<API.Areas.Admin.Models.Menus.Menus>();
+
+    if(StrListMenuDoc!=null && StrListMenuDoc != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenuDoc = JsonConvert.DeserializeObject<List<API.Areas.Admin.Models.Menus.Menus>>(StrListMenuDoc);
+    }
+    else
+    {
+        ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySessionMenuDoc,JsonConvert.SerializeObject(ListMenuDoc));
+        }
+        else
+        {
+            Context.Session.Remove(KeySessionMenuDoc);
+        }
+
+    }
+    // ************* End Menu Dọc **************
+
+    int countBanner9 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 9)
+            {
+                countBanner9 = countBanner9 + 1;
+            }
+        }
+    }
+
+    string class_banner_9_ct = "banner-93-";
+    if (countBanner9 == 2)
+    {
+
+        class_banner_9_ct = "banner-92-";
+    }
+    if (countBanner9 == 4)
+    {
+        class_banner_9_ct = "banner-94-";
+    }
+    int bannerCount = 0;
+    string active = "active";
+
+    List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan);
+}
+<div class="row">
+    <div class="col-md-4 col-12">
+        <div class="lmenu">
+            <ul class="leftmenu-list-group">
+                @for (int mn = 0; mn < ListMenuDoc.Count(); mn++)
+                {
+                    @if (@ListMenuDoc[mn].ChildCount > 0)
+                    {
+
+                        @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuChildDropdownBT", ListMenuDoc[mn])
+                        
+                    }
+                    else
+                    {
+                        <li>
+                            <a href="@ListMenuDoc[mn].Link">@ListMenuDoc[mn].Title</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+        @if (ItemCoQuan.MetadataCV.FlagVideosHome == 1)
+        {
+
+            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialVideos")
+
+        }
+    </div>
+    <div class="col-md-8 col-12">
+        <section id="features-wrap">
+            <div class="card card-style-two border-0 features-header">
+                <h4 class="featured-news-home">
+                    <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">
+                        <span>@Localizer["HotNews"]</span>
+                    </a>                    
+                </h4>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-12">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                            {
+                                @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                                {
+
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <div class="features-item">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                <img src="@ListArticlesHot[i].Images" alt="@ListArticlesHot[i].Title" class="d-block w-100" />
+                                            </a>
+                                            <div class="features-item-body">
+                                                <h1 class="title">
+                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                        @ListArticlesHot[i].Title
+                                                        <small>(@ListArticlesHot[i].PublishUpShow)</small>
+                                                    </a>
+                                                </h1>
+                                                <p class="overview">
+                                                    @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-12 col-12">
+                    <div class="features-list">
+                                
+                        @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                        {
+                            if (i < 3)
+                            {
+                                <div class="features-list-item">
+                                    <div class="features-list-item-img">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                            <img src="@ListArticlesHot[i].Images" alt="@ListArticlesHot[i].Title" />
+                                        </a>
+                                    </div>
+
+                                    <div class="features-list-item-content">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                            @ListArticlesHot[i].Title                                                    
+                                        </a>
+                                    </div>
+
+                                </div>
+                            }
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+@if (countBanner9 > 0)
+{
+    <section id="banner-bottom-featured">
+        <div class="carousel slide banner-bottom-featured-body"  data-ride="carousel">
+             
+            @if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+            {
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.ListBanners.Count(); i++)
+                    {
+                        if (Model.ListBanners[i].CatId == 9)
+                        {
+                            bannerCount = bannerCount + 1;
+                            
+                            if (bannerCount == 1)
+                            {
+                                active = "active";
+                            }
+                            else {
+                                active = "rong";
+                            }
+
+                            <div class="carousel-item banner-bottom-featured-item @class_banner_9_ct@(bannerCount) @active">
+                                <a href="@Model.ListBanners[i].Link"> <img src="@Model.ListBanners[i].Image" alt="@Model.ListBanners[i].Title" class="d-block w-100"></a>
+                            </div>
+
+                        }
+                    }
+                </div>
+            }
+
+        </div>
+    </section>
+}

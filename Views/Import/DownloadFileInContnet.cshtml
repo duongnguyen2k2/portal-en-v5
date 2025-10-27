@@ -1,0 +1,21 @@
+﻿@model API.Models.Import.ImportModel
+
+@{
+    ViewData["Title"] = "Index";
+ Layout = "~/Views/Shared/_Layout.cshtml";
+ string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+ 
+}
+
+<p>@Model.Item.FullText</p>
+
+@if(Model.ListItemsFile!=null && Model.ListItemsFile.Count()>0){
+    @foreach(var item in Model.ListItemsFile)
+    {
+        <div class="col-12">
+            <h4>@item.Path</h4>
+            <p>@item.Extension</p>            
+            
+        </div>
+    }
+}

@@ -1,0 +1,81 @@
+﻿@model API.Areas.Admin.Models.CategoriesArticles.CategoriesArticlesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = Model.Item.Title;
+    ViewData["Description"] = Model.Item.Metadesc;
+    ViewData["Keywords"] = Model.Item.Title;
+    ViewData["Url"] = Domain + "listchildcat/"+Model.Item.Alias + "-" + Model.Item.Id +".html";
+    ViewData["Images"] = Domain + Model.Item.Images;
+    ViewData["Alias"] = Model.Item.Title;
+    ViewData["Type"] = "article";
+
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Item.Title</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">Chưa có bài đăng</p>
+        </div>
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+
+            <div class="col mb-4">
+                <div class="card h-100 card-hop-truc-tuyen">
+                  
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a target="_blank" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias" >@Model.ListItems[i].Title</a>
+                        </h5>                        
+                        <a class="btn-hoptructuyen" target="_blank" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                            @if (Model.ListItems[i].Icon != null)
+                            {
+                                <i class="@Model.ListItems[i].Icon"></i> @("Xem thêm")
+                            }
+                            else
+                            {
+                                <i class="@Model.Item.Icon"></i> @("Xem thêm")
+                            }
+
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        }
+    }
+</div>

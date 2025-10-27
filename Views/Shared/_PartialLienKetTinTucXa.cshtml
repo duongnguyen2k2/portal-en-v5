@@ -1,0 +1,54 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject IViewLocalizer Localizer
+@{
+    Boolean flagShow = false;
+    string Link = "https://motcua.daklak.gov.vn/";
+    if (Configuration["Security:SiteCode"] == "DNO")
+    {
+        Link = "https://dichvucong.daknong.gov.vn/";
+    }
+    Link = Link + "public/linkto/thongketatca&ma-co-quan";
+    if (Model.CodeMotCua != null && Model.CodeMotCua != "")
+    {
+        Link = Link + "=" + Model.CodeMotCua;
+    }
+    List<string>
+    arrCode = Configuration["Security:SiteCode"].ToString().Split('-').ToList();
+
+    if (arrCode.Count() > 1)
+    {
+        if (arrCode[1] == "EDU") { flagShow = true; }
+    }
+
+}
+@if (flagShow)
+{
+    <div class="row" id="partial-lien-ket-tin-tuc">
+        <div class="col-lg-6">
+            <div class="partial-lien-ket-tin-tuc-card">
+                <div class="partial-lien-ket-tin-tuc-title">
+                    <a asp-controller="Documents" asp-action="Index"><i class="fas fa-bullhorn"></i> @Localizer["ANNOUNCEMENT"]</a>
+                </div>
+                <div class="partial-lien-ket-tin-tuc-body">
+                    <div class="partial-lien-ket-tin-tuc-content" id="site-sgd">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="partial-lien-ket-tin-tuc-card">
+                <div class="partial-lien-ket-tin-tuc-title">
+                    <a asp-controller="Account" asp-action="HopTrucTuyen"><i class="far fa-newspaper"></i> @Localizer["NEWS"]</a>
+                </div>
+                <div class="partial-lien-ket-tin-tuc-body">
+                    <div class="partial-lien-ket-tin-tuc-content" id="site-bgd">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

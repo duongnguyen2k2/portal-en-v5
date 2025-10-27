@@ -1,0 +1,286 @@
+﻿@model API.Areas.Admin.Models.USUsers.USUsersModel
+@{
+    ViewData["Title"] = "Cập Nhật Tài Khoản";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    if (Model.Item.Id > 0)
+    {
+        Model.Item.BirthdayNamSinhShow = Model.Item.Birthday.ToString().Substring(0, 4);
+    }
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>Chi tiết Người Dùng</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                <div class="col-lg-4 mr-0">
+                    <div class="form-group images-main">
+                        <label>Hình đại diện</label>
+                        <img src="@Model.Item.Avatar" class="Item_Images_Article_Preview" style="max-height:200px;">
+                        <input type="hidden" name="Avatar" id="Item_Images_Article" class="form-control" asp-for="Item.Avatar">
+                        <a onclick="ShowManagerFile('Item_Images_Article')" class="btn btn-primary text-white"><i class="far fa-image"></i> Chọn hình (600px*400px)</a>
+                        <a onclick="ViewImageArtile('Item_Images_Article')" class="text-white"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                    </div>
+                </div><!--End Left-->
+
+                <div class="col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdCoQuan">Cơ Quan</label>
+                                <select asp-for="Item.IdCoQuan" name="IdCoQuan" class="form-control" asp-items="Model.ListDMCoQuan"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.UserName">Tài Khoản <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.UserName" name="UserName">
+                            </div>
+                        </div>
+                        @if (Model.Item.Id == 0)
+                        {
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label asp-for="Item.PasswordShow">Mật khẩu <sup class="text-danger"> (*)</sup></label>
+                                    <input type="text" class="form-control" asp-for="Item.PasswordShow" name="PasswordShow" readonly>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.FullName">Tên</label>
+                                <input asp-for="Item.FullName" name="FullName" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.UserCode">Mã User</label>
+                                <input asp-for="Item.UserCode" name="UserCode" class="form-control" />
+                            </div>
+                        </div>
+                   
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdRegency"><strong>Chọn Chức vụ <span class="text-danger">*</span></strong></label>
+                                <select asp-for="Item.IdRegency" name="IdRegency" class="form-control" asp-items="Model.ListDMChucVu"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.Email">Email <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.Telephone">Điện Thoại</label>
+                                <input asp-for="Item.Telephone" name="Telephone" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label asp-for="Item.DangVien">Đang Viên</label>
+                            <div class="form-group">
+
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input asp-for="Item.DangVien" value="1" type="radio" id="DangVien_1" name="DangVien" class="custom-control-input">
+                                    <label class="custom-control-label" for="DangVien_1">Đảng Viên</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input asp-for="Item.DangVien" value="0" type="radio" id="DangVien_2" name="DangVien" class="custom-control-input">
+                                    <label class="custom-control-label" for="DangVien_2">Không</label>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdDanToc">Dân Tộc</label>
+                                <select asp-for="Item.IdDanToc" name="IdDanToc" class="form-control" asp-items="Model.ListDMDanToc"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdTonGiao">Tôn giáo</label>
+                                <select asp-for="Item.IdTonGiao" name="IdTonGiao" class="form-control" asp-items="Model.ListDMTonGiao"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdTrinhDo">Trình độ</label>
+                                <select asp-for="Item.IdTrinhDo" name="IdTrinhDo" class="form-control" asp-items="Model.ListDMTrinhDo"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.Specialize">Chuyên Môn</label>
+                                <input type="text" class="form-control" asp-for="Item.Specialize" name="Specialize">
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.NamSinh">Định dạng Ngày Sinh</label>
+                                <div class="form-group">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input asp-for="Item.NamSinh" value="1" type="radio" id="NamSinh_1" name="NamSinh" class="custom-control-input">
+                                        <label class="custom-control-label" for="NamSinh_1">Lấy Năm Sinh</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input asp-for="Item.NamSinh" value="0" type="radio" id="NamSinh_0" name="NamSinh" class="custom-control-input">
+                                        <label class="custom-control-label" for="NamSinh_0">Đầy đủ</label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="ChonNamSinh" class="form-group" @if (Model.Item.NamSinh == 0) { <text> style="display:none" </text> }>
+                                <label asp-for="Item.BirthdayNamSinhShow">Năm Sinh <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" asp-for="Item.BirthdayNamSinhShow" name="BirthdayNamSinhShow" class="form-control" style="width: 60px;" />
+                            </div>
+                            <div id="ChonNgaySinh" class="form-group" @if (Model.Item.NamSinh == 1) { <text> style="display:none" </text> }>
+                                <label asp-for="Item.BirthdayShow">Ngày Sinh <sup class="text-danger"> (*)</sup></label>
+                                <div class="input-group date" id="BirthdayShow" data-target-input="nearest">
+                                    <input type="text" asp-for="Item.BirthdayShow" name="BirthdayShow" class="form-control datetimepicker-input" data-target="#BirthdayShow" id="BirthdayShow" />
+                                    <div class="input-group-append" data-target="#BirthdayShow" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-lg-4">
+                            <label asp-for="Item.Gender">Giới Tính <sup class="text-danger"> (*)</sup></label>
+                            <div class="form-group">
+
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input asp-for="Item.Gender" value="1" type="radio" id="Gender_1" name="Gender" class="custom-control-input">
+                                    <label class="custom-control-label" for="Gender_1">Nữ</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input asp-for="Item.Gender" value="2" type="radio" id="Gender_2" name="Gender" class="custom-control-input">
+                                    <label class="custom-control-label" for="Gender_2">Nam</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input asp-for="Item.Gender" value="3" type="radio" id="Gender_3" name="Gender" class="custom-control-input">
+                                    <label class="custom-control-label" for="Gender_3">Khác</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.Ordering">
+                                    <strong>Thứ Tự</strong>
+                                </label>
+                                <input type="number" asp-for="Item.Ordering" name="Ordering" class="form-control" />
+                            </div>
+                        </div>
+
+                    
+
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label asp-for="Item.Status">Trạng Thái Người dùng</label>
+                                    <select asp-for="Item.Status" name="Status" class="form-control" asp-items="Model.ListItemsStatus"></select>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdGroup"><strong>Chọn Nhóm quyền</strong></label>
+                                <select asp-for="Item.IdGroup" name="IdGroup" class="form-control" asp-items="Model.ListItemsGroups"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label asp-for="Item.IdPhongBan">Phòng Ban</label>
+                                <select asp-for="Item.IdPhongBan" name="IdPhongBan" class="form-control" asp-items="Model.ListItemDanhMuc"></select>
+                            </div>
+                        </div>
+
+
+                        
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Description">Mô tả</label>
+                                <textarea asp-for="Item.Description" id="Description" name="Description" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                                <i class="fas fa-save"></i> Lưu lại
+                            </button>
+                            <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Hủy</a>
+                        </div>
+                    </div>
+
+                    <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                    <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                </div><!--End Right-->
+            </div>
+
+        </form>
+    </div>
+</div>
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $('#BirthdayShow').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        
+
+        $(document).ready(function () {
+            $('input:radio[name=NamSinh]').change(function () {
+
+                console.log($("input[name='NamSinh']:checked").val());
+                if ($("input[name='NamSinh']:checked").val() == '1') {
+                    $("#ChonNamSinh").show();
+                    $("#ChonNgaySinh").hide();
+                }
+                if ($("input[name='NamSinh']:checked").val() == '0') {
+                    $("#ChonNamSinh").hide();
+                    $("#ChonNgaySinh").show();
+                }
+
+            });
+        });
+    </script>
+}

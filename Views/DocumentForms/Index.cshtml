@@ -1,0 +1,150 @@
+﻿@model API.Areas.Admin.Models.DocumentForms.DocumentFormsModel
+@using Microsoft.AspNetCore.Http;
+
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    ViewData["Title"] = "Mẫu biểu hành chính";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container ContentDiv">
+    <div class="row">
+        <div class="col-12">
+            <div class="PageDetail">
+
+                <div class="greyDiv searchDiv mb-3">
+                    <form asp-controller="@ControllerName" asp-action="Index" method="GET">
+                        <div class="row">
+                            <div class="col col-lg-6 col-sm-6 col-md-6">
+                                <div class="form-row">
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" asp-for="SearchData.Keyword" name="Keyword" placeholder="Từ khóa">
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="submit" class="btn btn-primary" name="Search" value="Tìm kiếm" />
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="d-none d-sm-block">
+                    <table class="table table-bordered  myTable" style="margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th width="50px" class="text-center">STT</th>
+                                <th>Tên mẫu biểu</th>
+                                <th width="200px" class="text-center">Ký hiệu</th>
+                                <th width="100px">Mẫu trắng</th>
+                                <th width="100px">Mẫu ví dụ</th>
+                                <th width="100px" class="text-center">Xem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                            {
+                                <tr>
+                                    <td colspan="5">Không có văn bản nào</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Model.ListItems.Count(); i++)
+                                {
+                                    <tr>
+                                        <td class="text-center">@(i + 1)</td>
+                                        <td>
+                                            <a asp-controller="DocumentForms" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                                @Model.ListItems[i].Title
+                                            </a>
+                                        </td>
+                                        <td class="text-center">
+                                            <strong> @Model.ListItems[i].Code</strong>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (!string.IsNullOrEmpty(Model.ListItems[i].Link))
+                                            {
+                                                <a href="@Model.ListItems[i].Link" target="_blank"> <i class="fa fa-download" style="margin-right:7px"></i> Tải về</a>
+                                            }
+
+                                        </td>
+
+                                        <td class="text-center">
+                                            @if (!string.IsNullOrEmpty(Model.ListItems[i].Link2))
+                                            {
+                                                <a href="@Model.ListItems[i].Link2" target="_blank"> <i class="fa fa-download" style="margin-right:7px"></i> Tải về</a>
+                                            }
+
+                                        </td>
+
+                                        <td class="text-center">
+                                            <a asp-controller="DocumentForms" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias"><i class="fas fa-binoculars"></i></a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class=" d-block d-sm-none">
+                    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                    {
+                        <label>Không có dữ liệu!</label>
+                    }
+                    else
+                    {
+                        <div class="list-group-mobile">
+
+                            @for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <div class="list-group-mobile-item">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <span><strong>@Model.ListItems[i].Title</strong></span> <br />
+                                            <span><strong>Ký hiệu:</strong> @Model.ListItems[i].Code</span>
+                                            <span>  <a href="@Model.ListItems[i].Link" target="_blank"><strong>Mẫu trắng:</strong> <i class="fa fa-download" style="margin-right:7px"></i> </a></span> <br />
+                                            <span>  <a href="@Model.ListItems[i].Link2" target="_blank"><strong>Mẫu ví dụ:</strong> <i class="fa fa-download" style="margin-right:7px"></i> </a></span> 
+                                            <span> <a asp-controller="DocumentForms" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias"><strong>Chi Tiết:</strong> <i class="fas fa-binoculars"></i> </a></span>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_PartialPagination", Model.PaginationMobile)
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+

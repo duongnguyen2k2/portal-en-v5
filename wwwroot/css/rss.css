@@ -1,0 +1,60 @@
+.page-rss {
+    font-size: 14px;
+    font-family: "Merriweather",serif;
+}
+    .page-rss .sub-title-page {
+        font-size: 20px;
+        line-height: 160%;
+        margin-bottom: 15px;
+        font-family: "Merriweather",serif;
+        display: inline-block;
+    }
+    .page-rss p {
+        font-size: 18px;
+        line-height: 160%;
+        margin-bottom: 20px;
+    }
+    .page-rss .wrap-list-rss {
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+    }
+    .page-rss .wrap-list-rss .list-rss:first-child {
+        margin-right: 15px;
+    }
+    .page-rss .wrap-list-rss .list-rss {
+        width: 100%;
+        color: #4f4f4f;
+        font-size: 18px;
+        line-height: 1.1666666667;
+        margin-bottom: 15px;
+    }
+
+        .page-rss .wrap-list-rss .list-rss a {
+            padding: 15px 0;
+            display: block;
+            border-bottom: 1px solid #E5E5E5;
+        }
+    .page-rss .wrap-list-rss .list-rss .icon-rss {
+        font-size: 13px;
+        line-height: 1.1538461538;
+        float: right;
+        color: #222;
+        margin-top: 3px;
+        line-height: 20px;
+        -webkit-transition: all 0.4s ease;
+        transition: all 0.4s ease;
+    }
+
+        .page-rss .wrap-list-rss .list-rss .icon-rss .fas{
+            color: #ee802f;            
+            padding: 2px;
+            font-size:20px;
+            margin-top: -3px;
+            margin-left: 10px;
+            border-radius: 1px;
+        }
+       

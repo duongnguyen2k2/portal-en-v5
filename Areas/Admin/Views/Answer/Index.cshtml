@@ -1,0 +1,72 @@
+﻿@model API.Areas.Admin.Models.Answer.AnswerModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Kết quả khảo sát";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        
+        <h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        
+        <div class="row">            
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th class="text-info" >Nội dung khảo sát</th>
+                            <th width="200px">Câu trả lời</th>                            
+                            <th class="text-info" width="250px">IP Khảo sát</th>
+                            <th class="text-info" width="170px">Thời gian</th>
+                            <th width="70px" class="btn-contain">
+                                
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">                                    
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@(i + 1)</td>
+                                    <td>@Model.ListItems[i].SurveyTitle</td>
+                                    <td>@Model.ListItems[i].QuestionTitle</td>                                    
+                                    <td>@Model.ListItems[i].CustomerId</td>
+                                    <td>@Model.ListItems[i].CreatedDate</td>
+                                    <td class="text-center">
+                                        <ul class="list-inline action">                                            
+                                            <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].CustomerId" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">                    
+                    @await Html.PartialAsync("_PartialPagination",Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+

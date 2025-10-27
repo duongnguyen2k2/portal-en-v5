@@ -1,0 +1,222 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@model API.Areas.Admin.Models.Documents.DocumentsModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Văn Bản";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Văn Bản";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<style>
+   
+</style>
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css@("?v="+version )" />
+<div class="card">
+    <div class="card-header">
+        <h4>Chi tiết Văn bản</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tiêu đề tài liệu <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control Changetitle namepr" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Code">Số ký hiệu<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Code" name="Code">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Alias">Alias<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control slug" asp-for="Item.Alias" name="Alias">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Featured" name="Featured" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Featured"> Nổi Bật</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.FeaturedHome" name="FeaturedHome" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.FeaturedHome"> Thông báo</label>
+                        </div>
+                    </div>
+                </div>              
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <label asp-for="Item.Link">File Văn bản <sup class="text-danger"> (*)</sup></label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="Item_Images" class="form-control" asp-for="Item.Link" name="Link">
+                        <div class="input-group-prepend">
+                            <a onclick="ShowManagerFile('Item_Images')" class="btn btn-primary">Chọn File</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.IssuedDateShow">Ngày Ban Hành <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="IssuedDateShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.IssuedDateShow" name="IssuedDateShow" class="form-control datetimepicker-input" data-target="#IssuedDateShow" />
+                            <div class="input-group-append" data-target="#IssuedDateShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.EffectiveDateShow">Ngày Hiệu Lực</label>
+                        <div class="input-group date" id="EffectiveDateShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.EffectiveDateShow" name="EffectiveDateShow" class="form-control datetimepicker-input" data-target="#EffectiveDateShow" />
+                            <div class="input-group-append" data-target="#EffectiveDateShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.TypeId">Thể loại <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.TypeId" name="TypeId" class="form-control" asp-items="Model.ListDocumentsType"></select>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.CatId">Loại văn bản <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.CatId" name="CatId" class="form-control" asp-items="Model.ListDocumentsCategories"></select>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.FieldId">Lĩnh Vực <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.FieldId" name="FieldId" class="form-control" asp-items="Model.ListDocumentsField"></select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.OrganizationName">Cơ Quan Ban Hành<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.OrganizationName" name="OrganizationName">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.LevelId">Cấp <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.LevelId" name="LevelId" class="form-control" asp-items="Model.ListDocumentsLevel"></select>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">File Đính kèm</legend>
+                        <div class="file-list">
+
+                            @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+                            {
+                                <input type="hidden" id="maxfile" value="@(Model.Item.ListFile.Count() - 1)">
+                                for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                                {
+                                    <div class="file-item">
+                                        <a onclick="ShowManagerFile('FileName_@j')" class="btn btn-primary">Chọn File</a>
+                                        <input type="text" asp-for="@Model.Item.ListFile[j].Title" name="ListFile[@j].Title" class="TitleDocumentName" id="Title_@j">
+                                        <input type="text" asp-for="@Model.Item.ListFile[j].FilePath" name="ListFile[@j].FilePath" class="FileName" id="FileName_@j">
+                                        <span class="text-danger xoafile">Xóa</span>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <input type="hidden" id="maxfile" value="-1">
+                            }
+                        </div>
+                        <p style="margin:10px 5px; cursor:pointer" class="text-primary" onclick="ThemFile()">
+                            <i class="fa fa-plus-square"></i> Thêm file
+                        </p>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.Introtext">Trích Yếu</label>
+                <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.FullText">Nội Dung</label>
+                <textarea asp-for="Item.FullText" name="FullText" class="form-control"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Hủy</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.IdCoQuan" name="IdCoQuan">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+
+        </form>
+    </div>
+</div>
+
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js@("?v="+version )' referrerpolicy="origin"></script>
+
+    <script src="~/lib/js/moment.js@("?v="+version )"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js@("?v="+version )"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js@("?v="+version )"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js@("?v="+version )"></script>
+
+    <script src="~/TemplatesAdmin/Default/js/document.js@("?v="+version )"></script>
+
+    <script type="text/javascript">
+
+        
+    </script>
+}
+

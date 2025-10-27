@@ -1,0 +1,164 @@
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@inject IViewLocalizer Localizer
+
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan,CultureInfo.CurrentCulture.Name.ToLower());
+}
+
+<section id="hot-news-slider" class="hot-news-section full-width-slider">
+    <div class="container-page">        
+        <div class="row">
+            <div class="hot-news-left">
+                <div class="hot-news-slider-container">
+            <div class="accent-bar"></div>
+            <div id="hotNewsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                        {
+                            <li data-target="#hotNewsCarousel" data-slide-to="@i" class="@(i == 0 ? "active" : "")"></li>
+                        }
+                    }
+                </ol>
+
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="hot-news-slide">
+                                    <div class="slide-image">
+                                        <img src="@ListArticlesHot[i].Images" alt="@ListArticlesHot[i].Title" class="slide-img">
+                                        <div class="slide-overlay"></div>
+                                    </div>
+                                    <div class="slide-content">
+                                        <div class="slide-meta">
+                                            <span class="slide-date">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                @ListArticlesHot[i].PublishUpShow
+                                            </span>
+                                            <span class="slide-category">
+                                                <i class="fas fa-tag"></i>
+                                                Tin nổi bật
+                                            </span>
+                                        </div>
+                                        <h3 class="slide-title">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias">
+                                                @ListArticlesHot[i].Title
+                                            </a>
+                                        </h3>
+                                        <p class="slide-summary">
+                                            @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 150))
+                                        </p>
+                                        <div class="slide-action">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" class="btn-read-more">
+                                                <i class="fas fa-arrow-right"></i>
+                                                        @Localizer["seedetails"]
+                                                @* Xem chi tiết *@
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Navigation arrows -->
+                <a class="carousel-control-prev" href="#hotNewsCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#hotNewsCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+                </div>
+            </div>
+            <div class="hot-news-right">
+                @{
+                    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+                    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+                    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan, CultureInfo.CurrentCulture.Name.ToLower());
+                }
+                <div class="card notification-card-modern" id="featured-document">
+                    <div class="notification-header">
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="notification-title">
+                            @if (ItemCoQuan.ThongBao.ToLower() == "tinmoi")
+                            {
+                                <a href="#" class="notification-link">TIN MỚI</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Articles" asp-action="Notification" class="notification-link">
+                                    @if (ItemCoQuan.Id == 7)
+                                    {
+                                        <span>TIN TỨC, SỰ KIỆN</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Localizer["Notifications"]</span>
+                                    }
+                                </a>
+                            }
+                        </h3>
+                        <div class="notification-badge">@(NotificationList?.Count() ?? 0)</div>
+                    </div>
+                    <div class="notification-body">
+                        <div class="notification-list">
+                            <div class="notification-scroll-content">
+                                @if (NotificationList != null && NotificationList.Count() > 0)
+                                {
+                                    @for (int i = 0; i < NotificationList.Count(); i++)
+                                    {
+                                        <div class="notification-item @(i == 0 ? "latest" : "")">
+                                            <div class="notification-content">
+                                                <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title" class="notification-text">
+                                                    @NotificationList[i].Title
+                                                </a>
+                                                <div class="notification-meta">
+                                                    <span class="notification-date">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                        @NotificationList[i].PublishUp.ToString("dd/MM/yyyy")
+                                                    </span>
+                                                    @if (i == 0)
+                                                    {
+                                                        <span class="notification-new">MỚI</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="notification-arrow">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="notification-empty">
+                                        <i class="fas fa-inbox"></i>
+                                        <p>Chưa có thông báo nào</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

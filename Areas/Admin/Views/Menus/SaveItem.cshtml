@@ -1,0 +1,147 @@
+﻿@model API.Areas.Admin.Models.Menus.MenusModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới menu";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật menu";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>Chi tiết Menu</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                
+
+                <div class="col-12 col-md-5">
+                    <div class="form-group">
+                        <label asp-for="Item.ParentId">Menu cha</label>
+                        <select asp-for="Item.ParentId" class="form-control" asp-items="Model.ListItemsMenus"></select>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="form-group">
+                        <div>&nbsp;&nbsp;</div>
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Thứ tự hiển thị</label>
+                        <input type="text" class="form-control" asp-for="Item.Ordering">
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-2 col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Icon">Icon</label>
+                        <input type="text" class="form-control" asp-for="Item.Icon">
+                    </div>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="form-group">
+                        <label asp-for="Item.Target">Target</label>
+                        <select asp-for="Item.Target" class="form-control" asp-items="Model.ListCatTarget"></select>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-2">
+                    <div class="form-group">
+                        <label asp-for="Item.TypeShowId">Cách hiển thị</label>
+                        <select asp-for="Item.TypeShowId" class="form-control" asp-items="Model.ListItemsTypeShow"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                
+
+                <div class="col-md-6 col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Title">
+                    </div>
+                </div>
+
+                 <div class="col-md-6 col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Title_EN">Title English <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Title_EN">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Link">Link <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Link">
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Link_EN">Link English <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Link_EN">
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index" asp-route-catid="@Model.Item.CatId"><i class="fas fa-backward"></i> Quay Lại</a>
+                    <a href="#" class="btn btn-info" data-toggle="modal" data-target="#MenuDoc"><i class="fas fa-book"></i> Hướng dẫn</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids">
+            <input type="hidden" class="form-control" asp-for="SearchData.IdCoQuan" name="Item.IdCoQuan">
+            <input type="hidden" class="form-control" asp-for="SearchData.CatId" name="Item.CatId">
+
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="MenuDoc" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable  modal-xl" role="document">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Hướng dẫn sử dụng menu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h2>Chức năng này dùng để tạo danh mục menu hiện ngoài trang chủ. </h2>
+                Bạn điền đầy đủ thông tin như: Tên menu, Menu cha là gì? Link menu dẫn tới đâu khi người dùng click vào và số thứ tự hiển thị.
+                Lưu ý: <br />
+                <h3>1. Nếu là danh mục tin tức</h3>
+                <img src="~/images-doc/menu-danh-muc.png" title="" class="img-fluid" />
+
+                <h3>2. Nếu là tin tức thì Link menu được lấy trong chi tiết tin tức.</h3>
+                <img src="~/images-doc/menu-tintuc.png" title="" class="img-fluid" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>                
+            </div>
+        </div>
+    </div>
+</div>

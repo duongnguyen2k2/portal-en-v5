@@ -1,0 +1,83 @@
+﻿@model API.Areas.Admin.Models.USUsers.USUsersModel
+
+@using Microsoft.AspNetCore.Http;
+
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    ViewData["Title"] = "Ban lãnh đạo";
+    ViewData["Description"] = "Ban lãnh đạo";
+    ViewData["Keywords"] = "Ban lãnh đạo";
+    ViewData["Url"] = Domain + "/ban-lanh-dao.html";
+    ViewData["Images"] = "";
+
+}
+<link rel="stylesheet" href="~/Templates/ThemeCM/css/ban-lanh-dao.css" />
+<div class="row">
+    <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div id="app_banlanhdao">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">Chưa có Dữ liệu</p>
+        </div>
+
+    }
+    else
+    {
+
+        <div class="row">
+            @for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                                @if (Model.ListItems[i].Avatar != null && Model.ListItems[i].Avatar != "")
+                                {
+                                    <img src="@Model.ListItems[i].Avatar" style="width:100%" alt="@Model.ListItems[i].FullName">
+                                }
+                                else { 
+                                    <img src="/images/user-avatar.webp" style="width:100%" alt="@Model.ListItems[i].FullName">
+                                }
+                               
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@Model.ListItems[i].FullName</h5>
+                                    <p class="card-text">
+                                        <div><span class="app-info app-user-email">@Localizer["Email"]:</span><span class="app-info-content app-user-email-ct">@Model.ListItems[i].Email</span></div>
+                                        <div><span class="app-info app-user-tenchucvu">@Localizer["Position"]:</span><span class="app-info-content app-user-tenchucvu-ct">@Model.ListItems[i].TenChucVu</span></div>
+                                        <div><span class="app-info app-user-telephone">@Localizer["Phone"]:</span><span class="app-info-content app-user-telephone-ct">@Model.ListItems[i].Telephone</span></div>
+                                        <div><span class="app-info app-user-specialize">@Localizer["Expertise"]:</span><span class="app-info-content app-user-specialize-ct">@Model.ListItems[i].Specialize</span></div>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+

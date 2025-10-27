@@ -1,0 +1,406 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuanModel
+@{
+    ViewData["Title"] = "Cập nhật thông tin Cơ Quan";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="UpdateDMCoQuan" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>               
+           
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Address">Địa chỉ </label>
+                        <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                    </div>
+                </div>
+                
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Email">Email </label>
+                        <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Telephone">Số Điện Thoại </label>
+                        <input type="text" class="form-control" asp-for="Item.Telephone" name="Telephone">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Fax">Fax </label>
+                        <input type="text" class="form-control" asp-for="Item.Fax" name="Fax">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.CodeMotCua">Code Một Cửa </label>
+                        <input type="text" class="form-control" asp-for="Item.CodeMotCua" name="CodeMotCua">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.CodeVanBan">Code Văn bản </label>
+                        <input type="text" class="form-control" asp-for="Item.CodeVanBan" name="CodeVanBan">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.CodeLCT">Code Lịch công tác </label>
+                        <input type="text" class="form-control" asp-for="Item.CodeLCT" name="CodeLCT">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="Item.ThongBao">Thông báo(Articles) </label>
+                        <input type="text" class="form-control" asp-for="Item.ThongBao" name="ThongBao">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="Item.CompanyName">Tên Website <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.CompanyName" name="CompanyName">
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="row">
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.FlagStatusArticle">Trạng thái đăng bài <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.FlagStatusArticle" name="MetadataCV.FlagStatusArticle">
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.FlagAuthorText">Author Text <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.FlagAuthorText" name="MetadataCV.FlagAuthorText">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.FlagSession">Lưu Session <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.FlagSession" name="MetadataCV.FlagSession">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.FlagComment">Bình Luận <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.FlagComment" name="MetadataCV.FlagComment">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.FlagVideosHome">Videos Home <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.FlagVideosHome" name="MetadataCV.FlagVideosHome">
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.flagDisMarqueeHome">Dis Marquee Home <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.flagDisMarqueeHome" name="MetadataCV.flagDisMarqueeHome">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.flagTaiLieuHop">Tài liệu họp <sup class="text-danger"> (*)</sup></label>
+                        <input type="number" class="form-control" asp-for="Item.MetadataCV.flagTaiLieuHop" name="MetadataCV.flagTaiLieuHop">
+                    </div>
+                </div>
+                
+               
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.CTNC">Chịu trách nhiệm chính<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.CTNC" name="CTNC">
+                    </div>
+                </div>                
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Facebook">Facebook </label>
+                        <input type="text" class="form-control" asp-for="Item.Facebook" name="Facebook">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Twitter">Twitter </label>
+                        <input type="text" class="form-control" asp-for="Item.Twitter" name="Twitter">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Youtube">Youtube </label>
+                        <input type="text" class="form-control" asp-for="Item.Youtube" name="Youtube">
+                    </div>
+                </div>
+
+            </div>
+
+
+           <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.UrlImage" class="control-label">URL Image (png 380*200)</label>
+                        <input asp-for="Item.MetadataCV.UrlImage" name="MetadataCV.UrlImage" class="form-control" />
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.UrlIcon" class="control-label">URL Icon (png)</label>
+                        <input asp-for="Item.MetadataCV.UrlIcon" name="MetadataCV.UrlIcon" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.MailSettingsEmail" class="control-label">MailSettingsEmail</label>
+                        <input asp-for="Item.MetadataCV.MailSettingsEmail" name="MetadataCV.MailSettingsEmail" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.Favicon" class="control-label">Favicon</label>
+                        <input asp-for="Item.MetadataCV.Favicon" name="MetadataCV.Favicon" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.ThuTucHanhChinhXa" class="control-label">ThuTucHanhChinhXa</label>
+                        <input asp-for="Item.MetadataCV.ThuTucHanhChinhXa" name="MetadataCV.ThuTucHanhChinhXa" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.ThuTucHanhChinhHuyen" class="control-label">ThuTucHanhChinhHuyen</label>
+                        <input asp-for="Item.MetadataCV.ThuTucHanhChinhHuyen" name="MetadataCV.ThuTucHanhChinhHuyen" class="form-control" />
+                    </div>
+                </div>
+               <div class="col-lg-12">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.ThuTucHanhChinh" class="control-label">Danh mục thủ tục hành chính</label>
+                        <input asp-for="Item.MetadataCV.ThuTucHanhChinh" name="MetadataCV.ThuTucHanhChinh" class="form-control" />
+                    </div>
+                </div>
+               
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.DescFooter" class="control-label">Mô tả Footer</label>
+                        <textarea asp-for="Item.MetadataCV.DescFooter" name="MetadataCV.DescFooter" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.DescFooterEn" class="control-label">Mô tả Footer En</label>
+                        <textarea asp-for="Item.MetadataCV.DescFooterEn" name="MetadataCV.DescFooterEn" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+           <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.DescNewsHot" class="control-label">Mô tả tin tức Mới</label>
+                        <textarea asp-for="Item.MetadataCV.DescNewsHot" name="MetadataCV.DescNewsHot" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.DescNewsFeatured" class="control-label">Mô tả tin tức nổi bật</label>
+                        <textarea asp-for="Item.MetadataCV.DescNewsFeatured" name="MetadataCV.DescNewsFeatured" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.DescImages" class="control-label">Mô tả ảnh</label>
+                        <textarea asp-for="Item.MetadataCV.DescImages" name="MetadataCV.DescImages" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.LinkBanDo">Link bản đồ</label>
+                        <input type="text" class="form-control" asp-for="Item.MetadataCV.LinkBanDo" name="MetadataCV.LinkBanDo">
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.MetadataCV.ZaloVerification" class="control-label">ZaloVerification</label>
+                        <input asp-for="Item.MetadataCV.ZaloVerification" name="MetadataCV.ZaloVerification" class="form-control" />
+                    </div>
+                </div>
+
+               
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Metadesc" class="control-label"></label>
+                        <textarea asp-for="Item.Metadesc" name="Metadesc" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Metakey" class="control-label"></label>
+                        <textarea asp-for="Item.Metakey" name="Metakey" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.Description">Mô tả</label>
+                <textarea asp-for="Item.Description" name="Description" class="form-control"></textarea>
+            </div>
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Chữ chạy đầu trang</legend>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Slogan">Slogan </label>
+                            <input type="text" class="form-control" asp-for="Item.Slogan" name="Slogan">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="form-group">
+                            <label asp-for="Item.MetadataCV.MarqueeSpeed">Tốc độ </label>
+                            <input type="number" class="form-control" asp-for="Item.MetadataCV.MarqueeSpeed" name="MetadataCV.MarqueeSpeed">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="form-group">
+                            <label asp-for="Item.MetadataCV.MarqueeGap">Khoảng cách</label>
+                            <input type="number" class="form-control" asp-for="Item.MetadataCV.MarqueeGap" name="MetadataCV.MarqueeGap">
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <div class="form-group">
+                            <label asp-for="Item.MetadataCV.MarqueeDirection">Hướng chạy</label>
+                            <input type="text" class="form-control" asp-for="Item.MetadataCV.MarqueeDirection" name="MetadataCV.MarqueeDirection">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Facebook</legend>
+                <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.FacebookFanpage" class="control-label">FacebookFanpage</label>
+                                <textarea asp-for="Item.MetadataCV.FacebookFanpage" name="MetadataCV.FacebookFanpage" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.FacebookApp" class="control-label">FacebookApp</label>
+                                <input asp-for="Item.MetadataCV.FacebookApp" name="MetadataCV.FacebookApp" class="form-control" />
+                            </div>
+                        </div>
+                         <div class="col-lg-12">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.FacebookVerification" class="control-label">FacebookVerification</label>
+                                <input asp-for="Item.MetadataCV.FacebookVerification" name="MetadataCV.FacebookVerification" class="form-control" />
+                            </div>
+                        </div>                       
+                </div>
+            </fieldset>
+
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">File Đính kèm</legend>
+                <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.SmartVoiceTokenID" class="control-label">SmartVoiceTokenID</label>
+                                <input asp-for="Item.MetadataCV.SmartVoiceTokenID" name="MetadataCV.SmartVoiceTokenID" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.SmartVoiceTokenKey" class="control-label">SmartVoiceTokenKey</label>
+                                <input asp-for="Item.MetadataCV.SmartVoiceTokenKey" name="MetadataCV.SmartVoiceTokenKey" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.SmartVoiceAccessToken" class="control-label">SmartVoiceAccessToken</label>
+                                <input asp-for="Item.MetadataCV.SmartVoiceAccessToken" name="MetadataCV.SmartVoiceAccessToken" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.SmartVoiceRegion" class="control-label">SmartVoiceRegion</label>
+                                <input asp-for="Item.MetadataCV.SmartVoiceRegion" name="MetadataCV.SmartVoiceRegion" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MetadataCV.SmartVoiceSpeed" class="control-label">SmartVoiceSpeed</label>
+                                <input asp-for="Item.MetadataCV.SmartVoiceSpeed" name="MetadataCV.SmartVoiceSpeed" class="form-control" />
+                            </div>
+                        </div>
+                </div>
+            </fieldset>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+            <input type="hidden" class="form-control" asp-for="Item.Code" name="Code">
+            <input type="hidden" class="form-control" asp-for="Item.TemplateName" name="TemplateName">
+            <input type="hidden" class="form-control" asp-for="Item.FolderUpload" name="FolderUpload">
+
+        </form>
+    </div>
+</div>
+

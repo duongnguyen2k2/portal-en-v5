@@ -1,0 +1,85 @@
+﻿@model API.Areas.Admin.Models.HopTrucTuyen.HopTrucTuyenModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutHopTrucTuyen";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    ViewData["Title"] = "Tài liệu họp";
+    ViewData["Description"] = "Tài liệu họp";
+    ViewData["Keywords"] = "Tài liệu họp";
+    //ViewData["Url"] = Domain + "/hop-truc-tuyen.html";
+    //ViewData["Images"] = "";
+
+}
+
+<div class="row pagedetail-htt pagedetail-htt-@Model.Item.Id">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item" aria-current="page">@Localizer["TitleContronler"]</li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Item.Code</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 full-text article-content">
+        @if (Model.Item.CatId != 1)
+        {
+            <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+        }
+
+        @Html.Raw(Model.Item.FullText)
+
+        
+    </div>
+
+    @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+    {
+        <div class="listtailieu">
+            <div class="col-md-12">
+                @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                {
+                    string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.ListFile[j].FilePath);
+                    string url = "";                    
+                    url = Domain + Model.Item.ListFile[j].FilePath;
+
+                    if (ex == ".pdf")
+                    {
+                        <iframe src="@Domain/pdfviewer/web/viewer.html?file=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                    {
+                        <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else
+                    {
+                        if(Model.Item.ListFile[j].Title==null || Model.Item.ListFile[j].Title == "")
+                        {
+                            <a href="@url" target="_blank" class="">@Model.Item.ListFile[j].FilePath</a>
+                        }
+                        else
+                        {
+                            <a href="@url" target="_blank" class="">@Model.Item.ListFile[j].Title</a>
+                        }
+                        
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>

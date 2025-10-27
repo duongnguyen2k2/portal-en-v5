@@ -1,0 +1,42 @@
+﻿@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySession = "MenuFooter_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenu = Context.Session.GetString(KeySession);
+
+    List<Menus> ListMenuFooter = new List<Menus>();
+    if(StrListMenu!=null && StrListMenu != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenuFooter = JsonConvert.DeserializeObject<List<Menus>>(StrListMenu);
+    }
+    else
+    {
+        ListMenuFooter = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 2, ParentId);
+
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListMenuFooter));
+        }
+        
+    }
+
+    
+}
+<div id="nav-footer">
+    <div class="container">
+        <ul>
+            @for (int mn = 0; mn < ListMenuFooter.Count(); mn++)
+            {
+               
+                <li><a href="@ListMenuFooter[mn].Link">@ListMenuFooter[mn].Title</a></li>
+            }
+                    
+        </ul>
+    </div>
+</div>

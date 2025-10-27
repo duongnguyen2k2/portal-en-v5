@@ -1,0 +1,170 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Configuration
+@inject IViewLocalizer Localizer
+@inject IConfiguration Configuration
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+
+    var ListMenu = MenusService.GetListByParrent(0, IdCoQuan, 2, ParentId);
+
+}
+@if (ListMenu.Count() > 0)
+{
+    <div class="container footer-menu">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="footer-menu-content">
+                    <ul>
+                        @for (int i = 0; i < ListMenu.Count(); i++)
+                        {
+                            if (ListMenu[i].ChildCount > 0)
+                            {
+
+                            }
+                            else
+                            {
+                                <li>
+                                    @if (ListMenu[i].Icon != null && ListMenu[i].Icon != "")
+                                    {
+                                        <i class="@(ListMenu[i].Icon)"></i>
+                                    }
+                                    <a href="@ListMenu[i].Link" class="">@ListMenu[i].Title</a>
+                                </li>
+                            }
+
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Configuration["Security:SiteCode"] == "DLK" && ParentId == 10)
+{
+
+    <footer class="container">
+
+        <div class="row">
+            <div class="col-12 text-center">
+                <h5 class="font-weight-bold">@ItemCoQuan.Title</h5>
+                <div class="list-info">
+                    <div>@Localizer["Address"]: @ItemCoQuan.Address</div>
+                    <div>
+                        @Localizer["Phone"]: @ItemCoQuan.Telephone
+                        @if (@ItemCoQuan.Fax != null && @ItemCoQuan.Fax != "")
+                        {
+                            <span>; Fax:</span> @ItemCoQuan.Fax
+                        }
+                    </div>
+                    @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                    {
+                        <div>@Localizer["Email"]: @ItemCoQuan.Email</div>
+                    }
+                    @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                    {
+                        <div>@ItemCoQuan.CTNC</div>
+                    }
+                    @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                    {
+                        <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                    }
+                </div>
+
+            </div>
+            <div class="col-12">
+                <div class="font-weight-bolder su-dung-noi-dung text-center">@Localizer["NewsLetterWarming"]</div>
+            </div>
+        </div>
+    </footer>
+}
+else
+{
+    <footer class="container">
+
+        <div class="row">
+            <div class="col-lg-8 col-sm-8 col-md-8 col-xs-12 footer-left">
+                <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+                <div class="list-info">
+                    <div>@Localizer["Address"]: @ItemCoQuan.Address</div>
+                    <div>
+                        @Localizer["Phone"]: @ItemCoQuan.Telephone
+                        @if (@ItemCoQuan.Fax != null && @ItemCoQuan.Fax != "")
+                        {
+                        <span>; Fax:</span>  @ItemCoQuan.Fax
+                        }
+                    </div>
+                    @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                    {
+                        <div>@Localizer["Email"]: @ItemCoQuan.Email</div>
+                    }
+                    @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                    {
+                    <div>@ItemCoQuan.CTNC</div>
+                    }
+                    @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                    {
+                        <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                    }
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 col-sm-4 col-md-4 col-xs-12 footer-right">
+                <div><a href="@Model.CopyrightLink" target="_blank">@Localizer["Expertise"]: <span class="font-weight-bold">@Model.CopyrightTitle</span> </a></div>
+                <div>@Localizer["MadeBy"] : @Model.CopyrightPhone</div>
+                <p>
+                    <img src="/images/vnpt-logo.png" style="margin-top:5px">
+                </p>
+            </div>
+            <div class="col-12">
+                <div class="font-weight-bolder su-dung-noi-dung">@Localizer["NewsLetterWarming"]</div>
+            </div>
+        </div>
+    </footer>
+}
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>
+</div>
+<!-- IPv6-test.com button END -->
+<!-- https://tinnhiemmang.vn/ button BEGIN -->
+<div class="button-tinnhiemmang" id="@(ItemCoQuan.FolderUpload+"-button-tinnhiemmang")">
+    <a href='https://tinnhiemmang.vn/tim-kiem-theo-ten?type=web&q=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/handle_cert.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='Chung nhan Tin Nhiem Mang' title='Chung nhan Tin Nhiem Mang' border='0' />
+    </a>
+</div>
+<!-- https://tinnhiemmang.vn/ button END -->
+
+<div class="modal fade" id="SurveyChart" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="SurveyChartLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SurveyChartLabel">Kết quả khảo sát</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="SurveyChartBody">
+            </div>
+
+        </div>
+    </div>
+</div>

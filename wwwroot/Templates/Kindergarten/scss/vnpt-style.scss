@@ -1,0 +1,218 @@
+/*!
+VNPT Style Kindergarten
+*/
+@import "_vnpt-style-setting.scss";
+@import "bootstrap";
+@import "../../../scss/thong-tin-can-thiet.scss";
+//@import "_footer-menu.scss";
+@import "_lich-ke-hoach.scss";
+@import "_lien-ket-tin-tuc.scss";
+//@import url(plugins/slick.min.css);
+@import url(plugins/fakeloader.css);
+@import url(plugins/material-design-iconic-font.min.css);
+@import url(plugins/themify-icons.css);
+@import url(plugins/lightbox.css);
+
+@import url(plugins/mainmenu.css);
+@import url(plugins/animate.css);
+@import url(plugins/slider-animation.css);
+@import "style.css";
+
+a {
+    color: #444;
+    text-decoration: none;
+}
+p {
+    padding: 0px;
+    margin: 0px;
+}
+
+.article-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #ddd;
+    text-align: justify;
+    overflow: auto;
+
+    .img {
+        display: block;
+        float: left;
+        margin: 0px 10px 10px 0;
+        width: 25%;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    h4 {
+        margin-top: 0px;
+        font-weight: bold;
+        font-size: 14px;
+        clear:none;
+        a {
+            color: #444;
+        }
+    }
+}
+
+
+#article-print, #article-email {
+    display: block;
+    float: right;
+    width: 100px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #fff;
+    background: #1877f2;
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+
+    .fa-print {
+    }
+}
+
+#article-print {
+    width: 50px;
+}
+
+#social-zalo {
+    float: right;
+    margin-right: 10px;
+    background-color: #03a5fa;
+    padding-top: 3px;
+    padding-bottom: 0px;
+    border-radius: 5px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+#social {
+    float: right;
+    margin-right: 10px;
+}
+
+.social {
+    font-size: 11px;
+    line-height: 20px;
+    /* Facebook */
+    .fb-icon-bg {
+        background: #354f88;
+        height: 37px;
+        margin: 0 0 -37px 0;
+        width: 41px;
+        text-align: center;
+        line-height: 41px;
+
+        i {
+            color: #fff;
+            font-size: 20px;
+        }
+    }
+
+
+
+    .fb-bg {
+        background: #3b5998;
+        display: block;
+        height: 37px;
+        margin: 0 0 30px 41px;
+        width: 166px;
+    }
+
+    .fb-bg:after {
+        color: #fff;
+        content: "sign in with facebook";
+        font-family: 'Oswald', sans-serif;
+        height: 37px;
+        left: 8%;
+        position: relative;
+        text-transform: uppercase;
+        top: 22%;
+        width: 41px;
+    }
+
+    .fb-bg:hover {
+        cursor: pointer;
+    }
+
+    .fb-bg:active {
+        background: #354f88;
+    }
+    /* Twitter */
+    .twi-icon-bg {
+        background: #40a2d1;
+        height: 37px;
+        margin: 0 0 -37px 0;
+        width: 41px;
+    }
+
+    .twi-bg {
+        background: #45b0e3;
+        height: 37px;
+        margin: 0 0 30px 41px;
+        width: 166px;
+    }
+
+    .twi-bg:after {
+        color: #fff;
+        content: "sign in with twitter";
+        font-family: 'Oswald', sans-serif;
+        height: 37px;
+        left: 11%;
+        position: relative;
+        text-transform: uppercase;
+        top: 22%;
+        width: 41px;
+    }
+
+    .twi-bg:hover {
+        cursor: pointer;
+    }
+
+    .twi-bg:active {
+        background: #40a2d1;
+    }
+    /* Google+ */
+    .g-icon-bg {
+        background: #ce3e26;
+        height: 37px;
+        margin: 0 0 -37px 0;
+        width: 41px;
+    }
+
+    .g-bg {
+        background: #de4c34;
+        height: 37px;
+        margin-left: 41px;
+        width: 166px;
+    }
+
+    .g-bg:after {
+        color: #fff;
+        content: "sign in with google+";
+        font-family: 'Oswald', sans-serif;
+        height: 37px;
+        left: 10%;
+        position: relative;
+        text-transform: uppercase;
+        top: 22%;
+        width: 41px;
+    }
+
+    .g-bg:hover {
+        cursor: pointer;
+    }
+}
+
+.footer__contact__area {
+    font-size: 14px;
+
+}
+
+.copyright {
+    font-size: 14px;
+
+   
+}

@@ -1,0 +1,205 @@
+﻿<!-- Modal Tinymce -->
+<div class="modal fade" id="tinymce_insert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-max" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Quản lý file upload</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="tinymce_body">
+
+                <div class="row" id="tinymce_top">
+                    <div class="col-xl-6 col-lg-7 col-md-7 col-sm-12">
+                        <span onclick="ShowUploadFile()" class="action"><i class="fas fa-upload" data-toggle="tooltip" data-placement="bottom" title="Upload"></i> <strong>Tải</strong> File</span>
+                        <span onclick="ShowUploadFolder()" class="action"><i class="fas fa-upload" data-toggle="tooltip" data-placement="bottom" title="Upload"></i> <strong>Tải</strong> Folder</span>
+                        <span onclick="ShowFolderPlus()" class="action"><i class="fas fa-folder-plus"></i> <i>Tạo</i> Folder</span>
+                        <span onclick="TinyResetItems()" class="action"><i class="fas fa-sync"></i> Làm mới</span>
+
+                    </div>
+
+                    <div class="col-xl-6 col-lg-5 col-md-5 col-sm-12 text-right">
+                        Filters:
+                        <input type="text" class="filter-input" id="tiny_filter_keyword" value="" />
+                        <i class="fas fa-search" onclick="TinySearchListItems()"></i>
+                    </div>
+
+                </div>
+                <div id="tiny-alert" style="display:none;">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span class="tiny-alert-msg">Đang lấy dữ liệu. Xin vui lòng đợi</span>
+                        <button type="button" class="close" onclick="TinyAlertClose()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <ul class="row breadcrumb" id="TinyBreadcrumb"></ul>
+
+                <ul id="tinymce_content"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="far fa-window-close"></i> Đóng</button>
+                <button type="button" class="btn btn-primary btn-insert-file tiny-insert-file" style="display:none;"><i class="fas fa-check-double"></i> Chèn File</button>
+                <button type="button" id="btnManagerFileSelect" onclick="ManagerFileSelect('AllFile')" class="btn btn-primary btn-insert-file ouput-insert-file" style="display:none;"><i class="fas fa-check-double"></i> Chèn File</button>
+
+            </div>
+            <input type="hidden" value="" id="TinySelectPath" />
+            <input type="hidden" value="" id="TinySelectNameFile" />
+            <input type="hidden" value="" id="TinySelectMultiNameFile" />
+            <input type="hidden" value="" id="TinyCurrentFolder" />
+            <input type="hidden" value="" id="TinyOutputId" />
+            <input type="hidden" value="" id="TinyMangerFileType" /> <!--Loại gì: 1: gọi trong Tinymce, Loại 2: gọi trong fileinput-->
+        </div>
+    </div>
+</div>
+<!-- End Modal Tinymce -->
+<!-- Modal FolderPlus -->
+<div class="modal fade child-modal-tinymce" id="FolderPlus" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Bạn hãy nhập tên Folder</div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="FormCreateFolder">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto">
+                            <label class="sr-only" for="inlineFormInput">Tên Folder</label>
+                            <input style="width:300px;" type="text" class="form-control mb-2 " id="TinyFolderName" placeholder="Ten-Folder">
+
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="TinyCreateFolder()" type="button" class="btn btn-primary mb-2"><i class="fas fa-folder-plus"></i> Tạo</button>
+                        </div>
+                        <div class="invalid-feedback">
+                            Tên folder không hợp lệ.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="far fa-window-close"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Modal FolderPlus -->
+<!-- Modal UploadFile -->
+<div class="modal fade child-modal-tinymce" id="UploadFile" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Bạn hãy chọn các file cần upload</div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="FormCreateFolder" method="post" enctype="multipart/form-data">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto" id="tiny-select-files">
+                            <div class="custom-file" style="width:300px;">
+                                <input multiple type="file" class="custom-file-input" id="TinyUploadFile" required>
+                                <label class="custom-file-label" for="validatedCustomFile">Chọn file...</label>
+                                <div class="invalid-feedback">Example invalid custom file feedback</div>
+                            </div>
+                        </div>
+                        
+                        
+
+                        <div class="col-auto">
+                            <button onclick="TinyUploadFiles()" type="button" class="btn btn-primary mb-2"><i class="fas fa-folder-plus"></i> Upload File</button>
+                        </div>
+                        <div class="invalid-feedback">
+                            Tên folder không hợp lệ.
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="60px">#</th>
+                            <th scope="col">Tên</th>
+                            <th scope="col" width="150px">Kích Thước</th>
+                            <th scope="col" width="100px">Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="TinyBodyUploadFile">
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td><i class='fas fa-check text-primary'></i> <i class='fas fa-times text-danger'></i></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="far fa-window-close"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Modal UploadFile -->
+<!-- Modal FolderPlus -->
+<div class="modal fade child-modal-tinymce" id="TinyShowRename" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Bạn hãy nhập tên muốn sửa</div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="FormRename">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto">
+                            <label class="sr-only" for="inlineFormInput">Tên mới</label>
+                            <div class="input-group">
+                                <input style="width:300px;" type="text" class="form-control" id="TinyRenameName" placeholder="Tên">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text" id="TinyRenameExtension"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="TinyRename()" type="button" class="btn btn-primary mb-2"><i class="fas fa-folder-plus"></i> Cập nhật</button>
+                        </div>
+                        <div class="invalid-feedback">
+                            Lỗi khi đổ tên.
+                        </div>
+                    </div>
+                    <input type="hidden" value="" id="Rename_Path" />
+                    <input type="hidden" value="" id="Rename_N" />
+                    <input type="hidden" value="" id="Rename_I" />
+                    <input type="hidden" value="" id="TypeUpload" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="far fa-window-close"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Modal FolderPlus -->
+<!-- Modal Show Image Main-->
+<div class="modal fade" id="MainShowImage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gridModalLabel">Ảnh đại diện</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" id="MainShowImagePath" src="" />
+            </div>
+
+        </div>
+    </div>
+</div>

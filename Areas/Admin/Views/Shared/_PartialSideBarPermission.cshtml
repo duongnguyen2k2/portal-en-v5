@@ -1,0 +1,114 @@
+﻿@using Microsoft.AspNetCore.Http
+@using API.Areas.Admin.Models.USMenu;
+@using API.Areas.Admin.Models.USGroups;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    string TenCoQuan = Context.Session.GetString("TenCoQuan");
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+    int? IdMenu = 0;
+    if (Context.Session.GetInt32("IdMenu") != null)
+    {
+        IdMenu = Context.Session.GetInt32("IdMenu");
+    }
+
+    var GroupItem = USGroupsService.GetItem(IdGroup, API.Models.Settings.SecretId);
+    List<int> ListMenuId = new List<int>();
+    if (!string.IsNullOrEmpty(GroupItem.ListMenuId))
+    {
+        ListMenuId = GroupItem.ListMenuId.Split(',').Select(int.Parse).ToList();
+    }
+}
+
+
+<!-- Sidebar -->
+<ul class="sidebar navbar-nav">
+
+    @{
+        var dto = new SearchUSMenu();
+        var ListItems = USMenuService.GetListPermission(GroupItem.ListMenuId, IdUser);
+        var listRoot = (from t in ListItems where t.IdParent == 0 && t.ShowMenu == true select t).ToList();
+    }
+
+    @foreach (var item in listRoot)
+    {
+        var listchild = (from t in ListItems where t.IdParent == item.Id && t.ShowMenu == true select t).ToList();
+
+        <li class="nav-item dropdown @if (IdMenu == item.Id) {
+    @("show")
+; }">
+            <a onclick="UpdateSessionMenu(@item.Id)" class="nav-link @if (listchild != null && listchild.Count > 0) {
+        @("dropdown-toggle")
+; }else{
+        @("dropdown")
+} " href="@item.PathName
+                " @if (item.PathName == "#")
+            {
+                @("role=button data-toggle=dropdown aria-haspopup=true")
+            }
+               aria-expanded="@if (IdMenu == item.Id)
+            {
+                @("true")
+                ;
+            }
+            else
+            {
+                @("false")
+            }">
+                @if (!string.IsNullOrEmpty(item.Icon))
+                {
+                    <i class="@item.Icon"></i>
+                }
+                <span>@item.Title</span>
+            </a>
+
+            @if (listchild != null && listchild.Count > 0)
+            {
+                <div class="dropdown-menu @if (IdMenu ==item.Id) {
+        @("show")
+; }">
+
+                    @foreach (var child in listchild)
+                    {
+                        if (child.Styles == "divider")
+                        {
+                            <div class="dropdown-divider"></div>
+                        }
+
+                        <a class="dropdown-item" href="@(child.PathName)">
+
+                            @child.Title.Replace("–– ", "")
+
+                        </a>
+
+                        <!---------LEVEL 3----------->
+                        var listgrandchild = (from t in ListItems where t.IdParent == child.Id && ListMenuId.Contains(t.Id) select t).ToList();
+
+                        @if (listgrandchild != null && listgrandchild.Count > 0)
+                        {
+                            @foreach (var grandchild in listgrandchild)
+                            {
+                                if (grandchild.Styles == "divider")
+                                {
+                                    <div class="dropdown-divider"></div>
+                                }
+                                <a class="dropdown-item" href="@(grandchild.PathName)">@grandchild.Title.Replace("–– ", "")</a>
+
+                            }
+
+                        }
+                        <!------------END LV 3-->
+                    }
+                </div>
+            }
+
+        </li>
+    }
+    <li class="nav-item dropdown ">
+        <a href="/huong-dan-su-dung/index.html" target="_blank" class="nav-link">
+            <i class="fas fa-file-word"></i>
+            <span>Hướng dẫn sử dụng</span>
+        </a>
+    </li>
+
+</ul>

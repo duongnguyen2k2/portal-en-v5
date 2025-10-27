@@ -1,0 +1,99 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string icon = "";
+    if(ItemCoQuan.MetadataCV.UrlIcon!=null && ItemCoQuan.MetadataCV.UrlIcon != "")
+    {
+        icon = ItemCoQuan.MetadataCV.UrlIcon;
+    }
+
+}
+@if (ItemCoQuan.MetadataCV.ZaloVerification!=null && ItemCoQuan.MetadataCV.ZaloVerification!="")
+{
+    <meta name="zalo-platform-site-verification" content="@ItemCoQuan.MetadataCV.ZaloVerification" />
+}
+
+@if (ItemCoQuan.MetadataCV.FacebookVerification!=null && ItemCoQuan.MetadataCV.FacebookVerification!="")
+{    
+    <meta name="facebook-domain-verification" content="@ItemCoQuan.MetadataCV.FacebookVerification">
+}
+
+@if (ItemCoQuan.MetadataCV.FBAppId!=null && ItemCoQuan.MetadataCV.FBAppId!="")
+{    
+    <meta name="fb:app_id" content="@ItemCoQuan.MetadataCV.FBAppId">
+}
+
+@if (ItemCoQuan.MetadataCV.ZaloAppId!=null && ItemCoQuan.MetadataCV.ZaloAppId!="")
+{    
+    <meta name="fb:app_id" content="@ItemCoQuan.MetadataCV.ZaloAppId">
+}
+@if (icon != "")
+{
+    <link rel="icon" type="image/png" href="@icon">
+}
+
+<meta name="description" content="@ViewData["Description"]" />
+<meta name="keywords" content="@ViewData["Keywords"]" />
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<meta http-equiv="content-language" content="vi,en" />
+<meta name="robots" content="INDEX, FOLLOW" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+<meta property="og:url" content="@ViewData["Url"]" />
+<meta property="og:type" content="@ViewData["Type"]" />
+<meta property="og:title" content="@ViewData["Title"]" />
+<meta property="og:description" content="@ViewData["Description"]" />
+<meta property="og:locale" content="vi-vn" />
+
+<meta property="og:image" content="@ViewData["Images"]" />
+<meta property="og:image:url" content="@ViewData["Images"]" />
+<meta property="og:image:alt" content="@ViewData["Alias"]" />
+<meta property="og:image:secure_url" content="@ViewData["Images"]" />
+
+<meta name="author" content="phucbv1990@gmail.com">
+<meta itemprop="image" content="@ViewData["Images"]">
+<meta name="twitter:image" content="@ViewData["Images"]">
+<!-- ****************************** Start Seo twitter ******************************-->
+<meta name="twitter:card" content="@ViewData["Card"]">
+<meta name="twitter:url" content="@ViewData["Url"]">
+<meta name="twitter:title" content="@ViewData["Title"]">
+<meta name="twitter:description" content="@ViewData["Description"]">
+
+<!-- ****************************** Start Seo Dublin Core ******************************-->
+<meta name="DC.Language" content="vi-vn">
+<meta name="DC.Description" content="@ViewData["Description"]">
+<meta name="DC.Title" content="@ViewData["Title"]">
+<meta name="DC.Identifier" content="@ViewData["Url"]">
+
+<!-- ****************************** End Seo Dublin Core ******************************-->
+<meta name="DC.title" content="@ViewData["Title"]" />
+<meta name="geo.region" content="@ViewData["Region"]" />
+<meta name="geo.placename" content="@ViewData["Placename"]" />
+<meta name="geo.position" content="@ViewData["Position"]" />
+<meta name="ICBM" content="" />
+<meta name="PageInfo" content="@ItemCoQuan.MetadataCV.FlagSession.ToString()" />
+
+
+
+<!-- Begin Gov Tracking Code -->
+<script type="text/javascript">
+        var _govaq = window._govaq || [];
+        _govaq.push(['trackPageView']);
+        _govaq.push(['enableLinkTracking']);
+        (function () {
+            _govaq.push(['setTrackerUrl', 'https://f-emc.ngsp.gov.vn/tracking']);
+            _govaq.push(['setSiteId', "@Model.EMC"]);
+            var d = document,
+                g = d.createElement('script'),
+                s = d.getElementsByTagName('script')[0];
+            g.type = 'text/javascript';
+            g.async = true;
+            g.defer = true;
+            g.src = 'https://f-emc.ngsp.gov.vn/embed/gov-tracking.min.js';
+            s.parentNode.insertBefore(g, s);
+        })();
+</script>
+<!-- End Gov Tracking Code -->

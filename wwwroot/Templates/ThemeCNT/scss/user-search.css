@@ -1,0 +1,13 @@
+#app_users .card {
+  border-radius: 0px;
+  margin-bottom: 15px; }
+#app_users .card-title {
+  font-weight: bold;
+  text-transform: uppercase; }
+#app_users .card-body {
+  line-height: 25px;
+  padding-bottom: 0px; }
+  #app_users .card-body .app-info {
+    font-weight: bold; }
+
+/*# sourceMappingURL=user-search.css.map */

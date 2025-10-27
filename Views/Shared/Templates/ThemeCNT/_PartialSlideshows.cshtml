@@ -1,0 +1,61 @@
+﻿@model API.Areas.Admin.Models.Banners.BannersModel;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+
+@{
+    int indicators = 0;
+    int carousel = 0;
+
+    string str = "active";
+    string str_2 = "active";
+
+    var ListItems = API.Areas.Admin.Models.Banners.BannersService.GetListByCat(1, 4, 1, CultureInfo.CurrentCulture.Name.ToLower());
+}
+
+@if (ListItems != null && ListItems.Count() > 0)
+{
+<div class="row">
+    <div id="block-slideshow">
+
+        <div id="carousel-example-generic" class="carousel slide carousel-fade" data-ride="carousel">
+            <!-- Indicators -->
+            @*<ol class="carousel-indicators">
+                @for (int i = 0; i < ListItems.Count(); i++)
+                {
+                    if (ListItems[i].CatId == 1)
+                    {
+                        indicators = indicators + 1;
+                        @if (indicators > 1) { str_2 = ""; }
+                        <li data-target="#carousel-example-generic" data-slide-to="@indicators" class="@str_2"></li>
+
+                    }
+
+                }
+            </ol>*@
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                @for (int i = 0; i < ListItems.Count(); i++)
+                {
+
+                    if (ListItems[i].CatId == 1)
+                    {
+                        carousel = carousel + 1;
+                        @if (carousel > 1) { str = ""; }
+                        <div class="carousel-item @str">
+                            <a href="@ListItems[i].Link">
+                                <img src="@ListItems[i].Image" class="d-block w-100" alt="@ListItems[i].Title" />
+                            </a>
+                        </div>
+
+                    }
+
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+    
+}

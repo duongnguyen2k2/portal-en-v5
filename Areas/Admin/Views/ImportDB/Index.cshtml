@@ -1,0 +1,44 @@
+﻿@model API.Areas.Admin.Models.DMChucVu.DMChucVuModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Tạo dữ liệu Demo cho website";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Cơ quan Nguồn</label>
+                            <select onchange="MySearchForm()" class="form-control">
+                                <option>1</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Cơ quan Import</label>
+                            <select onchange="MySearchForm()" class="form-control">
+                                <option>1</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+

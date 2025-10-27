@@ -1,0 +1,146 @@
+﻿@model API.Areas.Admin.Models.NguonGocCayTrong.NguonGocCayTrongModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Truy xuất Mã số vùng trồng, mã số cơ sở đóng gói";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Truy xuất Mã số vùng trồng, mã số cơ sở đóng gói";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css@("?v="+version )" />
+
+<div class="container-fluid">
+   
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="page-title">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <form asp-controller="@ControllerName" asp-action="SaveItem" method="post" class="needs-validation" novalidate>
+
+                                <div class="row">
+                                    <div class="col-md-4 col-12">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.UserName">Mã</label>
+                                            <input type="text" class="form-control" asp-for="Item.UserName" name="UserName">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 col-12">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.FullName">Tên đầy đủ</label>
+                                            <input type="text" class="form-control" asp-for="Item.FullName" name="FullName">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-md-4">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.Status">Trạng Thái</label>
+                                            <div class="row g-3 align-items-center">
+                                                <div class="col-auto">
+                                                    <label>Trạng thái:</label>
+                                                </div>
+                                                <div class="col-auto me-3">
+                                                    <input type="checkbox" asp-for="Item.Status" name="Status" data-switch="success" />
+                                                    <label asp-for="Item.Status" data-on-label="Bật" data-off-label="Tắt">&nbsp;</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12 col-md-4">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.Latitude">Lat</label>
+                                            <input type="text" class="form-control" asp-for="Item.Latitude" name="Latitude">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-4">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.Longitude">Longitude</label>
+                                            <input type="text" class="form-control" asp-for="Item.Longitude" name="Longitude">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group images-main">
+                                            <label>File:</label>
+                                            <input type="hidden" name="LinkFile" id="Item_LinkFile_Article" class="form-control" asp-for="Item.LinkFile">
+                                            <a onclick="ShowManagerFile('Item_LinkFile_Article')" class="btn btn-primary text-white"><i class="fas fa-file-audio"></i> Chọn File  (Chỉ hỗ trợ file xlsx, pdf, docx):</a>
+                                            <a class="Item_LinkFile" id="Item_LinkFile_Article_Show">@Model.Item.LinkFile</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-4 col-12">
+                                        <label asp-for="Item.IdQuanHuyen">Quận Huyện</label>
+                                        <select asp-for="Item.IdQuanHuyen" onchange="GetListDMPhuongXa(0,'Item_IdPhuongXa')" name="IdQuanHuyen" class="form-control" asp-items="Model.ListItemsDMQuanHuyen" data-id="@Model.Item.IdQuanHuyen"></select>
+                                    </div>
+                                    <div class="col-lg-4 col-12">
+                                        <label asp-for="Item.IdPhuongXa">Phường Xã</label>
+                                        <select asp-for="Item.IdPhuongXa" name="IdPhuongXa" class="form-control" asp-items="Model.ListItemsDMPhuongXa" data-id="@Model.Item.IdPhuongXa"></select>
+                                    </div>
+
+                                    <div class="col-md-4 col-12">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.Address">Địa chỉ</label>
+                                            <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                         
+
+                                <div class="position-relative mb-3">
+                                    <label asp-for="Item.Description">Nội dung</label>
+                                    <textarea asp-for="Item.Description" name="Description" class="form-control"></textarea>
+                                </div>
+
+                                <div class="position-relative mt-2">
+                                    <div class="col-lg-12">
+                                        <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                                            <i class="fas fa-save"></i> Lưu lại
+                                        </button>
+                                        <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                                <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src="~/TemplatesAdmin/Default/js/admin-site.js@("?v="+version )"></script>
+    <script src='~/lib/tinymce/tinymce.min.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js@("?v="+version )' referrerpolicy="origin"></script>
+}

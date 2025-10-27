@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    var banner11 = API.Areas.Admin.Models.Banners.BannersService.GetListByCat(11, IdCoQuan);
+}
+
+<section>
+    <div class="row">
+        <div class="col-12">
+            <div class="category-list">
+                <div class="card border-0 list-item-home">
+                    <div class="card-header d-flex">
+                        <ul class="list-inline flex-fill">
+                            <li>
+                                <div class="category-list-title colored">
+                                    <p class="text-uppercase font-weight-bold float-left no-margin-bottom">
+                                        <span class="category-list-title-icon"><i class="fa fa-link" aria-hidden="true"></i></span>
+                                        <span class="pl-2">@Localizer["Linkedwebsite"]</span>
+                                    </p>
+                                </div>
+                            </li>
+
+                        </ul>
+                        <ul class="list-inline flex-fill">
+                            <li>
+                                <div class="category-list-title pr-1">
+                                    <nav class="nav nav-underline m-0 justify-content-end">
+                                        <i class="fa fa-caret-right mr-2 mt-1 py-auto text-black-50" aria-hidden="true"></i>
+                                        <a class="nav-link">@Localizer["Showmore"]</a>
+                                    </nav>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-0 mt-1">
+                        <div class="row d-flex justify-content-center">
+                            @for (int i = 0; i < banner11.Count(); i++)
+                            {
+                                <div class="col-6 col-md-4 col-lg-3 mb-3">
+                                    <a href="@banner11[i].Link">
+                                        <img src="@banner11[i].Image" class="w-100 h-100">
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

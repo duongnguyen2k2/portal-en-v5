@@ -1,0 +1,145 @@
+﻿@model API.Areas.Admin.Models.Menus.MenusModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Menu";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-table"></i> Quản lý Menu</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get" id="MySearchForm">
+            <div class="row">
+                
+                <div class="col-lg-8">
+                    <div class="form-row align-items-center">
+
+                        <div class="col-md-3 col-12">
+                            <div class="form-group">
+                                <select asp-for="SearchData.IdCoQuan" name="IdCoQuan" class="form-control" asp-items="Model.ListDMCoQuan"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-12">
+                            <div class="form-group">
+                                <select asp-for="SearchData.CatId" name="CatId" class="form-control" asp-items="Model.ListCatItems"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-group"><button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Tìm Kiếm</button>  </div>
+                        </div>
+
+                    </div>
+                </div>
+
+              
+
+            </div>
+        </form>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">Id</th>
+                            <th width="80px" class="text-info text-center" data-toggle="tooltip" data-placement="top" title="Số thứ tự vị trí của menu">STT</th>
+                            <th>Tên</th>
+                            <th width="100px">Trạng Thái</th>
+                            <th width="150px">Loại Hiển thị</th>
+
+                            <th width="250px" class="text-info" data-toggle="tooltip" data-placement="top" title="Link đường dẫn khi người dùng click vào Menu">Link</th>
+                            <th width="130px" class="btn-contain">
+                                <a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-IdCoQuan="@Model.SearchData.IdCoQuan" asp-route-CatId="@Model.SearchData.CatId" class="btn btn-primary">THÊM MỚI</a>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">                                    
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@(i + 1)</td>
+                                    <td class="text-center">@Model.ListItems[i].Ordering</td>
+                                    <td>
+                                        @Html.Raw(Model.ListItems[i].Title)
+                                        @if(Model.ListItems[i].Title_EN!=null && Model.ListItems[i].Title_EN != "")
+                                        {
+                                            <span><br /> @Model.ListItems[i].Title_EN</span>
+                                        }
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].Status == true)
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                        }
+                                        else
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+                                        }
+                                    </td>    
+                                    <td>
+                                        @if (Model.ListItems[i].TypeShowId == 0)
+                                        {
+                                            <span>Cả Máy tính và Điện thoại</span>
+                                        }else if(Model.ListItems[i].TypeShowId == 1)
+                                        {
+                                            <span>Chỉ hiện máy tính</span>
+                                        }else if(Model.ListItems[i].TypeShowId == 2)
+                                        {
+                                            <span>Chỉ hiện điện thoại</span>
+                                        }else if(Model.ListItems[i].TypeShowId == 3)
+                                        {
+                                            <span>Hiện điện thoại dưới chứ Menu</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div width="250px" class="text-break">
+                                            <code>@Model.ListItems[i].Link </code>
+                                        </div>
+                                        @if(Model.ListItems[i].Link_EN!=null && Model.ListItems[i].Link_EN != "")
+                                        {
+                                            <div width="250px" class="text-break"> <code>@Model.ListItems[i].Link_EN</code></div>
+                                        }
+                                    </td>
+                                    
+                                    <td>
+                                        <ul class="list-inline action">
+                                            <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids" asp-route-IdCoQuan="@Model.ListItems[i].IdCoQuan" asp-route-CatId="@Model.ListItems[i].CatId"><i class="fa fa-edit"></i>Sửa</a></li>
+                                            <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    function MySearchForm() {
+        jQuery("#MySearchForm").submit();
+    }
+</script>

@@ -1,0 +1,92 @@
+﻿@model API.Areas.Admin.Models.HTX.HTXModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@{
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = "Danh sách hợp tác xã";
+    ViewData["Description"] = "Danh sách hợp tác xã";
+    ViewData["Keywords"] = "Danh sách hợp tác xã";
+    ViewData["Url"] = Domain + "/" + "danh-sach-hop-tac-xa" + ".html";
+    ViewData["Images"] = Domain + "/uploads/kinhtetapthe/banner/social-kttt.webp";
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Localizer["HTX"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">@Localizer["NoRecord"] </p>
+        </div>
+
+    }
+    else
+    {
+        @if (Configuration["Security:SiteCode"] == "KTTT")
+        {
+            for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+                <div class="col-12">
+                    <div class="first-htx-item mb-2 h-100">
+                        <div class="d-flex" title="@Model.ListItems[i].Title">
+                            <div class="img">
+                                @if (@Model.ListItems[i].Image == null || @Model.ListItems[i].Image == "" || @Model.ListItems[i].Image.ToLower() == "/cms/content/tintuc/")
+                                {
+                                    <img src="~/images/no-image.png" class="w-100">
+                                }
+                                else
+                                {
+                                    <img src="@Model.ListItems[i].Image" class="w-100">
+                                }
+                            </div>
+
+                            <div class="first-article-body">
+                                <p class="m-0 mb-1 title truncate-title">
+                                    @Model.ListItems[i].Title
+                                </p>
+                                <p class="m-0 mb-1 publish truncate-title">
+                                    @Model.ListItems[i].Phone
+                                </p>
+                                <p class="m-0 mb-1 publish">
+                                    @Model.ListItems[i].Address
+                                </p>
+                                <p class="m-0 cat-desc truncate-content">
+                                    @API.Models.MyHelper.StringHelper.StringReadmore(@Model.ListItems[i].Description, 200)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

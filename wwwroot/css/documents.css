@@ -1,0 +1,25 @@
+﻿.ShowMobile{
+    display:none;
+}
+.document-tb-width{
+    width:200px;
+}
+#detail_EffectiveDateShow{
+    display:none;
+}
+@media only screen and (max-width: 600px) {
+    .ShowMobile {
+        display:table-row;
+    }
+    .ShowPC{
+        display:none;
+    }
+    .document-tb-width {
+        width: 150px;
+    }
+}
+.ContentDocument a {
+    font-weight: bold;
+    color: blue;
+    font-size: 115%;
+}

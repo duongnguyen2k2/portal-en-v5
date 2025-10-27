@@ -1,0 +1,116 @@
+﻿@model API.Areas.Admin.Models.Contacts.ContactsModel
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNoneCaptcha";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = "| " + ItemCoQuan.Title;
+    ViewData["Description"] = "Hỏi Đáp";
+    ViewData["Keywords"] = "Hỏi Đáp";
+    ViewData["Url"] = Domain + "/hoi-dap.html";
+    ViewData["Images"] = Domain + "/avatar_hoi_dap.jpg?v=" + DateTime.Now.ToString("yyyyMMddhh");
+    ViewData["Alias"] = "Hỏi Đáp";
+    ViewData["Type"] = "article";
+
+}
+<div class="row">
+    <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"] test</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Localizer["Communication"] @ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-3 col-md-3 col-12">
+        <div class="card mb-4">
+            <img class="card-img-top" src="/images/hoidap.webp?v=@DateTime.Now.ToString("yyyyMMddhh")" alt="hỏi đáp">
+            <div class="card-body">
+                <h5 class="card-title"><strong>@Localizer["Sendquestion"]</strong> </h5>
+                <p class="card-text small-f1">@Localizer["Description"]</p>
+                <p>
+                    <a asp-action="List" asp-controller="Contacts"><i class="fas fa-arrow-circle-right mr-1"></i> @Localizer["Answered"] </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-lg-9 col-md-9 col-12">
+        <div class="white-box mb-4">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <partial name="_PartialMsgInfo" />
+            <form asp-controller="@ControllerName" asp-action="Index" method="post">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Fullname">@Localizer["Fullname"] <sup class="text-danger"> (*)</sup></label>
+                            <input type="text" class="form-control" asp-for="Item.Fullname" name="Fullname">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Phone">@Localizer["Phone"]</label>
+                            <input type="text" class="form-control" asp-for="Item.Phone" name="Phone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Address">@Localizer["Address"]</label>
+                            <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Email">Email</label>
+                            <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Item.Title">@Localizer["Title"] <sup class="text-danger"> (*)</sup></label>
+                    <input type="text" asp-for="Item.Title" name="Title" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Item.Introtext">@Localizer["Introtext"] <sup class="text-danger"> (*)</sup></label>
+                    <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+                </div>
+                <div class="row">
+
+                    <div class="col-lg-12 col-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-sm" name="SaveItem"><i class="far fa-paper-plane"></i> @Localizer["BtnSubmit"]</button>
+                        <a class="btn btn-info btn-sm" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> @Localizer["Home"]</a>
+                    </div>
+                </div>
+
+
+                <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                <input type="hidden" class="form-control" name="Token" id="token_recaptcha">
+
+            </form>
+        </div>
+
+    </div>
+</div>
+

@@ -1,0 +1,83 @@
+﻿@model API.Areas.Admin.Models.NguonGocCayTrong.NguonGocCayTrongModel
+@using Microsoft.AspNetCore.Http
+@using System.Web
+@{
+    ViewData["Title"] = (Model.Item.UserName);
+    ViewData["Description"] = (Model.Item.UserName);
+    ViewData["Keywords"] = (Model.Item.UserName);
+    ViewData["Images"] = "";
+    ViewData["Url"] = "";
+
+
+
+}
+<div class="navigation nlist">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-inline">
+                    <li>
+                        <a href="/">Trang chủ</a>
+                        <i class="fa fa-angle-right"></i>
+                        <a href="/NguonGocCayTrong/Index">Truy xuất mã số vùng trồng, Mã cơ sở đóng gói</a>
+                        <i class="fa fa-angle-right"></i>
+                        @Model.Item.UserName
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container ContentDiv">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="row PageDetail PageDetail-@Model.Item.UserName" id="ContentArticle">
+
+                <div class="col-md-12 article-body">
+                    <div class="ContentArticle">
+                        <h1 class="Title">@(Model.Item.FullName)</h1>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4">
+
+                    @{ string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.LinkFile);
+                        string url = "";
+                        if (Context.Request.IsHttps)
+                        {
+                            url = "https://" + Context.Request.Host + Model.Item.LinkFile;
+                        }
+                        else
+                        {
+                            url = "http://" + Context.Request.Host + Model.Item.LinkFile;
+                        }
+                    }
+                    @if (ex == ".pdf")
+                    {
+                        <iframe src="http://@Context.Request.Host/pdfviewer/web/viewer.html?file=@url" width="100%" height="1024px"></iframe>
+                    }
+                    else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                    {
+                        <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" style="width: 100%; height: 1024px;"></iframe>
+                    }
+                    else
+                    {
+
+
+                    }
+                    <iframe id="myFrame" style="display:none" src="" width="100%" height="1024px"></iframe>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

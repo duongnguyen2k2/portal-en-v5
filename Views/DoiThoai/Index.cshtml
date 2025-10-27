@@ -1,0 +1,67 @@
+﻿@model API.Areas.Admin.Models.DoiThoai.DoiThoaiModel
+@{
+    ViewData["Title"] = Model.Categories.Title;
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = (Model.Categories.Title);
+    ViewData["Description"] = (Model.Categories.Metadesc);
+    ViewData["Keywords"] = (Model.Categories.Metakey);
+    ViewData["Url"] = Domain + "/" + "doi-thoai-truc-tuyen/" + Model.Categories.Alias + "-" + Model.Categories.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Categories.Images;
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb pl-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a class="text-dark" href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(Model.Categories.Title)</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">Chưa có bài đăng</p>
+        </div>
+
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+
+            <div class="col-md-12 col-sm-12 col-xs-12 ">
+
+                <div class="article-item">
+                   
+                    <div class="article-item-body ps-3">
+                        <h4><a asp-controller="DoiThoai" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">@Model.ListItems[i].Title</a></h4>
+                        <div class="text-justify">@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(Model.ListItems[i].Description, 300))</div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

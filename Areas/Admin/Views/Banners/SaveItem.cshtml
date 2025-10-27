@@ -1,0 +1,156 @@
+﻿@model API.Areas.Admin.Models.Banners.BannersModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Banner/Liên Kết";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Banner/Liên Kết";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    //string Link = "/" + Model.Item.Alias + "-" + Model.Item.Id + ".html";
+    //string Link_EN = "/" + Model.Item.Alias_EN + "-" + Model.Item.Id + ".html";
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="article-vi-tab" data-toggle="tab" href="#article-vi" role="tab" aria-controls="article-vi" aria-selected="true">Tiếng Việt</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="article-en-tab" data-toggle="tab" href="#article-en" role="tab" aria-controls="article-en" aria-selected="false">English</a>
+                </li>
+            </ul>
+            <div class="tab-content mt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="article-vi" role="tabpanel" aria-labelledby="article-vi-tab">
+                    
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="form-group">
+                                <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.Title" name="Title">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.CatId">Vị trí</label>
+                                <select asp-for="Item.CatId" name="CatId" class="form-control" asp-items="Model.ListItemsCategories"></select>
+                            </div>
+                        </div>
+                
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label asp-for="Item.Link">Link <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.Link" name="Link">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label asp-for="Item.SortOrder">Số Thứ Tự</label>
+                                <input type="text" class="form-control" asp-for="Item.SortOrder" name="SortOrder">
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label asp-for="Item.Target">Target</label>
+                                <input type="text" class="form-control" asp-for="Item.Target" name="Target">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                                    <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+          
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group images-main">
+                                <label>Hình đại diện</label>
+                                <img src="@Model.Item.Image" class="Item_Images_Main_Preview" style="max-height:200px;">
+                                <input type="hidden" name="Image" id="Item_Images_Main" class="form-control" asp-for="Item.Image">
+                                <a onclick="ShowManagerFile('Item_Images_Main')" class="btn btn-primary">Chọn hình</a>    
+                                <a onclick="ViewImageMain('Item_Images_Main')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Title">Mô tả</label>
+                                <textarea asp-for="Item.Description" id="full-textarea" name="Description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                </div><!--End VI-->
+
+                <!--Start EN-->
+                <div class="tab-pane fade" id="article-en" role="tabpanel" aria-labelledby="article-en-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Title_EN">Title </label>
+                                <input type="text" class="form-control" asp-for="Item.Title_EN" name="Title_EN">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Link_EN">Link </label>
+                                <input type="text" class="form-control" asp-for="Item.Link_EN" name="Link_EN">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group images-main">
+                                <label class="">Image</label>
+                                <img src="@Model.Item.Image_EN" class="Item_Images_EN_Main_Preview" style="max-height:200px;">
+                                <input type="hidden" name="Image_EN" id="Item_Images_EN_Main" class="form-control" asp-for="Item.Image_EN">
+                                <a onclick="ShowManagerFile('Item_Images_EN_Main')" class="btn btn-primary text-white">Select Image</a>    
+                                <a onclick="ViewImageMain('Item_Images_EN_Main')" class="text"> <i class="fas fa-eye"></i> View</a>
+                            </div>
+                        </div>
+                
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+            <input type="hidden" class="form-control" asp-for="SearchData.IdCoQuan" name="IdCoQuan">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index" asp-route-catid="@Model.Item.CatId"><i class="fas fa-backward"></i> Hủy</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>    
+}

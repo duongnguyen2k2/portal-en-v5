@@ -1,0 +1,250 @@
+﻿@model API.Areas.Admin.Models.WorkSchedules.WorkSchedulesModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý Lịch Công Tác";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/jquery-toast/jquery.toast.css?v=@version" />
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css?v=@version" />
+
+<div class="card" id="app-workschedules" style="display:none;">
+    <div class="card-header">
+        <h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form>
+            <div class="form-row">
+                <div class="col-12 col-md-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" v-on:keyup="ChangeKeyWord(event)" v-model="SearchItems.Keyword" id="SearchItems_Keyword" placeholder="Tìm kiếm..." aria-label="Username" aria-describedby="SearchItems_Keyword">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="SearchItems_Keyword" v-on:click="ChangeKeyWord(event)"><i class="fas fa-search"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2">
+                    <div class="form-group">
+                        <select class="form-control" id="status-select" v-model="SearchItems.Status" v-on:change="SearchChange()">
+                            <option value="-1">--- Trạng Thái ----</option>
+                            <option value="1">Bật</option>
+                            <option value="0">Tắt</option>
+                        </select>
+                    </div>
+                </div>
+               
+                <div class="col-12 col-md-2">
+                    <select class="form-control" v-model="SearchItems.ShowYear" v-on:change="SearchChangeYear()">
+                        <option value="0">--- Chọn Năm ---</option>
+                        <template v-for="(item, index) in ListYear">
+                            <option v-bind:value="item">Năm {{item}}</option>
+                        </template>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="col-auto">
+                        <a class="btn btn-primary float-left text-white" v-on:click="SearchChange()"><i class="fas fa-search"></i> Tìm kiếm</a>
+                        <a class="btn btn-primary float-right text-white" v-on:click="showAdd()"><i class="fas fa-plus"></i> Thêm mới</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th class="text-info">Tên </th>
+                            <th width="100px">Năm </th>
+                            <th width="100px">Tuần </th>
+                            <th width="90px">Trạng Thái </th>
+                            <th width="130px" class="btn-contain">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <template v-if="flagLoading==true">
+                            <tr v-for="(item,index) in ListSkeleton" :key="item">
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+                                <td class="skeleton-loading">
+                                    <div class="skeleton-bar"></div>
+                                </td>
+
+                            </tr>
+                        </template>
+                        <template v-if="!flagLoading">
+                            <tr v-if="ListItems.length==0">
+                                <td colspan="6" class="text-center">không có dữ liệu</td>
+                            </tr>
+                            <tr v-for="(item, index) in ListItems" v-bind:key="item.Id" v-bind:data-id="item.ID">
+                                <th class="text-center">{{(index+1)}}</th>
+                                <td>{{item.Title}}</td>
+                                <td>{{item.ShowYear}}</td>
+                                <td>{{item.ShowWeek}}</td>
+                                <td class="text-center">
+                                    <span class="fas fa-check-circle text-primary cursor-pointer" v-on:click="changeStatus(index)" aria-hidden="true" v-if="item.Status==1"></span>
+                                    <span class="far fa-times-circle text-danger cursor-pointer" v-on:click="changeStatus(index)" aria-hidden="true" v-if="item.Status==0"></span>
+                                </td>
+                                <td class="table-action text-center">
+                                    <a class="action-icon text-primary" title="Sửa" v-on:click="showEdit(index)"> <i class="fa fa-edit"></i> Sửa</a>
+                                    <a class="action-icon text-danger" title="Xóa" v-on:click="showDeleted(index)"> <i class="fa fa-trash"></i> Xóa</a>
+                                </td>
+                            </tr>
+
+                        </template>
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                <template v-if="ListItems!=null && ListItems.length>0 && SearchItems.PageCount>0">
+                    <paginate v-model="SearchItems.CurrentPage"
+                              :page-count="SearchItems.PageCount"
+                              :page-range="3"
+                              :margin-pages="2"
+                              :click-handler="pageChanged"
+                              :first-button-text="'Đầu'"
+                              :last-button-text="'Cuối'"
+                              :prev-text="'Trước'"
+                              :next-text="'Sau'"
+                              :first-last-button="true"
+                              :container-class="'pagination pagination-rounded'"
+                              :next-class="'page-item'"
+                              :next-link-class="'page-link'"
+                              :prev-class="'page-item'"
+                              :prev-link-class="'page-link'"
+                              :page-link-class="'page-link'"
+                              :page-class="'page-item'">
+                    </paginate>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="detail-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-max">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <template v-if="detailItem.Id==0">
+                            Thêm mới Lịch công tác
+                        </template>
+                        <template v-if="detailItem.Id>0">
+                            Cập nhật Lịch công tác
+                        </template>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="WorkSchedulesForm" class="needs-validation" novalidate>                        
+                        <div class="row">                           
+                            <div class="col-12 col-md-3">
+                                <div class="form-group">
+                                    <label for="DetailItem_ShowYear">Chọn Năm <span class="text-danger">(*)</span></label>
+                                    <select class="form-control" v-model="detailItem.ShowYear" id="DetailItem_ShowYear" v-on:change="SearchChangeYear()">
+                                        <option value="0">--- Chọn Năm ---</option>
+                                        <template v-for="(item, index) in ListYear">
+                                            <option v-bind:value="item">Năm {{item}}</option>
+                                        </template>
+                                    </select>
+                                </div>
+                                
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label for="DetailItem_ShowWeek">Chọn Tuần <span class="text-danger">(*)</span></label>
+                                    <select class="form-control" v-model="detailItem.ShowWeek" id="DetailItem_ShowWeek" v-on:change="SearchChange()">
+                                        <option value="0">--- Chọn Tuần (Trong Năm {{SearchItems.ShowYear}}) ---</option>
+                                        <template v-for="(item, index) in ListWeek">
+                                            <option v-bind:value="item.Id">Tuần {{item.Id}} ({{item.Title}})</option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="Item.FullText">Nội dung</label>
+                            <textarea id="full-textarea" name="FullText" v-model="detailItem.FullText" class="form-control full-textarea"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <button class="btn btn-primary" type="button" disabled v-if="flagLoadingChild">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        Đang Lưu
+                    </button>
+                    <button type="button" class="btn btn-primary" v-if="!flagLoadingChild" v-on:click="saveItem()">
+                        <template v-if="detailItem.Id==0">
+                            Thêm mới
+                        </template>
+                        <template v-if="detailItem.Id>0">
+                            Cập nhật
+                        </template>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Bạn muốn xóa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Bạn muốn xóa Lịch công tác <strong>{{deleteItem.Title}}</strong>?
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" disabled v-if="flagLoadingChild">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        Đang Xóa
+                    </button>
+                    <button type="button" class="btn btn-danger" v-if="!flagLoadingChild" v-on:click="deletedItem()">Xóa</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js?v=@version' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js?v=@version' referrerpolicy="origin"></script>
+
+    <script src="~/js/vue.js?v=@version"></script>
+    <script src="~/js/vuejs-paginate.js?v=@version"></script>
+    <script src="~/lib/jquery-toast/jquery.toast.js?v=@version"></script>
+    <script src="~/TemplatesAdmin/Default/js/workschedules-app.js?v=@version"></script>
+}

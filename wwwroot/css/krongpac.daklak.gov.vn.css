@@ -1,0 +1,46 @@
+
+@media only screen and (max-width: 600px) {
+   
+    .box-home {
+        clear: both;
+        overflow: hidden;
+        margin-bottom: 5px;
+        padding: 0 5px;
+    }
+    .box-home a.item {
+        border: 1px solid #eee;
+        border-radius: 4px;
+        color: #fff;
+        float: left;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 10px 0;
+        padding: 20px 0 20px 40px;
+        width: 100%;
+        text-align: left;
+        min-height: inherit;
+        height: 62px;
+    }
+
+    .box-home a.item.in3 {
+        background: #32bb4f url('/uploads/krongpac/banners/icon-tongquan.png') no-repeat 12px center;
+    }
+    .box-home a.item.in4 {
+        background: #d81818 url('/uploads/krongpac/banners/icon-tongquan.png') no-repeat 12px center;
+    }
+    .box-home a.item.in1 {
+        background: #fb7000 url('/uploads/krongpac/banners/icon-dulich.png') no-repeat 12px center;
+    }
+    .box-home a.item.in2 {
+        background: #0e91bd url('/uploads/krongpac/banners/icon-doanhnghiep.png') no-repeat 12px center;
+    }
+    .box-home a.item.in5 {
+        background: #e63681 url('/uploads/krongpac/banners/icon-tongquan.png') no-repeat 12px center;
+    }
+    .box-home a.item.in6 {
+        background: #3535d6 url('/uploads/krongpac/banners/icon-tongquan.png') no-repeat 12px center;
+    }
+    .box-home a.item {
+        margin: 5px 0;
+    }
+}

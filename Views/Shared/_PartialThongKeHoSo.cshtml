@@ -1,0 +1,41 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject IViewLocalizer Localizer
+@{
+    Boolean flagShow = true;
+    string Link = "https://dichvucong.daklak.gov.vn/";
+    if (Configuration["Security:SiteCode"] == "DNO")
+    {
+        Link = "https://dichvucong.daknong.gov.vn/";
+    }
+    Link = Link + "vi/iframe/dossier-iframe-report?macoquan=";
+    if (Model.CodeMotCua != null && Model.CodeMotCua != "")
+    {
+        Link = Link +  Model.CodeMotCua;
+    }
+    List<string> arrCode = Configuration["Security:SiteCode"].ToString().Split('-').ToList();
+    if (arrCode.Count() > 1)
+    {
+        if (arrCode[1] == "EDU" || arrCode[1] == "TINHDOAN") { flagShow = false; }
+
+    }
+    
+
+
+}
+@if (flagShow)
+{
+    <div class="portlet-borderless-container" style="">
+        <div class="portlet-body">
+            <div class="trangchinh_thongkehoso">
+                <div class="tieude-h1">
+                    <span class="thongkehoso-tieude">@Localizer["TKHS"]</span>
+                </div>
+                <div class="trangchinh_iframe">
+                    <iframe src="@Link" title="Thống kê hồ sơ"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+}

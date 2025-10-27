@@ -1,0 +1,22 @@
+﻿@model API.Areas.Admin.Models.Menus.Menus;
+<li class="drop">
+    <a class="text-uppercase font-weight-bold" data-id="@Model.Id.ToString()" href="@Model.Link">@(Model.Title)</a>
+    <ul class="dropdown__menu">
+        @for (int i = 0; i < Model.ListMenus.Count; i++)
+        {
+            if (Model.ListMenus[i].Link != null)
+            {
+                <li><a class=" " data-id="@Model.ListMenus[i].Id.ToString()" href="@(Model.ListMenus[i].Link)"><i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+            else if (Model.ListMenus[i].ArticleId != 0)
+            {
+                <li><a class="t " data-id="@Model.ListMenus[i].Id.ToString()" href="/gioi-thieu.html"> <i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+            else
+            {
+                <li><a class="" data-id="@Model.ListMenus[i].Id.ToString()" href="#"><i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+        }
+    </ul>
+</li>
+

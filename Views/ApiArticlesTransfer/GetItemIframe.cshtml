@@ -1,0 +1,212 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    Layout = "_LayoutTransferArticles";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = (Model.Item.Title);
+    ViewData["Description"] = (Model.Item.Metadesc);
+    ViewData["Keywords"] = (Model.Item.Metakey);
+    ViewData["Url"] = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Images;
+    ViewData["Alias"] = Model.Item.Alias;
+    ViewData["Type"] = "article";
+
+    if (Model.Item.CatId == 1)
+    {
+        ViewData["Title"] = (Model.Item.Title + " | "+ ItemCoQuan.Title);
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    if(Model.Item.AuthorName!=null && Model.Item.AuthorName != "")
+    {
+        Model.Item.Author = Model.Item.AuthorName;
+    }
+    string Culture =  API.Models.MyHelper.StringHelper.ConverLan(CultureInfo.CurrentCulture.Name); 
+}
+@if(ItemCoQuan.MetadataCV.FacebookApp==null || ItemCoQuan.MetadataCV.FacebookApp== "")
+{
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v5.0&appId=1511988695606372&autoLogAppEvents=1"></script>
+}
+<link rel="stylesheet" href="~/lib/fancybox-master/jquery.fancybox.min.css">
+
+<div class="row PageDetail PageDetail-@Model.Item.Alias" id="PageDetail">
+    <div class="col-md-12 full-text article-content">
+
+        @Html.Raw(Model.Item.FullText)
+
+        @if(Model.Item.Author!=null && Model.Item.Author != "")
+        {
+            <div class="text-right font-weight-bold AuthorName">
+                    @Model.Item.Author                       
+            </div>
+         }
+    </div>
+    @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+    {
+        <div class="listtailieu">
+            <div class="col-md-12">
+                @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                {
+                    string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.ListFile[j].FilePath);
+                    string url = "";                    
+                    url = Domain + Model.Item.ListFile[j].FilePath;
+
+                    if (ex == ".pdf")
+                    {
+                        <iframe src="@Domain/pdfviewer/web/viewer.html?file=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                    {
+                        <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else
+                    {
+                        <a href="@url" target="_blank" class="">@Model.Item.ListFile[j].FilePath</a>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+
+</div>
+<div class="social" style="display:none">
+    <div class="container">
+        <div class="item-social">
+            <div class="fb-icon-bg"><i class="fa fa-facebook" aria-hidden="true"></i></div>
+            <div class="fb-bg"></div>
+        </div>
+        <div class="item-social">
+            <div class="twi-icon-bg"></div>
+            <div class="twi-bg"></div>
+        </div>
+
+    </div>
+</div>
+<a onclick="PrintArticle()" id="article-print"><i class="fa fa-print"></i> @Localizer["Print"]</a>
+<a href="mailto:?subject=@Model.Item.Title&body=@bodyMail" id="article-email"><i class="fa fa-envelope"></i> @Localizer["SendEmail"]</a>
+<div id="social">
+    <div class="fb-share-button" data-href="@ViewData["Url"]" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@ViewData["Url"];src=sdkpreparse" class="fb-xfbml-parse-ignore"> @Localizer["Share"]</a></div>
+</div>
+<div id="social-zalo">
+    <div class="zalo-share-button" data-href="" data-oaid="579745863508352884" data-layout="1" data-color="blue" data-customize=false></div>
+</div>
+
+@if (Model.Item.ListLinkArticle != null && Model.Item.ListLinkArticle.Count() > 0)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="other-list" style="display:block">
+                <h2>Bài viết liên quan</h2>
+                <ul>
+
+                    @for (int i = 0; i < Model.Item.ListLinkArticle.Count(); i++)
+                    {
+                        <li><a href="@Model.Item.ListLinkArticle[i].Link">@Model.Item.ListLinkArticle[i].Title</a></li>
+                    }
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+}
+
+<script src="~/lib/fancybox-master/jquery.fancybox.min.js"></script>
+<script>
+    function PrintArticle() {
+        //shop-detail-container
+        var divName = "PageDetail";
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+
+<script type="text/javascript">
+    $('#PageDetail img').not('.notshowfancybox').each(function () {
+        var src = $(this).attr('src');
+        $(this).after('<a class="fancybox" data-fancybox="group" href="' + src + '"><img src="' + src + '"></a>');
+        $(this).hide();
+    })
+
+    $("[data-fancybox]").fancybox({
+        // Options will go here
+    });
+
+    // Disable copy content, prevent blacked out text, prevent "I" key, "J" key, "S" key + macOS, "U" key, "F12" key
+    jQuery(document).ready(function () {
+        jQuery(function () {
+            jQuery(this).bind("contextmenu", function (event) {
+                event.preventDefault();
+                //alert('Right click disable in this site! Chuột phải đã được vô hiệu hóa trên site này !')
+            });
+        });
+        (function () {
+            'use strict';
+            let style = document.createElement('style');
+            style.innerHTML = '*{ user-select: none !important; }';
+
+            document.body.appendChild(style);
+        })();
+        window.onload = function () {
+            document.addEventListener("contextmenu", function (e) {
+                e.preventDefault();
+            }, false);
+            document.addEventListener("keydown", function (e) {
+
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    disabledEvent(e);
+                }
+
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+                    disabledEvent(e);
+                }
+
+                if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                    disabledEvent(e);
+                }
+
+                if (e.ctrlKey && e.keyCode == 85) {
+                    disabledEvent(e);
+                }
+
+                if (event.keyCode == 123) {
+                    disabledEvent(e);
+                }
+            }, false);
+            function disabledEvent(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else if (window.event) {
+                    window.event.cancelBubble = true;
+                }
+                e.preventDefault();
+                return false;
+
+            }
+        }
+    });
+</script>
+
+
+<link rel="stylesheet" href="~/css/article-detail.css" />

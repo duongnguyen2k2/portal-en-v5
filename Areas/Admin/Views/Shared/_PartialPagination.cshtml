@@ -1,0 +1,174 @@
+﻿@model API.Areas.Admin.Models.Partial.PartialPagination
+@{
+    var controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Url = "";
+    if (Model.CurrentPage <= 0)
+    {
+        Model.CurrentPage = 1;
+    }
+
+    if (Model.QueryString == null || Model.QueryString == "")
+    {
+        Url = "";
+    }
+    else
+    {
+        string OldUrl = Model.QueryString.Substring(1);
+
+
+        List<string> ListUrl = OldUrl.Split("&").ToList();
+        if (ListUrl != null && ListUrl.Count() > 0)
+        {
+            for (int i = 0; i < ListUrl.Count(); i++)
+            {
+                if (ListUrl[i].StartsWith("CurrentPage") == false)
+                {
+                    if (Url == "")
+                    {
+                        Url = ListUrl[i];
+                    }
+                    else
+                    {
+                        Url = Url + "&" + ListUrl[i];
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    if (Url == "")
+    {
+        Url = "/Admin/" + @controllerName + "/Index?" + "CurrentPage";
+    }
+    else
+    {
+        Url = "/Admin/" + @controllerName + "/Index?" + Url + "&CurrentPage";
+    }
+
+    //string Url = "/Admin/" + @controllerName + "/Index"; //+ Model.QueryString + "&CurrentPage";
+    decimal Start = 1;
+    decimal Links = 11; //Number of frequency links to show at one time ;
+
+    if (Model.Link > 0)
+    {
+        Links = Model.Link;
+    }
+
+    decimal Last = Math.Ceiling(Model.TotalItems / Model.ItemsPerPage);
+    decimal End = 1;
+    if (Last <= 0)
+    {
+        Last = 1;
+    }
+    if ((Model.CurrentPage + Math.Floor(Links / 2)) < Last)
+    {
+        if ((Model.CurrentPage > Math.Floor(Links / 2)))
+        {
+            End = Model.CurrentPage + Math.Floor(Links / 2);
+        }
+        else
+        {
+            End = Links;
+        }
+    }
+    else
+    {
+
+        End = Last;
+    }
+
+    if ((Model.CurrentPage - Math.Floor(Links / 2)) > 1)
+    {
+        if ((Model.CurrentPage > Math.Floor(Links / 2)))
+        {
+            Start = Model.CurrentPage - Math.Floor(Links / 2);
+            if ((End - Start) < Links)
+            {
+                Start = End - Links + 1;
+            }
+
+        }
+
+    }
+
+    if (Start < 1)
+    {
+        Start = 1;
+    }
+}
+
+
+@if (Last <= 1)
+{
+
+}
+else
+{
+    <nav aria-label="Page navigation example-@Links end-@End ">
+        <ul class="pagination">
+            @if (Model.CurrentPage == 1)
+            {
+                <li class="page-item disabled">
+                    <a class="page-link d-none d-sm-block" href="@Url=1">Đầu</a>
+                    <a class="page-link d-block d-sm-none" href="@Url=1"><i class="fas fa-step-backward"></i></a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item"><a class="page-link d-none d-sm-block" href="@Url=1">Đầu</a></li>
+                <li class="page-item"><a class="page-link d-block d-sm-none" href="@Url=1"><i class="fas fa-step-backward"></i></a></li>
+            }
+
+            @if (Model.CurrentPage > 1 && Last > 1)
+            {
+                <li class="page-item"><a class="page-link" href="@Url=1"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item disabled"><a class="page-link" href="@Url=1"><span aria-hidden="true">&laquo;</span></a></li>
+            }
+            @for (decimal i = Start; i <= End; i++)
+            {
+                if (i == Model.CurrentPage)
+                {
+                    <li class="page-item active" aria-current="page">
+                        <a class="page-link" href="#">@i <span class="sr-only">(current)</span></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item"><a class="page-link" href="@Url=@i">@i</a></li>
+                }
+
+            }
+            @if (Model.CurrentPage < Last && Last > 1)
+            {
+                <li class="page-item"><a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+            else
+            {
+                <li class="page-item disabled"><a class="page-link" href="#"><span aria-hidden="true">&raquo;</span></a></li>
+            }
+
+            @if (Model.CurrentPage == Last)
+            {
+
+                <li class="page-item disabled">
+                    <a class="page-link d-none d-sm-block" href="#">Cuối</a>
+                    <a class="page-link d-block d-sm-none" href="#"><i class="fas fa-step-forward"></i></a>
+
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link d-none d-sm-block" href="@Url=@Last">Cuối</a>
+                    <a class="page-link d-block d-sm-none" href="@Url=@Last"><i class="fas fa-step-forward"></i></a>
+                </li>
+            }
+
+        </ul>
+    </nav>
+}

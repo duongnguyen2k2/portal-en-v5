@@ -1,0 +1,50 @@
+﻿@model API.Areas.Admin.Models.DoiThoai.DoiThoaiModel
+@using Microsoft.AspNetCore.Http
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = (Model.Item.Title);
+
+    ViewData["Url"] = Domain + "/doi-thoai-truc-tuyen/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Image;
+    ViewData["Alias"] = Model.Item.Alias;
+    ViewData["Type"] = "music.playlist";
+
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/doi-thoai-truc-tuyen/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+
+}
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v5.0&appId=1511988695606372&autoLogAppEvents=1"></script>
+<div class="row PageDetail PageDetail-@Model.Item.Alias" id="PageDetail">
+
+    <div class="col-lg-8 col-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white pl-0">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a class="text-dark" asp-controller="DoiThoai" asp-action="Index" asp-route-id="@Model.Categories.Id" asp-route-alias="@Model.Categories.Alias">@(Model.Categories.Title)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-4 col-4 text-end">
+        <span class="date"><span class="mobile-none">Cập nhật lúc:</span> @Model.Item.CreatedDate</span>
+    </div>
+
+
+    <div class="col-md-12 full-text article-content">
+        <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+       
+        @Html.Raw(Model.Item.Description)
+    </div>
+    
+
+
+</div>

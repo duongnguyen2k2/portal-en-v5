@@ -1,0 +1,128 @@
+﻿@model API.Areas.Admin.Models.Products.ProductsModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = (Model.Item.Title);
+    ViewData["Description"] = (Model.Item.Metadesc);
+    ViewData["Keywords"] = (Model.Item.Metakey);
+    ViewData["Url"] = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Image;
+
+    if (Model.Item.CatId == 1)
+    {
+        ViewData["Title"] = (Model.Item.Title + " | " + ItemCoQuan.Title);
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+
+}
+
+<link rel="stylesheet" href="~/css/products.css" />
+
+<div class="" id="ProductDetail">
+    <div class="row">
+        <div class="col-md-8 col-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white p-0">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="/products">Sản phẩm OCOP</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-4 col-4 text-right">
+            <span class="date d-flex justify-content-end">
+                <span class="d-none d-sm-block" style="">Cập nhật lúc:</span>
+                <span class="d-block d-sm-none "><i class="far fa-calendar-alt"></i></span>
+                <span>@Model.Item.PublishUpShow</span>
+            </span>
+        </div>
+    </div>
+    <div class="product-details-area">
+        <div class="row">
+            <div class="col-lg-6 mb-md-30 mb-sm-25">
+                <!--=======  product details slider  =======-->
+                <!--=======  big image slider  =======-->
+
+                <div class="big-image-slider-wrapper big-image-slider-wrapper--change-cursor">
+                    <div class="ht-slick-slider big-image-slider99">
+
+                        <!--=======  big image slider single item  =======-->
+
+                        <div class="big-image-slider-single-item">
+                            <img src="@Model.Item.Image" class="img-fluid" alt="@Model.Item.Title">
+                        </div>
+
+                        <!--=======  End of big image slider single item  =======-->
+
+
+                    </div>
+                </div>
+
+
+                <!--=======  End of product details slider  =======-->
+            </div>
+
+            <div class="col-lg-6">
+                <!--=======  product details content  =======-->
+
+                <div class="product-detail-content">
+
+                    <h3 class="product-details-title mb-15">@Model.Item.Title</h3>
+
+                    <div class="product-sku">Mã sản phẩm:&nbsp;<span class="text-danger">@Model.Item.Sku</span></div>
+
+                    <div class="rating d-inline-block mr-15">
+                        @for (int s = 1; s <= 5; s++)
+                        {
+                            if (s <= Model.Item.Star)
+                            {
+                                <i class="fas fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="far fa-star"></i>
+                            }
+                        }
+                    </div>
+
+                    <div class="product-manufacture-factory">
+                        <span><b>Cơ sở sản xuất:</b></span> <span>@Model.Item.TitleManufacturer</span>
+                    </div>
+                    <div class="product-business-address">
+                        <span><b>Địa chỉ kinh doanh:</b></span> <span>@Model.Item.AddressManufacturer</span>
+                    </div>
+
+                    <div class="product-short-desc mb-25">
+                        @Model.Item.Introtext
+                    </div>
+
+                    <div class="product-business-contact">
+                        <span><b>Liên Hệ:</b></span> <span>@Model.Item.ContactManufacturer</span>
+                    </div>
+                </div>
+
+                <!--=======  End of product details content  =======-->
+            </div>
+        </div>
+    </div>
+    <div class="product-description-review-area">
+        
+        @Html.Raw(Model.Item.Description)
+    </div>
+    
+</div>

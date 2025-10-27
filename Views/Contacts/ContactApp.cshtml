@@ -1,0 +1,99 @@
+﻿@model API.Areas.Admin.Models.Contacts.ContactsModel
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    Layout = "_LayoutAPICaptcha";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = "Góp ý ứng dụng " + " | " + ItemCoQuan.Title;
+    ViewData["Description"] = "Góp ý ứng dụng";
+    ViewData["Keywords"] = "Góp ý ứng dụng";
+    ViewData["Url"] = Domain + "/gop-y-ung-dung.html";
+    ViewData["Images"] = Domain + "/avatar_lien_he.jpg?v=" + DateTime.Now.ToString("yyyyMMddhh");
+    ViewData["Alias"] = "Góp ý ứng dụng";
+    ViewData["Type"] = "article";
+
+}
+
+
+<section id="contact" class="contact">
+    <div class="aos-init aos-animate" data-aos="fade-up">
+
+        
+           
+        <div class="row aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="col-lg-12 col-12 ">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <partial name="_PartialMsgInfo" />
+                <form asp-controller="@ControllerName" asp-action="ContactApp" method="post" class="php-email-form">
+                    <div class="row">
+                        <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Fullname">Họ Tên <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.Fullname" name="Fullname">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Phone">Điện Thoại</label>
+                                <input type="text" class="form-control" asp-for="Item.Phone" name="Phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Address">Địa Chỉ</label>
+                                <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Email">Email</label>
+                                <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tiêu đề <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" asp-for="Item.Title" name="Title" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Item.Introtext">Câu Hỏi <sup class="text-danger"> (*)</sup></label>
+                        <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12 text-center">
+                            <button type="submit" class="btn btn-primary btn-sm" name="SaveItem"><i class="far fa-paper-plane"></i> Gửi</button>
+                            <a class="btn btn-info btn-sm" asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Trang Chủ</a>
+                        </div>
+                    </div>
+
+
+                    <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                    <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                    <input type="hidden" class="form-control" name="Token" id="token_recaptcha">
+                </form>
+            </div>
+
+
+        </div>
+
+    </div>
+</section>

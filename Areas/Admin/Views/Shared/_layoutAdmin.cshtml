@@ -1,0 +1,166 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.USUsers;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    int? IdMenu = 0;
+    if (Context.Session.GetInt32("IdMenu") != null)
+    {
+        IdMenu = Context.Session.GetInt32("IdMenu");
+    }
+    var Login = Context.Session.GetString("Login");
+    USUsers MyInfo = JsonConvert.DeserializeObject<USUsers>(Login);
+	string version = DateTime.Now.ToString("yyyyMMddhh");
+
+	DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+	var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan, Context);
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&amp;display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css@("?v="+version )" />
+	<link rel="stylesheet" href="~/lib/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.css@("?v="+version )" />
+	<link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css@("?v="+version )" />
+	<link rel="stylesheet" href="~/TemplatesAdmin/Default/css/sb-admin.css@("?v="+version )">
+    <link rel="stylesheet" href="~/TemplatesAdmin/Default/css/admin.css?@("v="+DateTime.Now.ToString("yyyyMMdd"))">    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+</head>
+<body id="page-top">
+	<partial name="_PartialNavbar" />
+	<div id="wrapper">
+		@*
+		 @if (ItemCoQuan.FolderUpload == "tinhuy")
+		{
+			<partial name="_PartialSidebarTinhUy" />
+		}
+		else
+		{
+			@if (MyInfo.CQLevel == 0)
+			{
+				<partial name="_PartialSidebarAdmin" />
+			}
+			else if (MyInfo.CQLevel == 1)
+			{
+				@if (MyInfo.IdGroup == 3)
+				{
+					<partial name="_PartialSidebarCaphuyenDangBai" />
+				}
+				else if (MyInfo.IdGroup == 6)
+				{
+					<partial name="_PartialSidebarCompact" />
+				}
+				else if (MyInfo.IdGroup == 1 && MyInfo.IdCoQuan == 130)
+				{
+					<partial name="_PartialSidebarKiemLam" />
+				}
+				else
+				{
+					<partial name="_PartialSidebarCaphuyen" />
+				}
+			}
+			else
+			{
+				<partial name="_PartialSidebar" />
+			}
+		}
+		*@
+		<partial name="_PartialSideBarPermission" />
+
+		<div id="content-wrapper">
+
+			<div class="container-fluid">
+				@RenderBody()
+			</div>
+			<!-- /.container-fluid -->
+			<!-- Sticky Footer -->
+			<footer class="sticky-footer">
+				<div class="container my-auto">
+					<div class="copyright text-center my-auto">
+						@if (ItemCoQuan.FolderUpload == "tinhuy")
+						{
+							<span>Copyright © 2025. v4.3.0</span>
+						}
+						else
+						{
+							<span>Copyright © 2025 VNPT Đắk Lắk v9-en.1.0</span>
+						}
+					</div>
+				</div>
+			</footer>
+
+		</div>
+		<!-- /.content-wrapper -->
+
+	</div>
+	<!-- /#wrapper -->
+
+	<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body text-center">
+					<div class="p-3 text-center">
+						<i class="far fa-times-circle text-danger icon-deleted"></i>
+						<div class="text-3xl mt-3"> Bạn muốn xóa ?</div>
+						<p class="text-slate-500 mt-2 delete-title">Bạn có chắc chắn xóa ?</p>
+					</div>
+					<div class="px-3 pb-8 text-center">
+						<button class="btn btn-danger" data-ids="" data-url="/Admin/@ControllerName/" id="DeleteItemTrue"><i class="fas fa-trash"></i> Đồng ý</button>
+						<button class="btn btn-primary" data-dismiss="modal">Thoát</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="SuccessModal" tabindex="-1" role="dialog" aria-labelledby="SuccessModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="p-3 text-center">
+                        <p class="text-info icon-success">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" icon-name="check-circle" data-lucide="check-circle" class="lucide lucide-check-circle w-16 h-16 text-success mx-auto mt-3"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </p>
+                        <div class="text-3xl mt-3 modal-success-header"> Thành công</div>                        
+                        <p class="text-slate-500 mt-2 modal-success-title">Tạo dữ liệu thành công ?</p>
+                    </div>
+                    <div class="px-3 pb-8 text-center">                        
+                        <button class="btn btn-primary" data-dismiss="modal">Thoát</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<div class="modal fade" id="LoaddingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body text-center">
+					<p class="loading-title">Đang tải dữ liệu...</p>
+
+					<button class="btn btn-primary" data-dismiss="modal">Thoát</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<partial name="_CookieConsentPartial" />
+	<script src="~/lib/js/popper.min.js@("?v="+version )"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.min.js@("?v="+version )"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="~/TemplatesAdmin/Default/js/sb-admin.min.js@("?v="+version )"></script>
+	<script src="~/TemplatesAdmin/Default/js/admin-site.js@("?v="+version )"></script>
+	<script>
+		with ((console && console._commandLineAPI) || {}) {
+			console.log('\n %cDừng lại!\n %cĐây là một tính năng của trình duyệt dành cho các nhà phát triển. Nếu ai đó bảo bạn sao chép-dán nội dung nào đó vào đây để bật một tính năng của Hệ thống Website hoặc "hack" tài khoản của người khác, thì đó là hành vi lừa đảo và sẽ khiến họ có thể truy cập vào tài khoản Hệ thống Website của bạn.', 'font: 40pt sans-serif;margin-top:10px; font-weight: bold; color: #F00; text-shadow: 1px 1px #000, -1px -1px #000, -1px 1px #000, 1px -1px #000', 'font: 20pt sans-serif;');
+		}
+	</script>
+	@RenderSection("Scripts", required: false)
+</body>
+</html>

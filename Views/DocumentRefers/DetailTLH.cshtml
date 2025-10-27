@@ -1,0 +1,67 @@
+﻿@model API.Areas.Admin.Models.DocumentRefersCategories.DocumentRefersCategoriesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+
+}
+<div class="row PageDetail documentrefers-detail documentrefers-@Model.Item.Alias" id="PageDetail">
+    @if (Model.Item != null && Model.Item.Id > 0)
+    {
+        <div class="col-lg-8 col-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white p-0">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+                </ol>
+            </nav>
+        </div>
+
+
+        <div class="col-md-12 full-text article-content">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th>Tên tài liệu</th>                                              
+                            <th width="100px">Tải về</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ListItemsFile == null || Model.ListItemsFile.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="3">Không có văn bản nào</td>
+                            </tr>
+                        }
+                        else
+                        {
+
+                            for (int i = 0; i < Model.ListItemsFile.Count(); i++)
+                                {
+                                    <tr>
+                                        <td class="text-center">@(i + 1)</td>
+                                        <td>
+                                            <a asp-controller="ManagerFile" asp-action="DownloadFileMobile" asp-route-id="@Model.ListItemsFile[i].Id" asp-route-Ids="@Model.ListItemsFile[i].Ids" asp-route-PathFile="@Model.ListItemsFile[i].LinkPrivate">@Model.ListItemsFile[i].Title</a>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (!string.IsNullOrEmpty(Model.ListItemsFile[i].LinkPrivate))
+                                            {
+                                                <a asp-controller="ManagerFile" asp-action="DownloadFileMobile" asp-route-id="@Model.ListItemsFile[i].Id" asp-route-Ids="@Model.ListItemsFile[i].Ids" asp-route-PathFile="@Model.ListItemsFile[i].LinkPrivate" target="_blank"> <i class="fa fa-download" style="margin-right:7px"></i> Tải về</a>                                            
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h1>Tài liệu không tồn tại</h1>
+    }
+
+
+</div>

@@ -1,0 +1,95 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+}
+<div class="footer_wr">
+    <footer>
+        <div class="container-page">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+                    <div class="list-info">
+                        <div>Địa chỉ: @ItemCoQuan.Address</div>
+                        <div>Điện thoại: @ItemCoQuan.Telephone
+                        @if(@ItemCoQuan.Fax!=null && @ItemCoQuan.Fax != "")
+                        {
+                            <span>; Fax:</span> @ItemCoQuan.Fax
+                        } 
+                        </div>
+                        @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                        {
+                            <div>Email: @ItemCoQuan.Email</div>
+                        }
+                        @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                        {
+                            <div>@ItemCoQuan.CTNC</div>
+                        }
+                        @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                        {
+                            <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                        }
+                    </div>
+                </div>
+
+                <div class=" vnpt  col-12 col-md-4">
+                    <p>
+                        Thực hiện bởi  <a href="@Model.CopyrightLink" target="_blank" class="font-weight-bold">@Model.CopyrightTitle</a>
+                    </p>
+                    <p>
+                        <img src="/images/vnpt-logo.png" style="margin-top:5px">
+                    </p>
+
+                    <ul class="list-inline menu-select-css">
+                        <li class="list-inline-item">
+                            <ul class="list-inline list-color">
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-2 " href="/Home/SelectCssName?CssName=vnpt-style-2.css"></a>
+                                </li>
+
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-3" href="/Home/SelectCssName?CssName=vnpt-style-3.css"></a>
+                                </li>
+
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-4" href="/Home/SelectCssName?CssName=vnpt-style-4.css"></a>
+                                </li>
+                               
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>
+</div>
+<!-- IPv6-test.com button END -->
+
+@if(ItemCoQuan.Code=="portal-eakar.vnptdaklak.vn" || ItemCoQuan.Code == "eakar.daklak.gov.vn" || ItemCoQuan.Code == "localhost:54516")
+        {
+            <style>
+             @@media only screen and (max-width: 600px) {
+                #block-slideshow{
+                    background:url('../images/bg-header-eakar.png');
+                }
+            }
+            </style>
+            
+        }

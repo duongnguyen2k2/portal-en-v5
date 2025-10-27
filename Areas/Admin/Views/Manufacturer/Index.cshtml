@@ -1,0 +1,88 @@
+﻿@model API.Areas.Admin.Models.Manufacturer.ManufacturerModel
+@{
+	Layout = "_layoutAdmin";
+	ViewData["Title"] = "Danh mục Cơ sở sản xuất / Nhà vườn";
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+
+<div class="card">
+	<div class="card-header">
+
+		<h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+	</div>
+	<div class="card-body">
+		<partial name="_PartialMsgInfoAdmin" />
+
+		<div class="row">
+			<div class="col-lg-12">
+
+				<table class="table table-bordered table-striped table-hover ">
+					<thead>
+						<tr>
+							<th width="50px" class="text-center">STT</th>
+							<th class="text-center">Code</th>
+							<th class="text-info">Tên</th>
+							<th class="text-info">Người Liên Hệ</th>
+							<th width="150px" class="text-center text-info">Trạng Thái </th>
+							<th class="text-info">Thông tin liên hệ</th>
+							<th width="135px" class="btn-contain">
+								<a asp-controller="@ControllerName" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						@if (Model.ListItems == null || Model.ListItems.Count() == 0)
+						{
+							<tr>
+								<td colspan="5" class="text-center">
+									<label>Không có dữ liệu!</label>
+								</td>
+							</tr>
+						}
+						else
+						{
+							for (int i = 0; i < Model.ListItems.Count(); i++)
+							{
+								<tr>
+									<td width="50px" class="text-center">@((Model.Pagination.CurrentPage - 1) * Model.Pagination.ItemsPerPage + i + 1)</td>
+									<td class="text-center">@Model.ListItems[i].Id</td>
+									<td>@Model.ListItems[i].Title</td>
+									<td>
+										@Model.ListItems[i].FullName
+										(<small>@Model.ListItems[i].Phone</small>)
+									</td>
+									<td class="text-center">
+										@if (@Model.ListItems[i].Status)
+										{
+											<span onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check-circle text-primary" aria-hidden="true"></span>
+										}
+										else
+										{
+											<span onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></span>
+										}
+									</td>
+									<td>@Model.ListItems[i].Contact</td>
+									<td>
+										<ul class="list-inline action">
+											<li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+											<li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+										</ul>
+									</td>
+								</tr>
+							}
+						}
+
+					</tbody>
+
+				</table>
+				<form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+			</div>
+			<div class="col-lg-12">
+				@await Html.PartialAsync("_PartialPagination",Model.Pagination)
+			</div>
+		</div>
+	</div>
+</div>
+

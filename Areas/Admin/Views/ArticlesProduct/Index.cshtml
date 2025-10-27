@@ -1,0 +1,288 @@
+﻿@model API.Areas.Admin.Models.ArticlesProduct.ArticlesProductModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+	Layout = "_layoutAdmin";
+	ViewData["Title"] = "Quản lý tin tức";
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+	string TenCoQuan = Context.Session.GetString("TenCoQuan");
+	int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+	int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+	string str_class_tr = "";
+	DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+	Boolean flagEdit = false;
+}
+
+<div class="card">
+	<div class="card-header">
+		<h4>
+			<i class="far fa-newspaper"></i> @ViewData["Title"]
+			<span class="float-right">
+				Tổng dòng: <strong>
+					@if (Model.ListItems != null && Model.ListItems.Count() > 0)
+					{
+						<span>@Model.ListItems[0].TotalRows</span>
+					}
+					else
+					{
+						<span>0</span>
+					}
+				</strong>
+			</span>
+		</h4>
+	</div>
+	<div class="card-body">
+		<partial name="_PartialMsgInfoAdmin" />
+		<form asp-controller="@ControllerName" asp-action="Index" method="get" id="SearchFrorm">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="row">
+						<div class="col-12 col-md-6 col-lg-3">
+							<input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+						</div>
+
+						<div class="col-12 col-md-6 col-lg-2">
+							<select asp-for="SearchData.IdCatAP" name="IdCatAP" class="form-control" asp-items="Model.ListItemCategoriesAP"></select>
+						</div>
+
+						<div class="col-12 col-md-6 col-lg-2">
+							<select asp-for="SearchData.Status" name="Status" class="form-control" asp-items="Model.ListItemsStatus"></select>
+						</div>
+
+						<div class="col-12 col-md-6 col-lg-4">
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+								<a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1"><i class="fas fa-cogs"></i> Nâng cao</a>
+								@*<button data-toggle="modal" data-target="#LoaddingModal" data-whatever="Đang tải dữ liệu. Xin vui lòng đợi." id="ExportExcel" type="button" class="btn btn-info"><i class="far fa-file-excel"></i> Báo cáo</button>*@
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="collapse multi-collapse" id="multiCollapseExample1">
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							<label>Từ Ngày</label>
+							<div class="input-group date" id="ShowStartDate" data-target-input="nearest">
+								<input asp-for="SearchData.ShowStartDate" name="ShowStartDate" type="text" class="form-control datetimepicker-input" data-target="#ShowStartDate" id="ShowShowStartDate" />
+								<div class="input-group-append" data-target="#ShowStartDate" data-toggle="datetimepicker">
+									<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							<label>Đến Ngày</label>
+							<div class="input-group date" id="ShowEndDate" data-target-input="nearest">
+								<input asp-for="SearchData.ShowEndDate" name="ShowEndDate" type="text" class="form-control datetimepicker-input" data-target="#ShowEndDate" id="ShowShowEndDate" />
+								<div class="input-group-append" data-target="#ShowEndDate" data-toggle="datetimepicker">
+									<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="Ids" asp-for="SearchData.Ids" class="form-control" />
+				</div>
+			</div>
+		</form>
+		<div class="row">
+			<div class="col-lg-12">
+
+				<table class="table table-bordered table-striped table-hover ">
+					<thead>
+						<tr>
+							<th width="50px" class="text-center">STT</th>
+							<th class="text-center">ID</th>
+							<th>Tên bài viết</th>
+							@if (IdCoQuan == 1)
+							{
+								<th>Cơ quan</th>
+							}
+							@*<th class="text-center">Loại bài viết</t>*@
+							<th class="text-center">Nông sản</t>
+							<th class="text-center">Cơ sở sản xuất</th>
+							<th width="110px" class="text-center">Thông tin</th>
+							<th width="130px" class="text-center">Trạng Thái</th>
+							<th width="130px" class="btn-contain text-center">
+								<a onclick="RedirectToAddArticle()" class="btn btn-primary">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+										<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+									</svg>
+									THÊM MỚI
+								</a>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						@if (Model.ListItems == null || Model.ListItems.Count() == 0)
+						{
+							<tr>
+								<td colspan="10" class="text-center">
+									<label>Không có dữ liệu!</label>
+								</td>
+							</tr>
+						}
+						else
+						{
+							for (int i = 0; i < Model.ListItems.Count(); i++)
+							{
+								@*								@if (Model.ListItems[i].RootNewsFlag)
+						{
+						str_class_tr = "table-warning";
+						}
+						else
+						{
+						str_class_tr = "";
+						}*@
+
+								@if (IdGroup == 6)
+								{
+									if (Model.ListItems[i].CreatedBy == IdUser)
+									{
+										flagEdit = true;
+									}
+								}
+								else if (IdGroup == 7)// Chỉ đăng được bài
+								{
+									if (Model.ListItems[i].CreatedBy == IdUser)
+									{
+										flagEdit = true;
+									}
+								}
+								else
+								{
+									flagEdit = true;
+								}
+								<tr class="@str_class_tr">
+									<th width="50px" class="text-center">@((Model.Pagination.CurrentPage - 1) * Model.Pagination.ItemsPerPage + i + 1)</th>
+									<td width="50px" class="text-center">@Model.ListItems[i].Id</td>
+									<td>
+										<a class="text-primary" onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)">@Model.ListItems[i].Title</a><br />
+										<small>Danh Mục: <span class="badge badge-primary" style="font-size: 12px">@Model.ListItems[i].CatAPName</span> </small>
+									</td>
+									@*<td class="text-center">@Model.ListItems[i].CatAPName</td>*@
+									<td class="text-center">@Model.ListItems[i].CatProductName</td>
+									<td class="text-center">@Model.ListItems[i].ManufacturerName</td>
+									@if (IdCoQuan == 1)
+									{
+										<td>@Model.ListItems[i].TenCoQuan</td>
+									}
+									<td>
+										<div class="status_item text-center">
+											<span class="text-center p-0">@Model.ListItems[i].PublishUpShow</span> <br />
+										</div>
+										<div class="text-center">
+											<span class="text-center btn btn-info py-1" onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)"><a><i class="fas fa-eye"></i>   Xem</a> <br /></span>
+										</div>
+									</td>
+									<td class="text-center align-middle">
+										<div class="status_item">
+											@*<span class="article_status_text">Trạng thái: </span>*@
+											@if (@Model.ListItems[i].Status)
+											{
+												<a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check text-primary" aria-hidden="true"></a>
+											}
+											else
+											{
+												<a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+											}
+										</div>
+									</td>
+
+
+									<td class="text-center align-middle">
+										@if (flagEdit)
+										{
+											<ul class="list-inline action text-center mb-0">
+												@*												@if (Model.ListItems[i].RootNewsId > 0)
+									{
+									if (Model.ListItems[i].RootNewsFlag == true)
+									{
+									<li class="list-inline-item"><a onclick="ShowUpdateArticlesProductTransfer('@Model.ListItems[i].Ids')"><i class="fas fa-cloud-download-alt"></i>Cập Nhật</a></li>
+									}
+									<li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+									}
+									else
+									{*@
+												<li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids" asp-route-idsproduct="@Model.SearchData.Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+												<li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+											</ul>
+										}
+
+									</td>
+								</tr>
+							}
+						}
+
+					</tbody>
+
+				</table>
+				<form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+			</div>
+			<div class="col-lg-12">
+				@await Html.PartialAsync("_PartialPagination", Model.Pagination)
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailArticle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="article-title">Chi Tiết Bài Viết</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div id="article-content"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+			</div>
+			<div class="modal-footer " id="footer-detail-article">
+				<input id="LinkDetail" />
+				<button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"><i class="fas fa-times"></i> Đóng</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ArticlesProductTransfer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="article-transfer-title">Chi Tiết Bài Viết Liên Thông</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-danger alert-dismissible fade show" style="display:none;" role="alert">
+					<div class="ArticlesProducttransfer-alert-msg"></div>
+				</div>
+				<div id="article-transfer-content"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+			</div>
+			<div class="modal-footer " id="footer-detail-article-transfer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Đóng</button>
+			</div>
+			<div class="loading-content" style="display:none;" id="ArticlesProducttransfer-loading">
+				<div class="loadding-bg"></div>
+				<div class="lds-dual-ring"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+	<script src="~/lib/js/moment.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script type="text/javascript" src="~/lib/js/jquery.base64.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script type="text/javascript" src="~/lib/js/jquery.binarytransport.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script type="text/javascript" src="~/TemplatesAdmin/js-app/articles_product.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+}

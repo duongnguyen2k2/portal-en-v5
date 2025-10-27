@@ -1,0 +1,172 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using API.Areas.Admin.Models.Menus;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+
+    var ListMenu = MenusService.GetListByParrent(0, IdCoQuan, 2, ParentId);
+
+	
+    string KeySession = "MenuFooter_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenu = Context.Session.GetString(KeySession);
+
+    List<Menus> ListMenuFooter = new List<Menus>();
+    if(StrListMenu!=null && StrListMenu != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenuFooter = JsonConvert.DeserializeObject<List<Menus>>(StrListMenu);
+    }
+    else
+    {
+        ListMenuFooter = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 2, ParentId);
+
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListMenuFooter));
+        }
+        
+    }
+
+}
+
+
+<footer id="footer" class="footer-area footer--2">
+	<div class="footer__wrapper bg-image--10 section-padding--lg">
+		<div class="container">
+			<div class="row">
+				<!-- Start Single Widget -->
+				<div class="col-lg-3 col-md-6 col-sm-12">
+					<div class="footer__widget">
+						<div class="ft__logo">
+							<a href="index.html">
+								<img src="@ItemCoQuan.MetadataCV.UrlImage" alt="@ItemCoQuan.Title">
+							</a>
+						</div>
+						<div class="ftr__details">
+							<p>@ItemCoQuan.MetadataCV.DescFooter</p>
+						</div>
+						<div class="ftr__address__inner">
+							<div class="footer__social__icon">
+								<ul class="dacre__social__link--2 d-flex justify-content-start">
+									<li class="facebook"><a href="@ItemCoQuan.Facebook"><i class="fab fa-facebook-f"></i></a></li>
+									<li class="twitter"><a href="@ItemCoQuan.Twitter"><i class="fab fa-twitter"></i></a></li>
+									<li class="vimeo"><a href="https://vimeo.com/"><i class="fab fa-vimeo"></i></a></li>
+									<li class="pinterest"><a href="https://www.pinterest.com/"><i class="fab fa-pinterest-p"></i></a></li>
+								</ul>
+							</div>
+							<div class="ft__btm__title">
+								<h4>Về Chúng Tôi</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Widget -->
+
+				<!-- Start Single Widget -->
+					<div class="col-lg-4 col-md-6 col-sm-12 sm-mt-40">
+						<div class="footer__widget">
+							<h4>Fanpage facebook</h4>
+							<div class="footer__innner">
+								<div class="fb-page" data-href="https://www.facebook.com/webdonggoi" data-tabs="" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/webdonggoi" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/webdonggoi">Web Đóng Gói</a></blockquote></div>
+							</div>
+						</div>
+					</div>
+
+				<!-- End Single Widget -->
+				<!-- Start Single Wedget -->
+				<div class="col-lg-2 col-md-6 col-sm-12 md-mt-40 sm-mt-40">
+					<div class="footer__widget">
+						<h4>Tin Tức</h4>
+						<div class="footer__innner">
+							<div class="ftr__latest__post">
+								<ul class="ftr__catrgory">
+									@for (int mn = 0; mn < ListMenuFooter.Count(); mn++)
+									{               
+										<li><a href="@ListMenuFooter[mn].Link">@ListMenuFooter[mn].Title</a></li>
+									}																		
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- End Single Wedget -->
+				<!-- Start Single Widget -->
+					<div class="col-lg-3 col-md-6 col-sm-12 md-mt-40 sm-mt-40">
+						<div class="footer__widget">
+							<h4>Twitter Widget</h4>
+							<div class="footer__innner">
+
+							</div>
+						</div>
+					</div>
+				<!-- End Single Widget -->
+			</div>
+		</div>
+		<div class="ft__bottom__images--1 wow flipInX" data-wow-delay="0.6s" style="visibility: hidden; animation-delay: 0.6s; animation-name: none;">
+			<img src="Templates/@Context.Session.GetString("TemplateName")/images/banner/mid-img/ft.png" alt="footer images">
+		</div>
+		<div class="ft__bottom__images--2 wow fadeInRight" data-wow-delay="0.6s" style="visibility: hidden; animation-delay: 0.6s; animation-name: none;">
+			<img src="Templates/@Context.Session.GetString("TemplateName")/images/banner/mid-img/ft-2.png" alt="footer images">
+		</div>
+		
+	</div>
+	
+	<!-- .Start Footer Contact Area -->
+	<div class="footer__contact__area bg__cat--2">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="footer__contact__wrapper d-flex flex-wrap justify-content-between">
+						<div class="single__footer__address">
+							<div class="ft__contact__icon">
+								<i class="fa fa-home"></i>
+							</div>
+							<div class="ft__contact__details">
+								
+								<p>@ItemCoQuan.Address</p>
+							</div>
+						</div>
+						<div class="single__footer__address">
+							<div class="ft__contact__icon">
+								<i class="fa fa-phone"></i>
+							</div>
+							<div class="ft__contact__details">
+								<p><a href="#">@ItemCoQuan.Telephone</a></p>
+								<p><a href="#">@ItemCoQuan.Telephone</a></p>
+							</div>
+						</div>
+						<div class="single__footer__address">
+							<div class="ft__contact__icon">
+								<i class="fa fa-envelope"></i>
+							</div>
+							<div class="ft__contact__details">
+								<p><a href="#">@ItemCoQuan.Email</a></p>
+								<p><a href="#">@ItemCoQuan.Email</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!-- .End Footer Contact Area -->
+	<div class="copyright  bg--theme">
+		<div class="container">
+			<div class="row align-items-center copyright__wrapper justify-content-center">
+				<div class="col-lg-12 col-sm-12 col-md-12">
+					<div class="coppy__right__inner text-center">
+						<p><i class="fa fa-copyright"></i>Thực hiện bởi <a href="#"> @Model.CopyrightTitle</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+<!-- //Footer Area -->

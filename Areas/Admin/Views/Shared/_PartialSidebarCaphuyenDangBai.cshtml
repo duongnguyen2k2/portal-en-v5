@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    string TenCoQuan =Context.Session.GetString("TenCoQuan");
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));    
+    int? IdMenu = 0;
+    if (Context.Session.GetInt32("IdMenu") != null) {
+        IdMenu = Context.Session.GetInt32("IdMenu");
+    }
+    
+}
+<!-- Sidebar -->
+    <ul class="sidebar navbar-nav" data-partial="_PartialSidebarCaphuyenDangBai">
+        <li class="nav-item dropdown @if (IdMenu == 1) { @("show"); }">
+            <a class="nav-link" href="/Admin/Home" role="button"  aria-expanded="@if (IdMenu == 1) { @("true"); } else { @("false")}">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link" asp-controller="Articles" asp-action="Index">
+                <i class="fas fa-file-alt"></i>
+                Tin tức
+            </a>   
+        </li>                      
+    </ul>

@@ -1,0 +1,52 @@
+﻿@model API.Areas.Admin.Models.DMChucVu.DMChucVuModel
+@{
+    if (Model.Item.Id == 0) {
+        ViewData["Title"] = "Thêm mới Chức Vụ";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Chức Vụ";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="form-group">
+                <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                <input type="text" class="form-control" asp-for="Item.Title" name="Title">
+            </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                    <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                </div>
+                <div class="custom-control custom-checkbox custom-control-inline">
+                    <input asp-for="Item.Leader" name="Leader" class="custom-control-input" />
+                    <label class="custom-control-label" asp-for="Item.Leader">Lãnh đạo</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.Description">Mô tả</label>
+                <textarea asp-for="Item.Description" name="Description" class="form-control"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+            
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+        </form>
+    </div>
+</div>
+

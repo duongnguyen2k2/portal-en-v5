@@ -1,0 +1,80 @@
+﻿@using API.Areas.Admin.Models.Reviews;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+     int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySession = "Reviews_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListRv = Context.Session.GetString(KeySession);
+    List<Reviews> ListReviews = new List<Reviews>();
+
+    if(StrListRv!=null && StrListRv != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListReviews = JsonConvert.DeserializeObject<List<Reviews>>(StrListRv);
+    }
+    else
+    {
+        ListReviews = ReviewsService.GetListFeatured(IdCoQuan);
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListReviews));
+        }
+        
+    }
+    
+}
+
+
+@if (ListReviews.Count() > 0)
+{
+    <section class="junior__testimonial__area bg-image--2 section-padding--lg">
+        <div class="container">
+            <div class="row">
+                <div class="offset-lg-2 col-lg-8 col-md-12 col-sm-12">
+                    <div class="testimonial__container carousel slide" id="carouselExampleControls"  data-ride="carousel">
+                        <div class="tes__activation--1 owl-carousel owl-theme owl-loaded owl-drag carousel-inner">
+
+                            @for(int i=0;i<ListReviews.Count();i++){
+                                    <div class="carousel-item @if(i==1){ @(" active ");}">
+                                        <div class="testimonial__bg">
+                                            <!-- Start Single Testimonial -->
+                                            <div class="testimonial text-center">
+                                                <div class="testimonial__inner">
+                                                    <div class="test__icon">
+                                                        <img src="/Templates/@Context.Session.GetString("TemplateName")/images/testimonial/icon/1.png" alt="icon images">
+                                                    </div>
+                                                    <div class="client__details">
+                                                        <p>@ListReviews[i].Introtext</p>
+                                                        <div class="client__info">
+                                                            <h6>@ListReviews[i].FullName</h6>
+                                                            <span>@ListReviews[i].Title</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End Single Testimonial -->
+                                        </div>
+                                    </div>
+						    }
+								
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-target="#carouselExampleControls" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                          </button>
+                          <button class="carousel-control-next" type="button" data-target="#carouselExampleControls" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                          </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}

@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(ParentId);
+}
+
+
+
+<div class="card border-0" id="lien-thong-videos">
+    <div class="card-header rounded-0">
+        <a asp-controller="Videos" asp-action="Index">Videos</a>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-7 col-12">
+                <!-- Wrapper for slides -->
+                <div class="lien-thong-videos-inner" role="listbox">
+                    @if (ListItemVideos != null && ListItemVideos.Count() > 0)
+                    {
+                        if (ListItemVideos[0].IdType == 0)
+                        {
+                            <div class="carousel-item active" id="videos-serve">
+                                <video style="width:100%;" controls class="video-item">
+                                    <source src="@ListItemVideos[0].LinkSv" type="video/mp4">
+                                </video>
+                            </div>
+                        }
+                        else if (ListItemVideos[0].IdType == 1)
+                        {
+                            <div class="carousel-item active" id="video-youtube">
+                                <iframe style="width:100%;" src="@("https://www.youtube.com/embed/"+ListItemVideos[0].Link)" title="@ListItemVideos[0].Title" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        }
+
+                    }
+                    else
+                    {
+                        <div class="item  active">
+                            <video style="width:100%" controls class="video-item">
+                                <source src="/CMS/Content/videos/chi-can-nu-cuoi.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    }
+
+
+                </div>
+            </div>
+            <div class="col-md-5 col-12">
+                <ul class="list-unstyled">
+                    @if (ListItemVideos.Count > 1)
+                    {
+                        for (int i = 1; i < ListItemVideos.Count(); i++)
+                        {
+                            <li class="pt-1">
+                                <a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListItemVideos[i].Id"><i class="fas fa-dot-circle pr-2"></i> @ListItemVideos[i].Title</a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</div>

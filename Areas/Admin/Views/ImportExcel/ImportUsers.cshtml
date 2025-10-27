@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Import Excel Người dùng";
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div class="col-lg-12">
+            <partial name="_PartialMsgInfoAjax" />
+            <partial name="_PartialMsgInfoAdmin" />
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="col-lg-12">
+                    <p>Chọn file Excel dữ liệu <strong class="text-danger">Người Dùng</strong> (Hoặc download file mẫu tại <a href="/ReportTemplate/import_us_ususers.xlsx">đây</a>)</p>
+                    <input type="file" name="files" id="FileUSUser">
+                </div>
+                <div class="col-lg-12">
+                    <strong>Ghi Chú:</strong><br />
+                    <ul>
+                        <li>Giới Tính: 1: Nữ; 2: Nam</li>
+                        <li>Đảng Viên: 1: Là đảng viên;</li>
+                        <li>Ngày sinh định dạng là: yyyyMMdd (19900519). Nếu chỉ có năm sinh không thì điền năm sinh trong cột <strong>Ngày Sinh</strong>. và Tại cột <strong>Năm Sinh</strong> điền số 1</li>                        
+                    </ul>
+                </div>
+
+            </div>
+            <div class="row" style="margin-bottom:15px;">
+                <div class="col-lg-2">
+                    <a class="btn btn-primary" onclick="UploadFile()" style="color:#fff;"><i class="fas fa-upload"></i> Tải file</a>
+
+                </div>
+                <div class="col-lg-10 text-danger flagError"></div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th width="120px">Tài khoản</th>
+                            <th>Tên</th>
+                            <th>IdCoQuan</th>
+                            <th>Giới Tính</th>
+                            <th>Ngày Sinh</th>
+                            <th>Năm Sinh</th>
+                            <th>Địa chỉ</th>
+                            <th>Dân Tộc</th>
+                            <th>Tôn Giáo</th>
+                            <th>Đảng Viên</th>
+                            <th>Trình độ</th>
+                            <th>Chuyên Môn</th>                            
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody id="BodyAjax"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" id="flagBtn">
+                                <a class="btn btn-primary" onclick="SaveListItem()" style="color:#fff;"><i class="fas fa-save"></i> Lưu dữ liệu</a>
+                            </td>
+                            <td colspan="11" class="text-danger flagError"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var ListItemImportExcel = [];
+
+    function SaveListItem() {
+        ResetInfoAjax();
+        $(".MsgAjaxLoadingTitle").html("Đang Lưu dữ liệu ...");
+        $('#MsgAjaxLoading').show();
+        $('html, body').animate({ scrollTop: 0 }, 800);
+
+        if (ListItemImportExcel != null || ListItemImportExcel.length > 0) {
+            console.log(JSON.stringify(ListItemImportExcel));
+            $.ajax({
+                   url : '/Admin/ImportExcel/ImportListUSUsersAll',
+                   type : 'POST',
+                   data : JSON.stringify(ListItemImportExcel),
+                   contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                   success: function (data) {
+                      location.reload(true);
+                    },
+                   error: function () {
+                      location.reload(true);
+                   }
+            });
+        } else {
+            $(".MsgAjaxDanger").html("Dữ liệu rỗng. Xin vui lòng upload file Excel");
+        }
+
+    }
+
+    function UploadFile() {
+        var str_html = "";
+        var flagError = "";
+        $("#flagBtn").show();
+        $(".MsgAjaxLoadingTitle").html("Đang tải file lên...");
+        ResetInfoAjax();
+        $("#MsgAjaxLoading").show();
+        $("#BodyAjax").html(str_html);
+
+        var formData = new FormData();
+        formData.append('file', $('#FileUSUser')[0].files[0]);
+
+        $.ajax({
+               url : '/Admin/ImportExcel/UploadExcelUSUsers',
+               type : 'POST',
+               data : formData,
+               processData: false,  // tell jQuery not to process the data
+               contentType: false,  // tell jQuery not to set contentType
+               success: function (data) {
+                   $('#MsgAjaxLoading').hide();
+                   str_html = "";
+                   if (data.Success == true) {
+                       if (data.Data != null) {
+                           if (data.Data.length > 0) {
+                               str_html = str_html + "<tr>";
+                               for (let i = 0; i < data.Data.length; i++) {
+                                   if (data.Data[i].Flag==true) {
+                                       str_html = str_html + "<tr>";
+                                   } else {
+                                       str_html = str_html + "<tr class='table-danger'>";
+                                       flagError = "Dữ Liệu Đang Bị lỗi. Xin vui lòng xem lại các dòng bôi đỏ";
+                                       $("#flagBtn").hide();
+                                   }
+
+                                   str_html = str_html + "<td>" + (i+1) + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].UserName + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].FullName + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].IdCoQuan + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Gender + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Birthday + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].NamSinh + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Address + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].IdDanToc + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].IdTonGiao + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].DangVien + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].IdTrinhDo + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Specialize + "</td>";                                   
+                                   str_html = str_html + "<td>" + data.Data[i].Msg + "</td>";
+                                   str_html = str_html + "</tr>";
+                                   ListItemImportExcel.push({
+                                       FullName: data.Data[i].FullName,
+                                       UserName: data.Data[i].UserName,
+                                       IdCoQuan: data.Data[i].IdCoQuan,
+                                       Gender: data.Data[i].Gender,
+                                       Birthday: data.Data[i].Birthday,
+                                       NamSinh: data.Data[i].NamSinh,
+                                       Address: data.Data[i].Address,
+                                       IdDanToc: data.Data[i].IdDanToc,
+                                       IdTonGiao: data.Data[i].IdTonGiao,
+                                       DangVien: data.Data[i].DangVien,
+                                       IdTrinhDo: data.Data[i].IdTrinhDo,
+                                       Specialize: data.Data[i].Specialize                                       
+                                   });
+                               }
+                           } else {
+                               str_html = str_html + '<tr><td colspan="12" class="text-center"><label>Không có dữ liệu!</label> </td></tr>';
+                           }
+
+                       } else {
+                           str_html = str_html + '<tr><td colspan="12" class="text-center"><label>Dữ liệu rỗng!</label> </td></tr>';
+                       }
+
+                   } else {
+                       $("#MsgAjaxDanger").html(data.Msg);
+                       $("#MsgAjaxDanger").show();
+                       str_html = str_html + '<tr><td colspan="12" class="text-center"><label>Dữ liệu rỗng!</label> </td></tr>';
+
+                   }
+                   $("#BodyAjax").html(str_html);
+                   $(".flagError").html(flagError);
+                   $("#FileUSUser").val("");
+
+               }
+        });
+
+
+    }
+    function ResetInfoAjax() {
+        $("#MsgAjaxSuccess").hide();
+        $("#MsgAjaxDanger").hide();
+        $("#MsgAjaxInfo").hide();
+    }
+
+    </script>
+}

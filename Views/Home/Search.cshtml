@@ -1,0 +1,86 @@
+﻿@model API.Areas.Admin.Models.Search.SearchAllModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    ViewData["Title"] = "Tìm Kiếm";
+    ViewData["Url"] = Domain;
+    ViewData["Images"] = Domain + ItemCoQuan.MetadataCV.UrlImage;
+    ViewData["Alias"] = ItemCoQuan.Title;
+    ViewData["Description"] = ItemCoQuan.Metadesc;
+    ViewData["Keywords"] = ItemCoQuan.Metakey;
+    ViewData["Placename"] = ItemCoQuan.MetadataCV.Placename;
+    ViewData["Type"] = "website";
+
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@(ViewData["Title"])</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">Chưa có bài đăng</p>
+        </div>
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+
+            <div class="col-md-12 col-sm-12 col-xs-12 ">
+
+                <div class="article-item">
+                    <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                        @if (Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                        {
+                            <img src="/images/no-image.png" class="img-responsive">
+                        }
+                        else
+                        {
+
+                            <img class="img-responsive mr-3 img-fluid " src="@Model.ListItems[i].Images" style="max-width:195px;max-height:130px;" alt="@Model.ListItems[i].Title">
+                        }
+
+                    </a>
+                    <h4><a asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">@Model.ListItems[i].Title</a></h4>
+
+                    <div class="text-justify">@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(Model.ListItems[i].IntroText, 600))</div>
+                </div>
+            </div>
+
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

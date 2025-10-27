@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+   
+}
+
+<div class="box-title d-none d-md-flex flex-column">
+    <div class="box-title__item">
+        <a class="btn btn-phone" href="tel:#" data-toggle="tooltip" data-placement="right" title="Phản ánh qua Tổng đài" data-original-title="Phản ánh qua Tổng đài"><i class="fa fa-lg fa-phone"></i></a>
+    </div>
+    <div class="box-title__item">
+        <a class="btn btn-facebook" href="https://www.facebook.com/daklaktructuyen" target="_blank" data-toggle="tooltip" data-placement="right" title="Phản ánh qua facebook" data-original-title="Phản ánh qua facebook"><i class="fab fa-facebook-f"></i></a>
+    </div>
+
+    <div class="box-title__item">
+        <a class="btn btn-mail" href="mailto:dieuhanhiocdaklak@gmail.com" data-toggle="tooltip" data-placement="right" title="Phản ánh qua mail" data-original-title="Phản ánh qua mail"><i class="far fa-envelope"></i></a>
+    </div>
+
+    <div class="box-title__item">
+        <a class="btn btn-zalo" href="https://zalo.me/2544413504842043550" target="_blank" data-toggle="tooltip" data-placement="right" title="Phản ánh qua Zalo" data-original-title="Phản ánh qua Zalo">
+            <img src="/images/zalo.png">
+        </a>
+    </div>
+
+    <div class="box-title__item">
+        <a class="btn btn-expand" href="/IOC/" data-toggle="tooltip" data-placement="right" title="Xem chế độ toàn màn hình" data-original-title="Xem chế độ toàn màn hình">
+            <i class="fas fa-expand"></i>
+        </a>
+    </div>
+</div>
+
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+    Tooltip on top
+</button>
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="right" title="Tooltip on right">
+    Tooltip on right
+</button>
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">
+    Tooltip on bottom
+</button>
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" title="Tooltip on left">
+    Tooltip on left
+</button>

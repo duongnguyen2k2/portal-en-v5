@@ -1,0 +1,107 @@
+﻿//@title-shadow rgb(0 0 0 / 1%);
+.partial-lich-ke-hoach-card {
+
+    .partial-lich-ke-hoach-title {
+        background-color: $bg-menu;
+        padding: .5rem;
+
+        a {
+            color: #fff;
+
+            i {
+                margin-left: 10px;
+                margin-right: 7px;
+                font-size: 20px;
+            }
+        }
+    }
+
+    .partial-lich-ke-hoach-body {
+        ul {
+            li {
+                padding: 7px 0 7px 0;
+
+                i {
+                    padding-right: 10px;
+                    font-size: 40px;
+                    color: #333;
+                }
+
+                a {
+                    text-align: justify;
+                    display: block;
+                    line-height: 18px;
+                }
+
+                .date {
+                    color: #919191;
+                    font-style: italic;
+                }
+
+                .cat {
+                    color: #919191;
+                    font-style: italic;
+
+                    .fa-connectdevelop {
+                        font-size: 14px;
+                        padding-right: 0px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+.btn-hoptructuyen {
+    border: 1px solid #e7effd;
+    border-radius: 4px;
+    line-height: 45px;
+    height: 45px;
+    display: block;
+    font-size: 0.9em;
+    font-family: 'Semibold';
+    color: #246df8;
+    background-color: #e7effd;
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+}
+.card-hop-truc-tuyen {
+    border: 0px;
+    border-radius: 6px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 10px #EFEFF0;
+    
+
+    .card-body {
+        padding-top: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 20px;
+
+        .card-title {
+            margin-bottom: .5rem;
+
+            a {
+                font-family: 'Roboto Condensed', sans-serif;
+                color: #0060aa;
+                font-size: 16px;
+                word-break: break-word;
+                text-shadow: #0060aa 0 0 1px;
+                display: block;
+                text-align: justify;
+                line-height: 25px;               
+                font-weight:600;
+            }
+        }
+    }
+
+    .course_text {
+        color: #17a2b8;
+    }
+
+    .card-text {
+    }
+}

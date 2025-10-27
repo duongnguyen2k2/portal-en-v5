@@ -1,0 +1,140 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@inject IViewLocalizer Localizer
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    Boolean flagChat = false;
+    List<string> ListChat = [
+        "tanlap.vnptdaklak.vn","tanan.vnptdaklak.vn","eakao.daklak.gov.vn"
+        ,"tanlap.daklak.gov.vn","tanan.daklak.gov.vn"
+    ];
+
+    foreach(string chat in ListChat)
+    {
+        if (chat == ItemCoQuan.Code || chat == ItemCoQuan.CodeDemo)
+        {
+            flagChat =true;
+        }
+    }
+}
+<div class="footer_wr">
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+                    <div class="list-info">
+                        <div>@Localizer["Address"]: @ItemCoQuan.Address</div>
+                        <div>
+                            @Localizer["Phone"]: @ItemCoQuan.Telephone
+                        @if(@ItemCoQuan.Fax!=null && @ItemCoQuan.Fax != "")
+                        {
+                            <span>; Fax:</span> @ItemCoQuan.Fax
+                        } 
+                        </div>
+                        @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                        {
+                            <div>Email: @ItemCoQuan.Email</div>
+                        }
+                        @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                        {
+                            <div>@Html.Raw(ItemCoQuan.CTNC)</div>
+                        }
+                        @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                        {
+                            <div>@Html.Raw(ItemCoQuan.MetadataCV.DescFooter)</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-12 text-md-right mt-sm-4 mt-md-0 vnpt">
+                    <p>
+                        @Localizer["MadeBy"]  <a href="@Model.CopyrightLink" target="_blank" class="font-weight-bold">@Model.CopyrightTitle</a>
+                    </p>
+                    <p>
+                        <img src="/images/vnpt-logo.png" style="margin-top:5px">
+                    </p>
+
+                    <ul class="list-inline menu-select-css">
+                        <li class="list-inline-item">
+                            <ul class="list-inline list-color">
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style " href="/Home/SelectCssName?CssName=vnpt-style.css"></a>
+                                </li>
+
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-2" href="/Home/SelectCssName?CssName=vnpt-style-2.css"></a>
+                                </li>
+                               
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>
+</div>
+<!-- IPv6-test.com button END -->
+<!-- https://tinnhiemmang.vn/ button BEGIN -->
+<div class="button-tinnhiemmang" id="@(ItemCoQuan.FolderUpload+"-button-tinnhiemmang")">
+    <a href='https://tinnhiemmang.vn/tim-kiem-theo-ten?type=web&q=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/handle_cert.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='Chung nhan Tin Nhiem Mang' title='Chung nhan Tin Nhiem Mang' border='0' />
+    </a>
+</div>
+<!-- https://tinnhiemmang.vn/ button END -->
+
+<div class="modal fade" id="SurveyChart" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="SurveyChartLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SurveyChartLabel">@Localizer["SurveyResults"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="SurveyChartBody">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@if (flagChat==true)
+{
+    <div id="vnpt_ai_livechat_content" onclick="toggleDisplayBotAI()">
+        <button id="vnpt_ai_livechat_button" type="button">
+            <span class="ant-avatar">
+                <img src="/images/bot_avatar.png?v=@DateTime.Now.ToString("yyyyMMddhh")">
+            </span>
+        </button>
+    </div>
+
+    <div id="botai-frame">
+        <button type="button" id="vnpt_ai_livechat_toggle_fullscreen" onclick="toggleClass('botai-frame', 'fullscreen')">
+            <i class="fas fa-expand-arrows-alt"></i>
+        </button>
+        <iframe loading="lazy"
+            id="integrate-iframe"
+            scrolling="no"
+            src="https://ai.vnptdaklak.vn/chat-frame/7ec3cf68-ac56-4944-8a51-6bed30d85b9c/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVkNDk5ODgtY2MxYy00OTZhLTkzM2MtZjZlMzZmNGE4MGUzIiwicGVybWlzc2lvbnMiOlsiQk9UX01BTkFHRVIiLCJGSUxFX01BTkFHRVIiXSwiZXhwIjoxNzQxNzY1MDU3ODJ9.24MAaC_VKTN4fm6mZg4W-aCGFbQsXVCc2Y-akZ3RtUw"
+            style="width: 100%; border: none; height: 100%; overflow: hidden"
+            allow="clipboard-read; clipboard-write; autoplay; encrypted-media; fullscreen; display-capture; microphone">
+        </iframe>
+    </div>
+}

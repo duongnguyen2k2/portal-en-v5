@@ -1,0 +1,16 @@
+﻿@model API.Models.Home.HomeModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+
+}
+
+<h1>@Localizer["Ten"]</h1>
+<h1>English</h1>
+
+<h2>Đồ Xịn: @Localizer["PhotosAboutUs"]</h2>

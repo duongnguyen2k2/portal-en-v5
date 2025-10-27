@@ -1,0 +1,313 @@
+﻿@model API.Areas.Admin.Models.ArticlesProduct.ArticlesProductModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.USUsers;
+@{
+	if (Model.Item.Id == 0)
+	{
+		ViewData["Title"] = "Thêm mới bài viết";
+	}
+	else
+	{
+		ViewData["Title"] = "Cập nhật bài viết";
+	}
+
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	string Link = "/" + Model.Item.Alias + "-" + Model.Item.Id + ".html";
+	string Str_Url = "/Admin/ArticlesProduct/Index" + Context.Session.GetString("STR_Action_Link_" + ControllerName + "_" + Context.Request.Headers["UserName"]);
+	int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+
+	USUsers ItemUSUsers = JsonConvert.DeserializeObject<USUsers>(Context.Session.GetString("Login"));
+	string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+	API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+	ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+}
+
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css">
+
+<div class="card">
+	<div class="card-header">
+		<h4>@ViewData["Title"]</h4>
+	</div>
+	<div class="card-body">
+		<div asp-validation-summary="All" class="text-danger"></div>
+		<form asp-controller="@ControllerName" enctype="multipart/form-data" asp-action="SaveItem" method="post" id="Myform">
+			<div class="row">
+				<div class="col-md-8">
+					<div class="form-group">
+						<label asp-for="Item.Title">Tiêu đề bài viết <sup class="text-danger"> (*)</sup></label>
+						<input type="text" name="Title" class="form-control Changetitle namepr" asp-for="Item.Title">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label asp-for="Item.Alias" class="control-label"></label>
+						<input asp-for="Item.Alias" name="Alias" class="form-control slug" />
+						<span asp-validation-for="Item.Alias" class="text-danger"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="form-group">
+						<label>Ngày Đăng <sup class="text-danger"> (*)</sup></label>
+						<div class="input-group date" id="PublishUpShow" data-target-input="nearest">
+							<input type="text" asp-for="Item.PublishUpShow" name="PublishUpShow" class="form-control datetimepicker-input" data-target="#PublishUpShow" id="PublishUpShow" />
+							<div class="input-group-append" data-target="#PublishUpShow" data-toggle="datetimepicker">
+								<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-4">
+					<div class="form-group">
+						<label asp-for="Item.IdManufacturer" class="control-label">Cơ sở sản xuất / Nhà vườn</label>
+						<select asp-for="Item.IdManufacturer" name="IdManufacturer" class="form-control selectpicker" asp-items="Model.ListItemsManufacturer" data-live-search="true"></select>
+					</div>
+				</div>
+
+				<div class="col-lg-4">
+					<div class="form-group">
+						<label asp-for="Item.IdCatProduct" class="control-label">Nhóm nông sản <sup class="text-danger"> (*)</sup></label>
+						<select asp-for="Item.IdCatProduct" name="IdCatProduct" class="form-control" asp-items="Model.ListItemCategoriesProduct"></select>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="form-group">
+						<label asp-for="Item.IdCatAP" class="control-label">Thể loại bài viết <sup class="text-danger"> (*)</sup></label>
+						<select asp-for="Item.IdCatAP" name="IdCatAP" class="form-control" asp-items="Model.ListItemCategoriesAP"></select>
+					</div>
+				</div>
+				<div class="col-lg-4 d-flex flex-column-reverse">
+					<div class="form-group">
+						<div class="custom-control custom-checkbox custom-control-inline">
+							<input asp-for="Item.Status" name="Status" class="custom-control-input" />
+							<label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-8">
+					<div class="form-group images-main">
+						<label>Hình đại diện</label>
+						<img src="@Model.Item.Images" class="Item_Images_Article_Preview" style="max-height:200px;">
+						<input type="hidden" name="Images" id="Item_Images_Article" class="form-control" asp-for="Item.Images">
+						<a onclick="ShowManagerFile('Item_Images_Article')" class="btn btn-primary text-white"><i class="far fa-image"></i> Chọn hình (510px*330px)</a>
+						<a onclick="ViewImageArtile('Item_Images_Article')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label asp-for="Item.IntroText">Mô tả</label>
+						<textarea asp-for="Item.IntroText" name="IntroText" class="form-control"></textarea>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Item.FullText">Nội dung bài viết</label>
+				<textarea asp-for="Item.FullText" id="full-textarea" name="FullText" class="form-control"></textarea>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<fieldset class="scheduler-border">
+						<legend class="scheduler-border">Đính kèm tập tin</legend>
+						<div class="file-list">
+
+							@if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+							{
+								<input type="hidden" id="maxfile" value="@(Model.Item.ListFile.Count() - 1)">
+								for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+								{
+									<div class="file-item">
+										<a onclick="ShowManagerFile('FileName_@j')" class="btn btn-primary">Chọn File</a>
+										<input type="text" asp-for="@Model.Item.ListFile[j].FilePath" name="ListFile[@j].FilePath" class="FileName" id="FileName_@j">
+										<span class="text-danger xoafile">Xóa</span>
+									</div>
+								}
+							}
+							else
+							{
+								<input type="hidden" id="maxfile" value="-1">
+							}
+						</div>
+						<p style="margin:10px 5px; cursor:pointer" class="text-primary" onclick="ThemFile()">
+							<i class="fa fa-plus-square"></i> Thêm tập tin
+						</p>
+					</fieldset>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<fieldset class="scheduler-border">
+						<legend class="scheduler-border">Đường dẫn bài viết liên quan</legend>
+						<div class="link-article-list"></div>
+						<p style="margin:10px 5px; cursor:pointer" class="text-primary" onclick="AddLinkArticle()">
+							<i class="fa fa-plus-square"></i> Thêm đường dẫn
+						</p>
+					</fieldset>
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div class="col-md-6">
+					<div class="form-group">
+						<label asp-for="Item.Metadesc" class="control-label"></label>
+						<textarea asp-for="Item.Metadesc" name="Metadesc" class="form-control"></textarea>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label asp-for="Item.Metakey" class="control-label"></label>
+						<textarea asp-for="Item.Metakey" name="Metakey" class="form-control"></textarea>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col">
+					<div class="form-group">
+						<label class="control-label">Đường dẫn</label>
+						<input readonly class="form-control" value="@Link" />
+					</div>
+				</div>
+			</div>
+
+			<button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+				<i class="fas fa-save"></i> Lưu lại
+			</button>
+
+			<a class="btn btn-danger" href="@Str_Url"><i class="fas fa-backward"></i> Hủy</a>
+			<input type="hidden" name="Id" class="form-control" asp-for="Item.Id">
+			<input type="hidden" name="Ids" class="form-control" asp-for="Item.Ids">
+			<input type="hidden" name="IdProduct" class="form-control" asp-for="Item.IdProduct">
+			<input type="hidden" name="CatId" class="form-control" asp-for="Item.IdCatAP">
+			<input type="hidden" name="PublishUp" class="form-control" asp-for="Item.PublishUp">
+
+		</form>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ArticlesProducthowImage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="gridModalLabel">Ản đại diện</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+			</div>
+			<div class="modal-body">
+				<img class="img-fluid" id="ArticlesProducthowImagePath" src="" />
+			</div>
+
+		</div>
+	</div>
+</div>
+<partial name="_PartialTinymce" />
+@section Scripts{
+	<script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+	<script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+	<script src="~/lib/js/moment.js"></script>
+	<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+	<script src="~/lib/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+	<script type="text/javascript">
+		var str_link = '@Html.Raw(Model.Item.Str_Link)';
+		var ListLinkArticle = null;
+
+		$(document).ready(function () {
+			if (str_link != null && str_link != '') {
+				ListLinkArticle = JSON.parse(str_link);
+				BuildHtmlLinkArticle();
+			} else {
+				ListLinkArticle = [];
+			}
+		});
+
+		$(function () {
+
+			$('#PublishUpShow').datetimepicker({
+				format: 'DD/MM/YYYY',
+			});
+		});
+
+		function SaveItemFeatured() {
+			$('#Item_Featured').attr('checked', 'checked');
+			$("#Myform").submit();
+		}
+
+		function SaveItemStatus() {
+			$('#Item_Status').attr('checked', 'checked');
+			$("#Myform").submit();
+		}
+
+		function ViewImageArtile(id) {
+			$('#ArticlesProducthowImagePath').attr("src", "/images/no-image.png");
+			$('#ArticlesProducthowImage').modal('show');
+			$('#ArticlesProducthowImagePath').attr("src", $('#' + id).val());
+		}
+
+		function ThemFile() {
+			var max = parseInt($("#maxfile").val()) + 1;
+			/**/
+			$(".file-list").append('<div class="file-item"><a onclick="ShowManagerFile(\'FileName_' + max + '\')" type="button" class="btn btn-primary">Chọn File</a><input type="text" name="ListFile[' + max + '].FilePath" class="FileName" id="FileName_' + max + '">  <span class="text-danger xoafile">Xóa</span></div>');
+			/**/
+			$("#maxfile").val(max);
+		}
+
+		$('.file-list').on('click', '.file-item .xoafile', function (event) {
+			$(this).parent().find(".lblFileName").empty();
+			$(this).parent().find(".FileName").val("");
+		})
+
+		function AddLinkArticle() {
+			console.log(ListLinkArticle);
+			var Item = { Title: '', Link: '', Status: true };
+			if (ListLinkArticle == null) {
+				ListLinkArticle = [];
+			}
+			ListLinkArticle.push(Item);
+			BuildHtmlLinkArticle();
+		}
+
+		function DeleteLinkArticle(i) {
+			ListLinkArticle[i].Status = false;
+			BuildHtmlLinkArticle();
+		}
+
+		function BuildHtmlLinkArticle() {
+			if (ListLinkArticle != null && ListLinkArticle.length > 0) {
+				$(".link-article-list").html('');
+				for (var i = 0; i < ListLinkArticle.length; i++) {
+					if (ListLinkArticle[i].Status) {
+						str = '<div class="link-article-item mt-2"><div class="row">';
+						str = str + '<div class="col-lg-3"><input onchange="UpdateDataLinkArticle(' + i + ',1,event)" name="ListLinkArticle[' + i + '].Title" class="form-control" placeholder="Tiêu Đề" value="' + ListLinkArticle[i].Title + '" /></div>';
+						str = str + '<div class="col-lg-3"><input onchange="UpdateDataLinkArticle(' + i + ',2,event)" name="ListLinkArticle[' + i + '].Link"  class="form-control" placeholder="Link" value="' + ListLinkArticle[i].Link + '"/></div>';
+						str = str + '<div class="col-lg-2"><span class="btn btn-danger" onclick="DeleteLinkArticle(' + i + ')">Xóa</span></div>';
+						str = str + '<input type="hidden" name="ListLinkArticle[' + i + '].Status" value="' + ListLinkArticle[i].Status + '"/></div></div>';
+						$(".link-article-list").append(str);
+					}
+				}
+			}
+		}
+		function UpdateDataLinkArticle(i, n, event) {
+			console.log(event.target.value);
+			if (n == 1) {// Title
+				ListLinkArticle[i].Title = event.target.value;
+			} else if (n == 2) {
+				ListLinkArticle[i].Link = event.target.value;
+			}
+		}
+	</script>
+}

@@ -1,0 +1,50 @@
+﻿$color-main: #033775;
+$color-main-2: #fce38f;
+$khauhieu: #fce38f;
+$bg-main: #fff;
+$bg-footer: #d20000;
+$bg-menu: #d42f3c;
+$color-menu: #fff;
+$bg-header-cat: #e04d58;
+$color-header-cat: #fff;
+$bg-menu-mobile: #fff;
+$icon-header: '../images/icon-tin-noi-bat.png';
+$bg-footer-image: '../images/bg-fotter.png';
+$bg-image: '../images/bg.jpg';
+$zoom-img: '../images/zoom.png';
+$bg-leftmenu:#e04d58;
+$home-cat-dot-circle: #e04d58;
+$home-cat-dot-circle-hover: #033775;
+$bg-webxa:'../images/danh-sach-website-xa.png';
+$thongbao-tieudeh1: #e04d58;
+$thongkevanban-tieudeh1: #e04d58;
+$bg-stellarnav-mobile: #c05100;
+$bg-emc: #EC3237;
+.menu-select-css {
+    .list-color {
+        .color-item {
+            width: 40px;
+            height: 20px;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            cursor: pointer;
+            display: block;
+        }
+
+        .vnpt-style {
+            background: #e04d58;
+        }
+
+        .vnpt-style-2 {
+            background: #0a68dc;
+        }
+
+        .vnpt-style-3 {
+            background: #44951A;
+        }
+
+        .vnpt-style-4 {
+            background: #0058c0;
+        }
+    }
+}

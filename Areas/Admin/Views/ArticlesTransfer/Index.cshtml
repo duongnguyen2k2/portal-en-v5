@@ -1,0 +1,266 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Liên thông tin tức";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    string TenCoQuan = Context.Session.GetString("TenCoQuan");
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>
+            <i class="fas fa-table"></i> @ViewData["Title"]
+            <span class="float-right">Tổng dòng: <strong>@if (Model.ListItems != null && Model.ListItems.Count() > 0)
+            {<span>@Model.ListItems[0].TotalRows</span>}
+        else
+        {<span>0</span>}</strong></span>
+        </h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get">
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <select asp-for="SearchData.CatId" name="CatId" class="form-control" asp-items="Model.ListItemsDanhMuc"></select>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <select onchange="MySearchForm()" asp-for="SearchData.IdCoQuan" name="IdCoQuan" class="form-control" asp-items="Model.ListDMCoQuan"></select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+                        </div>
+                        <div class="col">
+                            <select asp-for="SearchData.Status" name="Status" class="form-control" asp-items="Model.ListItemsStatus"></select>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1"><i class="fas fa-cogs"></i> Nâng cao</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="collapse multi-collapse" id="multiCollapseExample1">
+                <div class="row">
+
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Tác Giả</label>
+                            <select asp-for="SearchData.AuthorId" name="AuthorId" class="form-control" asp-items="Model.ListItemsAuthors"></select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Người đăng</label>
+                            <select asp-for="SearchData.CreatedBy" name="CreatedBy" class="form-control" asp-items="Model.ListItemsCreatedBy"></select>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Từ Ngày</label>
+                            <div class="input-group date" id="ShowStartDate" data-target-input="nearest">
+                                <input asp-for="SearchData.ShowStartDate" name="ShowStartDate" type="text" class="form-control datetimepicker-input" data-target="#ShowStartDate" id="ShowShowStartDate" />
+                                <div class="input-group-append" data-target="#ShowStartDate" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Đến Ngày</label>
+                            <div class="input-group date" id="ShowEndDate" data-target-input="nearest">
+                                <input asp-for="SearchData.ShowEndDate" name="ShowEndDate" type="text" class="form-control datetimepicker-input" data-target="#ShowEndDate" id="ShowShowEndDate" />
+                                <div class="input-group-append" data-target="#ShowEndDate" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">ID</th>
+                            <th>Tên bài viết</th>
+                            <th width="200px">Cơ quan</th>
+                            <th>Ngày đăng</th>                                                        
+                            <th width="70px" class="text-center text-info" data-toggle="tooltip" data-placement="top" title="Xem nhanh nội dung bài viết">Xem </th>
+                            
+                            
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center">
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@Model.ListItems[i].Id</td>
+                                    <td>
+                                        <a onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)">@Model.ListItems[i].Title</a><br />
+                                        <small>Danh Mục: @Model.ListItems[i].Category</small>
+                                    </td>
+                                    <td>@Model.ListItems[i].TenCoQuan</td>                                   
+                                    <td>@Model.ListItems[i].PublishUpShow</td>                                                                       
+                                    <td class="text-center">
+                                        <a onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                    
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailArticle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="article-title">Chi Tiết Bài Viết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger alert-dismissible fade show" style="display:none;" role="alert">
+                    <div class="articlestransfer-alert-msg"></div>                   
+                </div>
+
+                <div id="article-content"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+            </div>
+            <div class="modal-footer " id="footer-detail-article">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Đóng</button>
+            </div>
+            <div class="loading-content" style="display:none;" id="articlestransfer-loading">
+                <div class="loadding-bg"></div>
+                <div class="lds-dual-ring"></div>                
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js"></script>
+    <script type="text/javascript">
+        function InsertArticlesTransfer(Ids) {
+            $("#articlestransfer-loading").show();
+            $("#DetailArticle .alert").removeClass("alert-danger");
+            $("#DetailArticle .alert").removeClass("alert-success");
+
+            $.ajax({
+                url: "/Admin/ArticlesTransfer/InsertArticlesTransfer?Id="+Ids,
+                method: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $("#articlestransfer-loading").hide();
+                    $("#DetailArticle .alert").show();
+                    if (result.Success) {
+                        if (result.Data > 1) {
+                            
+                            $("#DetailArticle .alert").addClass("alert-success");
+                            $(".articlestransfer-alert-msg").html("Lấy tin liên thông thành công");
+                        } else if (result.Data == -1) {
+                            $("#DetailArticle .alert").addClass("alert-danger");
+                            $(".articlestransfer-alert-msg").html("Tin liên thông đã tồn tại.");
+                        }else if (result.Data == 0) {
+                            $("#DetailArticle .alert").addClass("alert-danger");
+                            $(".articlestransfer-alert-msg").html("Bạn không thể lấy tin liên thông từ bài viết của mình.");
+                        }
+                    } else {
+                        $("#DetailArticle .alert").addClass("alert-danger");
+                        $(".articlestransfer-alert-msg").html(result.Msg);
+                    }
+                    $('#DetailArticle .modal-body').scrollTop(0);
+                    //console.log(result);
+                 }
+              });
+        }
+        function GetItemDetail(Ids,IdGroup) {
+            $('#DetailArticle').modal('show');
+            $("#DetailArticle .alert").hide();
+             //$("#ytuongchuaduyet_mota_content").html(DataYTuong[IdYTuong].MOTA);
+             $.ajax({
+                url: "/Admin/ArticlesTransfer/GetItem?Id="+Ids,
+                method: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                 success: function (result) {
+                     $("#article-title").html(result.Title);
+                     $("#article-content").html(result.FullText);
+
+                     var str = '<button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Đóng</button>';
+                     str = str + ' <button onclick="InsertArticlesTransfer(\''+result.Ids+'\')" type="button" class="btn btn-primary"><i class="fas fa-cloud-download-alt"></i> Lấy tin về</button>';
+
+                     $("#footer-detail-article").html(str);
+                 }
+              });
+        }
+        $(function () {
+            $('#ShowStartDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+
+            });
+            $('#ShowEndDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+
+        $('document').ready(function () {
+
+                $('#DetailArticle').on('hidden.bs.modal', function (e) {
+                    $("#article-title").html("Chi Tiết Bài Viết");
+                    $("#article-content").html('<div class="text-center"><div class="lds-dual-ring"></div></div>');
+                    var str = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>';
+                    $("#footer-detail-article").html(str);
+                });
+
+
+            });
+
+    </script>
+
+}

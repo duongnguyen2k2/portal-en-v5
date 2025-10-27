@@ -1,0 +1,183 @@
+﻿@model API.Areas.Admin.Models.ArticleComment.ArticleCommentModel
+@using Microsoft.AspNetCore.Http
+
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Bình Luận: "+Model.ArticlesItem.Title;
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    string TenCoQuan = Context.Session.GetString("TenCoQuan");
+    
+}
+<input type="hidden" value="@Model.ArticlesItem.Id" id="ArticleId"/>
+<input type="hidden" value="@Model.ArticlesItem.Ids" id="ArticleIds"/>
+<div class="card" id="app_backend_orders">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-lg-8">
+                <h4><i class="fas fa-table"></i> @ViewData["Title"] </h4>
+            </div>
+            <div class="col-lg-4 text-right">
+                <span><a asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-arrow-alt-circle-left"></i> Quay Lại</a></span>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-bordered table-striped table-hover ">
+                        <thead>
+                            <tr>
+                                <th width="50px" class="text-center">STT</th>
+                                <th class="text-info">Bình Luận</th>                                
+                                <th width="90px">Trạng Thái </th>                          
+                                <th width="150px" class="btn-contain">
+                                   
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr v-if="ListItems.length==0">
+                                <td colspan="4" class="text-center" v-if="flagLoading">
+                                    <div class="loading-indicator-container">
+                                        <div class="loading-indicator indicator-center">
+                                            <span></span>
+                                            <div>Loading...</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td colspan="4" class="text-center" v-if="!flagLoading">không có dữ liệu</td>
+                            </tr>
+                            <tr v-for="(item, index) in ListItems" v-bind:key="item.id">
+                                <td>{{item.Id}}</td>
+                                <td>{{item.Description}} <br />
+                                    <span class="badge badge-pill badge-info" v-if="SearchItems.ArticleId==0">{{item.ArticleTitle}}</span> 
+                                </td>
+                                
+                                <td class="text-center">
+                                    <a  v-if="item.Status==1" v-on:click="UpdateStatus(index)" class="fas fa-check text-primary"></a>
+                                    <a v-if="item.Status==0" v-on:click="UpdateStatus(index)"  class="far fa-times-circle text-danger"></a>
+                                </td>
+                                
+                                 <td class="text-center">
+                                    <a  v-on:click="ShowEdit(index)">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>     
+                                    
+                                    <a  v-on:click="showDeleted(index)" class="pl-2">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </a>  
+                                </td>
+                               
+                            </tr>
+                        </tbody>
+
+                    </table>
+            </div>
+            <div class="col-lg-12">
+                <template>
+                    <paginate v-model="SearchItems.CurrentPage"
+                              :page-count="pageCount"
+                              :page-range="3"
+                              :margin-pages="2"
+                              :click-handler="pageChanged"
+                              :prev-text="'Prev'"
+                              :next-text="'Next'"
+                              :first-last-button="true"
+                              :next-link-class="'page-link'"
+                              :next-class="'page-item'"
+                              :prev-link-class="'page-link'"
+                              :prev-class="'page-item'"
+                              :container-class="'pagination'"
+                              :page-link-class="'page-link'"
+                              :page-class="'page-item'">
+                    </paginate>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
+        <!-- Modal -->
+    <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header py-2">
+            <h7 class="modal-title font-weight-bold" id="exampleModalLabel">Chỉnh sửa bình luận</h7>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="CommentId" class="font-weight-bold">Bình Luận(<small class="text-danger">*</small>)</label>
+                <textarea id="CommentId" class="txt_comment block_input form-control" placeholder="Bình Luận" v-model="detailItem.Description">
+
+                </textarea>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer  py-2">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" v-if="!flagLoadingChild" @@click="SaveItem()"><i class="fas fa-save"></i> Lưu Bình Luận</button>
+            <button type="button" class="btn btn-primary" v-if="flagLoadingChild"><i class="fas fa-spinner fa-spin"></i> Lưu Bình Luận</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="DeletedCommentModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delete-modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <div class="modal-body">
+                    <div class="p-3 text-center">
+                        <i class="far fa-times-circle text-danger icon-deleted"></i>
+                        <div class="text-3xl mt-3"> Bạn muốn xóa ?</div>
+                        <div class="text-slate-500 mt-2">{{deleteItem.Title}}</div>
+                    </div>
+                   
+                    <div class="px-3 pb-8 text-center">
+                        <button class="btn btn-danger" type="button" disabled v-if="flagLoadingChild">
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Đang Xóa
+                        </button>
+                        <button type="button" class="btn btn-danger" v-if="!flagLoadingChild" v-on:click="deletedItem()"><i class="fas fa-trash"></i> Xóa</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+
+                    </div>
+                </div>
+                
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+</div>
+
+@section Scripts{
+    <script src="~/js/vue.js"></script>
+    <script src="~/js/vuejs-paginate.js"></script>    
+    <script src="~/lib/toast-jquery/jquery.toast.min.js"></script>
+    <script src="~/TemplatesAdmin/js-app/article_comment.js"></script>   
+}
+
+<style>
+    .list-group-mobile {
+    }
+
+    .list-group-mobile-item {
+        border-bottom: 1px solid;
+        padding-bottom: 7px;
+        padding-top: 7px;
+    }
+</style>

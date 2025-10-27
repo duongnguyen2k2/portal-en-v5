@@ -1,0 +1,112 @@
+﻿@model API.Areas.Admin.Models.CategoriesDoiThoai.CategoriesDoiThoaiModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Danh mục Đối thoại trực tuyến";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Danh mục Đối thoại trực tuyến";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Link = "/loai-truyen-hinh/" + Model.Item.Alias + "-" + Model.Item.Id + ".html";
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" enctype="multipart/form-data" asp-action="SaveItem" method="post">
+            <div id="imageList"></div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                        <input id="txtTen" type="text" class="form-control Changetitle namepr" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Alias">Alias <sup class="text-danger"> (*)</sup></label>
+                        <input id="txtAlias" class="form-control slug" type="text" asp-for="Item.Alias" name="Alias">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label">Link</label>
+                        <input readonly class="form-control" value="@Link" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="form-group">
+                        <label asp-for="Item.Description">Mô tả</label>
+                        <input id="txtDes" asp-for="Item.Description" name="Description" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Ordering" class="control-label"> Sắp Xếp</label>
+                        <input asp-for="Item.Ordering" name="Ordering" class="form-control" />
+                        <span asp-validation-for="Item.Ordering" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="control-label">&nbsp;</label>
+                    <div class="form-group">
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Featured" name="Featured" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Featured">Nổi bật</label>
+                        </div>
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group images-main">
+                        <label>Hình đại diện</label>
+                        <img src="@Model.Item.Images" class="Item_Images_Article_Preview" style="max-height:200px;">
+                        <input type="hidden" name="Images" id="Item_Images_Article" class="form-control" asp-for="Item.Images">
+                        <a onclick="ShowManagerFile('Item_Images_Article')" class="btn btn-primary">Chọn hình (510px*330px)</a>
+                        <a onclick="ViewImageArtile('Item_Images_Article')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                    </div>
+                </div>
+                                
+            </div>
+
+
+            <div class="row" style="margin-bottom: 15px;">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Hủy</a>
+                    <input id="txtId" type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                    
+                    <input id="txtIds" type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                    <input id="ParentId" type="hidden" class="form-control" asp-for="Item.ParentId" name="ParentId">
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+
+<partial name="_PartialTinymce" />
+
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+}

@@ -1,0 +1,116 @@
+﻿@model API.Areas.Admin.Models.DMPhongBan.DMPhongBanModel
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Http;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = "Danh bạ điện tử";
+    ViewData["Description"] = "Danh bạ điện tử";
+    ViewData["Keywords"] = "Danh bạ điện tử";
+    ViewData["Url"] = Domain + "danh-ba-dien-tu.html";
+    ViewData["Images"] = Domain + "/images/danh-ba-dien-tu.png";
+
+}
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-12 col-md-12">
+        <div class="greyDiv searchDiv mb-3">
+            <form asp-controller="@ControllerName" asp-action="DanhBaDienTu" method="GET">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-xs-12">
+                        <div class="form-group">
+                            <label asp-for="SearchData.Keyword" class="">Tên,Email </label>
+                            <input type="text" class="form-control form-control-sm" asp-for="SearchData.Keyword" name="Keyword">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 col-4">
+                        <div class="form-group">
+                            <label style="display: block;">&nbsp; &nbsp;</label>
+                            <input type="submit" class="btn btn-primary btn-sm" name="Search" value="Tìm kiếm" />
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="col-12 col-md-12">
+        <table class="table table-bordered table-striped table-hover ">
+            <thead>
+                <tr>
+                    <th width="50px" class="text-center">STT</th>
+                    <th width="90px">Avatar</th>
+                    <th class="text-info">Tên  </th>                    
+                    <th class="text-info" width="130px">SĐT </th>
+                    <th class="text-info" width="130px">Email </th>
+                    <th class="text-info">Địa chỉ</th>                                       
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+
+                            <label>Không có dữ liệu!</label>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    for (int i = 0; i < Model.ListItems.Count(); i++)
+                    {
+                        <tr>
+                            <td width="50px" class="text-center">@(i + 1)</td>
+                            <td>
+                                @if (Model.ListItems[i].Images != null && Model.ListItems[i].Images != "")
+                                {
+                                    <img src="@Model.ListItems[i].Images" style="width: 70px" />
+                                }
+                                else
+                                {
+                                    <img src="@("/images/no-avatar_pb.png?v="+DateTime.Now.ToString("ddMMyyyyy"))" style="width: 70px" />
+                                }
+                            </td>
+                            <td>@Model.ListItems[i].Title</td>
+                            <td>@Model.ListItems[i].Telephone</td>
+                            <td>@Model.ListItems[i].Email</td>
+                            <td>
+                                @Model.ListItems[i].Address                                
+                            </td>                            
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+        <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

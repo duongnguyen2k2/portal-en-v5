@@ -1,0 +1,114 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    string version = DateTime.Now.ToString("yyyyMM");
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = "Đăng nhập";
+    ViewData["Url"] = Domain;
+    ViewData["Images"] = Domain + "/images/avatar_login.jpg?v=" + DateTime.Now.ToString("yyyyMMddhh");
+    ViewData["Alias"] = "Hệ thống quản trị nội dung";
+    ViewData["Description"] = "Hệ thống quản trị nội dung portal";
+    ViewData["Keywords"] = "Hệ thống, quản trị, nội dung,portal";
+    ViewData["Placename"] = "";
+    ViewData["Type"] = "article";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <meta name="description" content="@ViewData["Description"]" />
+    <meta name="keywords" content="@ViewData["Keywords"]" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="content-language" content="vi,en" />
+    <meta name="robots" content="INDEX, FOLLOW" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+
+    <meta property="og:url" content="@ViewData["Url"]" />
+    <meta property="og:type" content="@ViewData["Type"]" />
+    <meta property="og:title" content="@ViewData["Title"]" />
+    <meta property="og:description" content="@ViewData["Description"]" />
+    <meta property="og:locale" content="vi-vn" />
+
+    <meta property="og:image" content="@ViewData["Images"]" />
+    <meta property="og:image:url" content="@ViewData["Images"]" />
+    <meta property="og:image:alt" content="@ViewData["Alias"]" />
+    <meta property="og:image:secure_url" content="@ViewData["Images"]" />
+
+    <meta name="author" content="phucbv1990@gmail.com">
+    <meta itemprop="image" content="@ViewData["Images"]">
+    <meta name="twitter:image" content="@ViewData["Images"]">
+    <!-- ****************************** Start Seo twitter ******************************-->
+    <meta name="twitter:card" content="@ViewData["Card"]">
+    <meta name="twitter:url" content="@ViewData["Url"]">
+    <meta name="twitter:title" content="@ViewData["Title"]">
+    <meta name="twitter:description" content="@ViewData["Description"]">
+
+    <!-- ****************************** Start Seo Dublin Core ******************************-->
+    <meta name="DC.Language" content="vi-vn">
+    <meta name="DC.Description" content="@ViewData["Description"]">
+    <meta name="DC.Title" content="@ViewData["Title"]">
+    <meta name="DC.Identifier" content="@ViewData["Url"]">
+
+    <!-- ****************************** End Seo Dublin Core ******************************-->
+    <meta name="DC.title" content="@ViewData["Title"]" />
+    <meta name="geo.region" content="@ViewData["Region"]" />
+    <meta name="geo.placename" content="@ViewData["Placename"]" />
+    <meta name="geo.position" content="@ViewData["Position"]" />
+    <meta name="ICBM" content="" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css?v=@version" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css?v=@version" />
+    <link rel="stylesheet" href="~/TemplatesAdmin/Default/css/login.css?v=@version" />
+    <script src="~/lib/jquery/dist/jquery.js?v=@version"></script>
+</head>
+<body id="portal-en v9-en">
+    @RenderBody()
+
+
+    <script src="~/lib/js/popper.min.js?v=@version"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js?v=@version"></script>
+    
+	 <script>
+        with ((console && console._commandLineAPI) || {}) {     
+        console.log('\n %cDừng lại!\n %cĐây là một tính năng của trình duyệt dành cho các nhà phát triển. Nếu ai đó bảo bạn sao chép-dán nội dung nào đó vào đây để bật một tính năng của Hệ thống Website hoặc "hack" tài khoản của người khác, thì đó là hành vi lừa đảo và sẽ khiến họ có thể truy cập vào tài khoản Hệ thống Website của bạn.', 'font: 40pt sans-serif;margin-top:10px; font-weight: bold; color: #F00; text-shadow: 1px 1px #000, -1px -1px #000, -1px 1px #000, 1px -1px #000','font: 20pt sans-serif;');
+      }
+    </script>
+
+    @{
+        var validDomains = Configuration.GetSection("RecaptchaSettings:ValidDomain").Get<string[]>() ?? new string[0];
+        var currentHost = Context.Request.Host.Host;
+        var showCaptcha = validDomains.Contains(currentHost);
+    }
+
+    
+    @if (Configuration["flagCaptCha"] != "0" || showCaptcha)
+    {
+
+        <script src="https://www.google.com/recaptcha/api.js?render=@Configuration["RecaptchaSettings:SiteKey"]"></script>
+
+        <script>
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('@Configuration["RecaptchaSettings:SiteKey"]', { action: 'submit' }).then(function (token) {
+                    $("#token_recaptcha").val(token);
+                });
+            });
+
+        </script>
+    }
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

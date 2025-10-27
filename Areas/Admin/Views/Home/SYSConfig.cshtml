@@ -1,0 +1,117 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfigModel
+@{
+    ViewData["Title"] = "Cập nhật Cấu Hình";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>Cập nhật Cấu Hình</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.WebsiteName">Tên web <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.WebsiteName" name="WebsiteName">
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.CompanyName">Tên Công Ty <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.CompanyName" name="CompanyName">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.WebsiteName">Tên web <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.WebsiteName" name="WebsiteName">
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.CompanyName">Tên Công Ty <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.CompanyName" name="CompanyName">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.WebsiteName">Tên web <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.WebsiteName" name="WebsiteName">
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.CompanyName">Tên Công Ty <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.CompanyName" name="CompanyName">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.SEODescription">SEO Description</label>
+                        <textarea asp-for="Item.SEODescription" name="SEODescription" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.SEOKeyword">SEOKeyword</label>
+                        <textarea asp-for="Item.SEOKeyword" name="SEOKeyword" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Map">Google Map</label>
+                        <textarea asp-for="Item.Map" name="Map" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Youtube">Youtube</label>
+                        <textarea asp-for="Item.Youtube" name="Youtube" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Footer">Footer</label>
+                        <textarea asp-for="Item.Footer" name="Footer" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Contact">Liên Hệ</label>
+                        <textarea asp-for="Item.Contact" name="Contact" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <input type="submit" class="btn btn-primary" name="SaveItem" value="Lưu" />
+            <a class="btn btn-info" asp-controller="@ControllerName" asp-action="Index">Quay Lại</a>
+
+
+        </form>
+    </div>
+</div>
+

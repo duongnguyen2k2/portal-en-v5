@@ -1,0 +1,70 @@
+﻿@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySession = "Menu_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenu = Context.Session.GetString(KeySession);
+    List<Menus> ListMenu = new List<Menus>();
+    if(StrListMenu!=null && StrListMenu != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenu = JsonConvert.DeserializeObject<List<Menus>>(StrListMenu);
+    }
+    else
+    {
+        ListMenu = MenusService.GetListByParrent(0, IdCoQuan,0, ParentId);
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListMenu));
+        }
+        
+    }
+
+}
+@if (ListMenu.Count() > 0)
+{ 
+<div class="row d-none d-lg-flex">
+    <div class="col-sm-4 col-md-6 col-lg-2 order-1 order-lg-1">
+		<div class="logo">
+			<a href="/">
+				<img src="@ItemCoQuan.MetadataCV.UrlImage" alt="@ItemCoQuan.Title">
+			</a>
+		</div>
+	</div>
+
+    <div class="col-sm-4 col-md-2 col-lg-9 order-3 order-lg-2">
+		<div class="mainmenu__wrap">
+			<nav class="mainmenu__nav" style="display: block;">
+                <ul class="mainmenu">
+                    <li >
+                        <a href="/" class="text-uppercase font-weight-bold "><i class="fas fa-home"></i></a>
+                    </li>
+                    @for (int i = 0; i < ListMenu.Count(); i++)
+                    {
+                        if (ListMenu[i].ChildCount > 0)
+                        {
+                            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuChild", ListMenu[i]);
+                        }
+                        else
+                        {
+                            <li>
+                                @if (ListMenu[i].Icon != null && ListMenu[i].Icon != "")
+                                {
+                                    <i class="@(ListMenu[i].Icon)"></i>
+                                }
+                                <a href="@ListMenu[i].Link" data-id="@ListMenu[i].Id.ToString()" class="text-uppercase font-weight-bold ">@ListMenu[i].Title</a>
+                            </li>
+                        }
+
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    
+</div>
+}

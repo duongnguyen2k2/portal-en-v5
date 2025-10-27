@@ -1,0 +1,250 @@
+﻿@model API.Models.Home.HomeModel
+@{
+    ViewData["Title"] = "Trang Chủ";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="dashboard" id="app-dashboard" style="display:none;">
+    <h1 class="mt-4" style="display:none;">{{title}}</h1>
+    <div class="row box-home-1">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Bài viết tại đơn vị
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{detailItem.ThangDonVi}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Bài viết của huyện
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{detailItem.ThangHuyen}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Bài viết của tỉnh
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{detailItem.ThangTinh}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Tổng bài viết trong tháng
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{detailItem.ThangTatCa}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="thong-ke-coquan">
+        <div class="row">            
+            <div class="col">
+                <div class="form-group">
+                    <label>Từ Ngày</label>
+                    <div class="input-group date" id="ShowStartDate" data-target-input="nearest">
+                        <input v-model="SearchItems.ShowStartDate" name="ShowStartDate" type="text" class="form-control datetimepicker-input" data-target="#ShowStartDate" id="ShowShowStartDate" />
+                        <div class="input-group-append" data-target="#ShowStartDate" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label>Đến Ngày</label>
+                    <div class="input-group date" id="ShowEndDate" data-target-input="nearest">
+                        <input v-model="SearchItems.ShowEndDate" name="ShowEndDate" type="text" class="form-control datetimepicker-input" data-target="#ShowEndDate" id="ShowShowEndDate" />
+                        <div class="input-group-append" data-target="#ShowEndDate" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex justify-content-start">
+                    <div class="form-group">
+                         <div>&nbsp; &nbsp; &emsp; </div>
+                        <button type="button" v-on:click="Report()" class="btn btn-primary"><i class="fas fa-chart-line"></i> Thống Kê</button>                                                
+                    </div>
+
+                    <div class="form-group ml-2">
+                         <div>&nbsp; &nbsp; &emsp; </div>
+                        <button type="button" v-if="!flagLoadingExcel" v-on:click="ExportExcel()" class="btn btn-primary"><i class="far fa-file-excel"></i> Export Excel</button>
+                        <button type="button" v-if="flagLoadingExcel" class="btn btn-primary"><i class="fas fa-spinner fa-spin"></i> Export Excel...</button>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    
+        <div class="row">
+            
+            <div class="col-md-6 col-12">
+                <table class="table table-bordered">
+                      <thead>
+                            <tr>
+                                  <th scope="col">STT</th>  
+                                  <th scope="col">Id Cơ Quan</th>
+                                  <th scope="col">Cơ Quan</th>
+                                  <th scope="col">Bài Viết</th>
+                                  <th scope="col">Hình Ảnh</th>
+                            </tr>
+                      </thead>
+                      <tbody>
+                            <tr v-if="ListArticles.length==0">
+                                <td colspan="3" class="text-center">không có dữ liệu</td>
+                            </tr>
+                            <tr v-for="(item, index) in ListArticles" v-bind:key="item.id" v-bind:class="{'table-danger':(item.SoBaiViet==0)}">
+                                  <th scope="row">{{index+1}}</th>
+                                  <td>{{item.IdCoQuan}}</td>     
+                                  <td>{{item.Title}}</td>                                                  
+                                  <td>{{item.SoBaiViet}}</td>                      
+                                  <td>{{item.SoHinhAnh}}</td>                      
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 col-12">
+                <table class="table table-bordered">
+                      <thead>
+                            <tr>
+                                  <th scope="col">STT</th>                      
+                                  <th scope="col">Id Cơ Quan</th>                      
+                                  <th scope="col">Cơ Quan</th>
+                                  <th scope="col">Lượt truy cập</th>
+                            </tr>
+                      </thead>
+                      <tbody>
+                            <tr v-if="ListVisit.length==0">
+                                <td colspan="3" class="text-center">không có dữ liệu</td>
+                            </tr>
+                            <tr v-for="(item, index) in ListVisit" v-bind:key="item.id" v-bind:class="{'table-danger':(item.LuotTruyCap==0)}">
+                                  <th scope="row">{{index+1}}</th>
+                                  <td>{{item.IdCoQuan}}</td>
+                                  <td>{{item.Title}}</td>
+                                  <td>{{item.LuotTruyCap}}</td>                      
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="home-box mt-3 bieu-do-baiviet">
+        <div class="home-box-head">
+            <div class="home-box-title">
+                Báo cáo bài viết theo tháng trong năm {{SearchItems.Nam}}
+            </div>
+            <div class="home-box-left">                
+                <select class="form-control" v-model="SearchItems.Nam" name="Nam" v-on:change="SearchChangeYear()">
+                    <option value="0">Năm</option>
+                    <template v-for="(item, index) in ListYear">
+                        <option v-bind:value="item">Năm {{item}}</option>
+                    </template>
+                </select>
+            </div>
+        </div>
+        <!-- HTML -->
+        <div id="chartBieuDoCot" class="box-chart"></div>
+    </div>
+
+    <div class="home-box mt-3 bieu-do-baiviet">
+        <div class="home-box-head">
+            <div class="home-box-title">
+                Báo cáo Lượt truy cập theo tháng trong năm {{SearchItems.Nam}}
+            </div>
+            <div class="home-box-left">
+                <select class="form-control" v-model="SearchItems.Nam" name="Nam" v-on:change="SearchChangeYear()">
+                    <option value="0">Năm</option>
+                    <template v-for="(item, index) in ListYear">
+                        <option v-bind:value="item">Năm {{item}}</option>
+                    </template>
+                </select>
+            </div>
+        </div>
+        <!-- HTML -->
+        <div id="chartBieuDoLuotTruyCapCot" class="box-chart"></div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js"></script>
+    <script src='~/js/vuejs3.js' referrerpolicy="origin"></script>
+    <script src='~/TemplatesAdmin/Default/js/app-dashboard.js' referrerpolicy="origin"></script>
+    <script type="text/javascript">
+         $(function () {
+            $('#ShowStartDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+
+            });
+            $('#ShowEndDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+    </script>
+}
+

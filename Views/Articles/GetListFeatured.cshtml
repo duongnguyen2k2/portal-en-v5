@@ -1,0 +1,63 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@{
+    ViewData["Title"] = "Tin nổi bật";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Tin Nổi Bật</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p>Chưa có bài đăng</p>
+        </div>
+
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+
+            <div class="col-md-12 col-sm-12 col-xs-12 ">
+
+                <div class="article-item">
+                    <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                        @if (Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                        {
+                            <img src="/Home/ResizeImage?url=/images/no-image.png&width=195&height=130" class="img-responsive">
+                        }
+                        else
+                        {
+
+                            <img class="img-responsive mr-3 img-fluid " src="/Home/ResizeImage?url=@Model.ListItems[i].Images&width=195&height=130" alt="@Model.ListItems[i].Title">
+                        }
+
+                    </a>
+                    <h4>
+                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">@Model.ListItems[i].Title</a>
+                        <span>(@Model.ListItems[i].PublishUpShow)</span>    
+                    </h4>
+
+                    <div class="text-justify">@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(Model.ListItems[i].IntroText, 600))</div>
+                </div>
+            </div>
+
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

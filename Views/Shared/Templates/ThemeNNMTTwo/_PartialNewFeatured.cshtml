@@ -1,0 +1,117 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan,CultureInfo.CurrentCulture.Name.ToLower());
+    List<API.Areas.Admin.Models.Articles.Articles> NewsList = new List<API.Areas.Admin.Models.Articles.Articles>();
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    
+    if (ItemCoQuan.ThongBao.ToLower() == "tb_tmduoinb")
+    {
+        NewsList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNew(0, 5, IdCoQuan,CultureInfo.CurrentCulture.Name.ToLower());
+    }
+    int countBanner9 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 9)
+            {
+                countBanner9 = countBanner9 + 1;
+            }
+        }
+    }
+
+    string class_banner_9_ct = "banner-93-";
+    if (countBanner9 == 2)
+    {
+
+        class_banner_9_ct = "banner-92-";
+    }
+    if (countBanner9 == 4)
+    {
+        class_banner_9_ct = "banner-94-";
+    }
+    int bannerCount = 0;
+    string active = "active";
+}
+@if (ItemCoQuan.ThongBao.ToLower() == "tb_tmduoinb")
+{
+    <section id="tinmoi-home">
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 list-item-home">
+                    <div class="card-header">
+                        <div class="panel-title">
+                            <a class="text-uppercase font-weight-bold float-left">
+                                <span class="pl-2 pr-2">@Localizer["News"]</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0 m-0">
+                        <div class="banner-tinmoi-anh">
+                            <div class="owl-carousel owl-theme albums-item" id="banner-tinmoi-anh-body">
+                                @if (NewsList != null && NewsList.Count() > 0)
+                                {
+                                    for (int i = 0; i < NewsList.Count(); i++)
+                                    {
+                                        <div class="item">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NewsList[i].Id" asp-route-alias="@NewsList[i].Alias" title="@NewsList[i].Title">
+                                                <img src="@NewsList[i].Images" title="@NewsList[i].Title" />
+                                                <div class="tinmoi-title">
+                                                    @NewsList[i].Title
+                                                </div>
+                                            </a>
+                                        </div>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+}
+@if (countBanner9 > 0)
+{
+    <section id="banner-bottom-featured">
+        <div class="carousel slide banner-bottom-featured-body"  data-ride="carousel">
+             
+            @if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+            {
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.ListBanners.Count(); i++)
+                    {
+                        if (Model.ListBanners[i].CatId == 9)
+                        {
+                            bannerCount = bannerCount + 1;
+                            
+                            if (bannerCount == 1)
+                            {
+                                active = "active";
+                            }
+                            else {
+                                active = "rong";
+                            }
+
+                           @*  <div class="carousel-item banner-bottom-featured-item @class_banner_9_ct@(bannerCount) @active">
+                                <a href="@Model.ListBanners[i].Link"> <img src="@Model.ListBanners[i].Image" alt="@Model.ListBanners[i].Title" class="d-block w-100"></a>
+                            </div> *@
+
+                        }
+                    }
+                </div>
+            }
+
+        </div>
+    </section>
+}

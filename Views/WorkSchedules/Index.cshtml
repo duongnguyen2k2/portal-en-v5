@@ -1,0 +1,78 @@
+﻿@model API.Areas.Admin.Models.WorkSchedules.WorkSchedulesModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = "Lịch công tác";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = "Lịch công tác";
+    ViewData["Description"] = "Lịch công tác";
+    ViewData["Keywords"] = "Lịch công tác";
+    ViewData["Url"] = Domain + "/lich-cong-tac.html";
+    ViewData["Images"] = Domain + "/images/lich-cong-tac.png";
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb pl-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a class="text-dark" href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="workschedules-wapper" id="app-workschedules" style="display:none;">
+    <form>
+        
+        <div class="form-row justify-content-md-center">
+            <div class="col">
+                <span class="float-left week-pre"><i class="fas fa-angle-double-left"></i>@Localizer["LastWeek"]</span>
+            </div>
+            <div class="col-12 col-md-2">
+                <select class="form-control" v-model="SearchItems.ShowYear" v-on:change="SearchChangeYear()">
+                    <option value="0">@Localizer["ChooseYear"]</option>
+                    <template v-for="(item, index) in ListYear">
+                        <option v-bind:value="item">@Localizer["Year"] {{item}}</option>
+                    </template>
+                </select>
+            </div>
+            <div class="col-12 col-md-5">
+                <div class="form-group">
+                    <select class="form-control" v-model="SearchItems.ShowWeek" id="DetailItem_ShowWeek" v-on:change="SearchChange()">
+                        <option value="0">--- @Localizer["ChooseWeek"] (@Localizer["In"] {{SearchItems.ShowYear}}) ---</option>
+                        <template v-for="(item, index) in ListWeek">
+                            <option v-bind:value="item.Id">@Localizer["Week"] {{item.Id}} ({{item.Title}})</option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <span class="float-right week-next">@Localizer["NextWeek"] <i class="fas fa-angle-double-right"></i></span>
+            </div>
+        </div>
+        
+    </form>
+
+    <div class="row">
+        <div class="col-lg-12" v-html="detailItem.FullText">
+            
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+  
+    <script src="~/js/vue.js"></script>  
+    <script src="~/js/workschedules-app-site.js"></script>
+}

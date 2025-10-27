@@ -1,0 +1,13 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+   
+}
+
+@if(Model.MetadataCV.FacebookFanpage!=null && Model.MetadataCV.FacebookFanpage != ""){
+    @Html.Raw(Model.MetadataCV.FacebookFanpage);
+}

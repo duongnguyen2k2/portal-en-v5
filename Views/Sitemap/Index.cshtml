@@ -1,0 +1,12 @@
+﻿@model List<API.Models.Sitemap.SitemapUrl>
+@{
+    Layout = null;
+    Context.Response.ContentType = "application/xml";
+}
+@Html.Raw(@"<?xml version=""1.0"" encoding=""UTF-8""?>")
+@Html.Raw("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">")
+@foreach (var url in Model)
+{
+    @Html.Raw($"<url><loc>{url.Loc}</loc><lastmod>{url.LastMod:yyyy-MM-dd}</lastmod><changefreq>{url.ChangeFreq}</changefreq><priority>{url.Priority:F1}</priority></url>")
+}
+@Html.Raw("</urlset>")

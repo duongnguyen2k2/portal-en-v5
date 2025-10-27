@@ -1,0 +1,165 @@
+﻿@model API.Areas.Admin.Models.Documents.DocumentsModel
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@{
+    ViewData["Title"] = (Model.Item.Title);
+    ViewData["Description"] = (Model.Item.Introtext);
+    ViewData["Keywords"] = "";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+}
+    <div class="row PageDetail PageDetail-@Model.Item.Alias">
+
+        <div class="col-md-12">
+            <ul class="list-inline navigation nlist">
+                <li>
+                <a href="/">@Localizer["Home"]</a>
+                    <i class="fa fa-angle-right"></i>
+                <a asp-controller="Documents" asp-action="Index">@Localizer["Documents"]</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-12 article-body">
+            <div class="ContentDocument">
+                <table class="table table-bordered">
+                   <tbody>
+                      <tr>
+                        <td class="document-tb-width"><strong>@Localizer["Number"]</strong></td>
+                         <td>@Model.Item.Code</td>
+                      </tr>
+                      <tr class="ShowPC">
+                        <td><strong>@Localizer["Description"]</strong></td>
+                         <td>@Model.Item.Introtext</td>
+                      </tr>
+                      <tr class="ShowMobile">                         
+                         <td colspan="2">
+                            <strong>@Localizer["Description"]: </strong>
+                             @Model.Item.Introtext
+                        </td>
+                      </tr>                     
+                      <tr>
+                        <td><strong>@Localizer["PublishedAt"]</strong></td>
+                         <td>@Model.Item.IssuedDateShow</td>
+                      </tr>
+                      <tr>
+                        <td><strong>@Localizer["Effect"] </strong></td>
+                         <td>@Model.Item.EffectiveDateShow</td>
+                      </tr>
+                      <tr>
+                        <td><strong>@Localizer["Category"]</strong></td>
+                         <td>@Model.Item.FieldTitle</td>
+                      </tr>
+                      
+                      <tr>
+                        <td><strong>@Localizer["Institution"]</strong></td>
+                         <td>@Model.Item.TypeTitle</td>
+                      </tr>
+                      <tr>
+                        <td><strong>@Localizer["Accessory"]:</strong></td>
+                         <td>
+                            <div><a href="@Model.Item.Link" target="_blank"><i class="fas fa-cloud-download-alt"></i> @Localizer["Download"]</a></div>
+
+                            @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+                            {
+                                <ul>
+                                    @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                                    {
+                                        <li class="">
+                                            <a target="_blank" href="@Model.Item.ListFile[j].FilePath"> 
+                                                @if( Model.Item.ListFile[j].Title==null || Model.Item.ListFile[j].Title == "")
+                                                {
+                                                    <span>@Localizer["Supplement"] @j</span>
+                                                }
+                                                else{
+                                                    <span>@Model.Item.ListFile[j].Title</span>                                                     
+                                                }                                                                
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                         </td>
+                      </tr>
+                   </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-12 full-text article-content">
+            @Html.Raw(Model.Item.Introtext) 
+            <a href="@Model.Item.Link" target="_blank"><i class="fas fa-download"></i> Tải File</a>
+        </div>
+        @if (Model.Item.Link != null)
+        {
+            <div class="listtailieu">
+                <div class="col-md-12">
+                    @{
+                        string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.Link);
+                        string url = "";
+                        
+                        url = Domain + Model.Item.Link;
+
+                        if (ex == ".pdf")
+                        {
+                            <iframe src="@Domain/pdfviewer/web/viewer.html?file=@url" style="width:100%;height:600px;"></iframe>                            
+                        }
+                        else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                        {
+                            <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" style="width:100%;height:600px;"></iframe>
+                        }
+                        else
+                        {
+                        <a href="@url" target="_blank"> <i class="fa fa-download" style="margin-right:7px"></i> @Localizer["Download"]</a>
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+        @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+        {
+            <div class="listtailieu">
+                <div class="col-md-12">
+                    @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                    {
+                        string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.ListFile[j].FilePath);
+                        string url = "";
+                        url = Domain + Model.Item.ListFile[j].FilePath;
+                        
+                        if (ex == ".pdf")
+                        {
+                            <iframe src="@Domain/pdfviewer/web/viewer.html?file=@url" style="width:100%;height:600px;"></iframe>
+                        }
+                        else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                        {
+                            <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" ></iframe>
+                        }
+                        else
+                        {
+
+
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+
+    </div>
+
+
+<link rel="stylesheet" href="~/css/documents.css" />

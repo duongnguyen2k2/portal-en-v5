@@ -1,0 +1,275 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý tin tức";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    string TenCoQuan = Context.Session.GetString("TenCoQuan");
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+    string str_class_tr = "";
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    Boolean flagEdit = false;
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>
+            <i class="far fa-newspaper"></i> @ViewData["Title"]
+            <span class="float-right">Tổng dòng: <strong>@if (Model.ListItems != null && Model.ListItems.Count() > 0)
+            {<span>@Model.ListItems[0].TotalRows</span>}
+            else
+            {<span>0</span>}</strong></span>
+        </h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <form asp-controller="@ControllerName" enctype="multipart/form-data" asp-action="SaveItem" id="Myform" method="post">
+                    <input type="hidden" name="Title" asp-for="Item.Title">                    
+                    <input type="hidden" name="Id" class="form-control" asp-for="Item.Id">
+                    <input type="hidden" name="Status" class="form-control" asp-for="Item.Status">
+                    <input type="hidden" name="Deleted" class="form-control" asp-for="Item.Deleted">
+                    <input type="hidden" name="CatId" class="form-control" asp-for="Item.CatId">
+                    <input type="hidden" name="PublishUpShow" class="form-control" asp-for="Item.PublishUpShow">
+                    <input type="hidden" name="Ids" class="form-control" asp-for="Item.Ids">
+                    <button type="submit" class="btn btn-primary" style="margin-bottom:15px" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> THÊM MỚI BÀI VIẾT TẠM
+                    </button>
+                </form>
+            </div>
+
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">ID</th>
+                            <th>Tên bài viết</th>
+                            @if (IdCoQuan == 1)
+                            {
+                                <th>Cơ quan</th>
+                            }
+                            <th width="130px">Thông tin</th>                                                                
+                            <th width="130px" class="btn-contain">
+                               
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center">
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                @if (Model.ListItems[i].RootNewsFlag)
+                                {
+                                    str_class_tr = "table-warning";
+                                }
+                                else
+                                {
+                                    str_class_tr = "";
+                                }
+
+                                @if (IdGroup == 6 || (IdGroup == 3 && ItemCoQuan.MetadataCV.FlagStatusArticle==0))
+                                {
+                                    if (Model.ListItems[i].CreatedBy == IdUser)
+                                    {
+                                        flagEdit = true;
+                                    }
+                                }                               
+                                else
+                                {
+                                    flagEdit = true;
+                                }
+                                <tr class="@str_class_tr">
+                                    <td width="50px" class="text-center">@Model.ListItems[i].Id</td>
+                                    <td>
+                                        <a onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)">                                            
+                                            @if (Model.ListItems[i].Title == "article_tmp")
+                                            {
+                                                <strong>Bài viết chưa có tiêu đề</strong>
+                                            }
+                                            else
+                                            {
+                                                <span>@Model.ListItems[i].Title</span>
+                                            }
+                                        </a><br />
+                                        <small>Danh Mục: <span class="badge badge-primary">@Model.ListItems[i].Category</span> </small>
+                                        <span class="pl-2">
+                                            <i class="far fa-images"></i> @Model.ListItems[i].QuantityImage (Ảnh)
+                                        </span>
+
+                                        @if (ItemCoQuan.MetadataCV.SmartVoiceTokenID !=null && ItemCoQuan.MetadataCV.SmartVoiceTokenID.Trim() != "" )
+                                        {
+                                            <span id="create_audio_@Model.ListItems[i].Id" onclick="CreateAudio(@Model.ListItems[i].Id,'@Model.ListItems[i].Ids')" class="badge badge-pill badge-primary create_article_audio pl-2">
+                                                <i class="fas fa-file-audio"></i> 
+                                                @if(Model.ListItems[i].FileItem!=null && Model.ListItems[i].FileItem!="")
+                                                {
+                                                    <a>Tạo <strong class="text-danger">Lại</strong> audio</a>
+                                                }else{
+                                                    <a>Tạo file audio</a>
+                                                }
+                                            </span>
+                                            <span id="loading_audio_@Model.ListItems[i].Id" class="badge badge-pill badge-info pl-2 create_article_audio" style="display:none">
+                                                <i class="fas fa-spinner fa-spin"></i> Đang Tạo file..
+                                            </span>
+                                        }
+                                        
+                                            <div>
+                                                @if (Model.ListItems[i].AuthorName != null && Model.ListItems[i].AuthorName != "")
+                                                {
+                                                    <strong>Tác giả:</strong> <i>@Model.ListItems[i].AuthorName</i>
+                                                    @if (Model.ListItems[i].TenPhongBan != null && Model.ListItems[i].TenPhongBan != "")
+                                                    {
+                                                        <span>(@Model.ListItems[i].TenPhongBan)</span>
+                                                    }
+                                                }
+                                                <strong>Người tạo:</strong> <i>@Model.ListItems[i].CreatedByFullName</i>
+                                                @if (Model.ListItems[i].ModifiedByFullName != null && Model.ListItems[i].ModifiedByFullName != "")
+                                                {
+                                                            
+                                                    <strong>,Cập nhật:</strong> <i>@Model.ListItems[i].ModifiedByFullName</i>
+                                                }
+                                                 
+                                            </div>
+                                       
+                                    </td>
+                                    @if (IdCoQuan == 1)
+                                    {
+                                        <td>@Model.ListItems[i].TenCoQuan</td>
+                                    }
+                                    <td>
+                                       <span class="">@Model.ListItems[i].PublishUpShow</span> <br />
+                                        <a onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)"><i class="fas fa-eye"></i>Xem</a> <br />
+                                        <a class="pr-3" asp-controller="@ControllerName" asp-action="ViewLog" asp-route-id="@Model.ListItems[i].Ids"><i class="fas fa-binoculars"></i> Lịch Sử</a>
+                                        @if (ItemCoQuan.MetadataCV.FlagComment == 1 && Model.ListItems[i].Comment==true)
+                                        {
+                                            <br />
+                                            <a asp-controller="@ControllerName" asp-action="ViewComment" asp-route-id="@Model.ListItems[i].Ids"><i class="fas fa-comments"></i> Bình Luận</a>
+                                        }
+                                    </td>
+                                                                                                           
+                                   
+                                    <td>
+                                        @if(flagEdit){
+                                            <ul class="list-inline action text-center">
+                                                @if (Model.ListItems[i].RootNewsId > 0)
+                                                {
+                                                    if (Model.ListItems[i].RootNewsFlag == true)
+                                                    {
+                                                        <li class="list-inline-item"><a onclick="ShowUpdateArticlesTransfer('@Model.ListItems[i].Ids')"><i class="fas fa-cloud-download-alt"></i>Cập Nhật</a></li>
+                                                    }
+                                                    <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    @if ((IdGroup == 3 && ItemCoQuan.MetadataCV.FlagStatusArticle == 0) && Model.ListItems[i].Status == true)
+                                                    {
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+                                                        <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                                        <li class="list-inline-item"><a data-toggle="modal" data-target="#PublicArticleModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fas fa-upload"></i>Chuyển chính thức</a></li>
+                                                    }
+                                                }
+
+                                            </ul>
+                                        }
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailArticle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="article-title">Chi Tiết Bài Viết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="article-content"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+            </div>
+            <div class="modal-footer " id="footer-detail-article">
+                <div class="detail-audio-file" id="footer-detail-article-audio"></div>
+                <input id="LinkDetail" />
+                <button type="button" class="btn btn-secondary mr-1" data-dismiss="modal"><i class="fas fa-times"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal PublicArticleModal -->
+<div class="modal fade" id="PublicArticleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="article-title">Chuyển bài viết tạm sang chính thức</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="article-content-tmp"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+            </div>
+            <div class="modal-footer " id="footer-detail-article">
+                <a class="btn btn-info text-white" data-dismiss="modal" data-ids="" data-url="/Admin/@ControllerName/" id="ArticleStatusItemTrue">Chuyển sang chính thức</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .create_article_audio{
+        width:130px;
+    }
+    .create_article_audio:hover{
+        cursor:pointer;
+    }
+</style>
+@section Scripts{
+    <script src="~/lib/js/moment.js@("?v="+version)"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js@("?v="+version)"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js@("?v="+version)"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js@("?v="+version)"></script>
+    <script type="text/javascript" src="~/TemplatesAdmin/Default/js/admin-article.js@("?v="+version)"></script>
+    <script type="text/javascript" src="~/TemplatesAdmin/Default/js/admin-article-index-by-status.js@("?v="+version)"></script>
+}

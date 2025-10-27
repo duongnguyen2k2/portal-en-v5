@@ -1,0 +1,126 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Microsoft.AspNetCore.Http;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+
+    int countBanner9 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 9)
+            {
+                countBanner9 = countBanner9 + 1;
+            }
+        }
+    }
+
+    string class_banner_9_ct = "banner-93-";
+    if (countBanner9 == 2)
+    {
+
+        class_banner_9_ct = "banner-92-";
+    }
+    if (countBanner9 == 4)
+    {
+        class_banner_9_ct = "banner-94-";
+    }
+    int bannerCount = 0;
+}
+<section id="features-wrap">
+    <div class="card card-style-two border-0 features-header">
+        <div class="card-header bg-white">
+            <h3>
+                <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">TIN NỔI BẬT</a>
+            </h3>
+            <div class="bar"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7 col-sm-6 col-xs-12 " id="features-wrap-left">
+
+            <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                        {
+
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="features-item">
+                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                        <img src="@ListArticlesHot[i].Images" style="width:100%;height:225px;" />
+                                    </a>
+                                    <div class="features-item-body">
+                                        <h1 class="title">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                @ListArticlesHot[i].Title
+                                            </a>
+                                        </h1>
+                                        <p class="overview">
+                                            @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-5 col-sm-6 col-xs-12 " id="features-wrap-right">
+            <h4 class="featured-news-home bg-red text-center m-0 p-2 ">
+                <a class="text-white text-uppercase font-weight-bold" href="/tin-noi-bat.html">TIN NỔI BẬT</a>
+            </h4>
+            <ul class="features-list scrollWrap m-0 p-0 rounded-left rounded-bottom">
+                @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                {
+                    @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                    {
+                        <li>
+                            <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                <img src="@ListArticlesHot[i].Images" title="@ListArticlesHot[i].Title" />
+                            </a>
+                            <p class="title m-0">
+                                <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                    @ListArticlesHot[i].Title
+                                </a>
+                            </p>
+                            <span class="clearfix"></span>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+@if (countBanner9 > 0)
+{
+    <section id="banner-bottom-featured">
+        <div class="banner-bottom-featured-body">
+            @if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+            {
+                @for (int i = 0; i < Model.ListBanners.Count(); i++)
+                {
+                    if (Model.ListBanners[i].CatId == 9)
+                    {
+                        bannerCount = bannerCount + 1;
+
+                        <div class="banner-bottom-featured-item @class_banner_9_ct@(bannerCount)">
+                            <a href="@Model.ListBanners[i].Link"> <img src="@Model.ListBanners[i].Image" alt="@Model.ListBanners[i].Title" class="d-block w-100"></a>
+                        </div>
+
+                    }
+                }
+            }
+
+        </div>
+    </section>
+}

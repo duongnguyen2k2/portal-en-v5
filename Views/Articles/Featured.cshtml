@@ -1,0 +1,180 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inject IViewLocalizer Localizer;
+@{
+
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = "Tin nổi bật";
+    ViewData["Description"] = ItemCoQuan.Metadesc;
+    ViewData["Keywords"] = ItemCoQuan.Metakey;
+    ViewData["Url"] = Domain + "tin-noi-bat.html";
+    ViewData["Images"] = Domain + "/images/tin-noi-bat.png";
+    ViewData["Alias"] = "tin-noi-bat";
+    ViewData["Type"] = "article";
+
+}
+
+@if (Configuration["Security:SiteCode"] == "KTTT")
+{
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Localizer["Featured"]</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row categoryList">
+        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+        {
+            <div class="col-lg-12">
+                    <p class="text-center">@Localizer["NoPost"]</p>
+            </div>
+        }
+        else
+        {
+            for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+                    <div class="col-12">
+                        <div class="first-article-item mb-2 h-100">
+                            <a class="d-flex" asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias" title="@Model.ListItems[i].Title">
+                                <div class="img">
+                                    @if (@Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || @Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                                    {
+                                        <img src="~/images/no-image.png" class="w-100">
+                                    }
+                                    else
+                                    {
+                                        <img src="@Model.ListItems[i].Images" class="w-100">
+                                    }
+                                </div>
+
+                                <div class="first-article-body">
+                                    <p class="m-0 mb-1 title truncate-title">
+                                        @Model.ListItems[i].Title
+                                    </p>
+                                    <p class="m-0 mb-1 publish truncate-title">
+                                        @Model.ListItems[i].PublishUpShow
+                                    </p>
+                                    <p class="m-0 cat-desc truncate-content">
+                                        @API.Models.MyHelper.StringHelper.StringReadmore(@Model.ListItems[i].IntroText, 200)
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                //<div class="col-md-12 col-sm-12 col-xs-12 ">
+
+                //    <div class="article-item">
+                //        <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                //            @if (Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                //            {
+                //                <img src="/images/no-image.png" class="img-responsive">
+                //            }
+                //            else
+                //            {
+
+                //                <img class="img-responsive mr-3 img-fluid " src="@Model.ListItems[i].Images" style="max-width:195px;max-height:130px;" alt="@Model.ListItems[i].Title">
+                //            }
+
+                //        </a>
+                //        <h4>
+                //            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                //                @Model.ListItems[i].Title
+                //                <span>(@Model.ListItems[i].PublishUpShow)</span>
+                //            </a>
+
+                //        </h4>
+
+                //        <div class="text-justify">@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(Model.ListItems[i].IntroText, 600))</div>
+                //    </div>
+                //</div>
+            }
+        }
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row categoryList">
+        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+        {
+            <div class="col-lg-12">
+                <p class="text-center">Chưa có bài đăng</p>
+            </div>
+        }
+        else
+        {
+            for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+
+                <div class="col-md-12 col-sm-12 col-xs-12 ">
+
+                    <div class="article-item">
+                        <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                            @if (Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                            {
+                                <img src="/images/no-image.png" class="img-responsive">
+                            }
+                            else
+                            {
+
+                                <img class="img-responsive mr-3 img-fluid " src="@Model.ListItems[i].Images" style="max-width:195px;max-height:130px;" alt="@Model.ListItems[i].Title">
+                            }
+
+                        </a>
+                        <h4>
+                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                @Model.ListItems[i].Title
+                                <span>(@Model.ListItems[i].PublishUpShow)</span>
+                            </a>
+
+                        </h4>
+
+                        <div class="text-justify">@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(Model.ListItems[i].IntroText, 600))</div>
+                    </div>
+                </div>
+
+            }
+        }
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

@@ -1,0 +1,262 @@
+﻿@model API.Areas.Admin.Models.CategoriesAblums.CategoriesAblumsModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inject IViewLocalizer Localizer;
+
+@{
+	Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+	string Domain = "";
+	if (Context.Request.IsHttps)
+	{
+		Domain = "https://" + Context.Request.Host;
+	}
+	else
+	{
+		Domain = "http://" + Context.Request.Host;
+	}
+	string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+	API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+	ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+
+	// Lấy danh sách videos
+	List<API.Areas.Admin.Models.Videos.Videos> ListVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan, CultureInfo.CurrentCulture.Name.ToLower());
+
+	ViewData["Title"] = "Thư Viện ảnh";
+	ViewData["Description"] = ItemCoQuan.MetadataCV.DescImages == null ? ItemCoQuan.Metadesc : ItemCoQuan.MetadataCV.DescImages;
+	ViewData["Keywords"] = ItemCoQuan.Metakey;
+	ViewData["Url"] = "albums.html";
+	//ViewData["Images"] = Domain + Model.Item.Images;
+	//ViewData["Alias"] = Model.Item.Alias;
+	ViewData["Type"] = "images";
+}
+<link rel="stylesheet" href="~/lib/fancybox-master/jquery.fancybox.min.css">
+
+@if (Configuration["Security:SiteCode"] == "KTTT")
+{
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Multimedia</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="PageDetail albums-container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs mb-3" id="multimediaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="albums-tab" data-toggle="tab" data-target="#albums" type="button" role="tab" aria-controls="albums" aria-selected="true">
+                    <i class="fas fa-images"></i> Hình ảnh
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="videos-tab" data-toggle="tab" data-target="#videos" type="button" role="tab" aria-controls="videos" aria-selected="false">
+                    <i class="fas fa-video"></i> Videos
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="multimediaTabContent">
+            <!-- Albums Tab -->
+            <div class="tab-pane fade show active" id="albums" role="tabpanel" aria-labelledby="albums-tab">
+                <div class="album" data-plugin-album>
+                    <div class="row">
+                        @for (int i = 0; i < Model.ListItems.Count(); i++)
+                        {
+                            @if (Model.ListItems[i].ListItemsAlbums != null && Model.ListItems[i].ListItemsAlbums.Count() > 0)
+                            {
+                                <div class="image-gallery gallery col-lg-4 col-md-6 col-12">
+                                    <div class="card rounded-0 border-0 h-100">
+                                        <a href="@Model.ListItems[i].Images" data-fancybox="gallery_@Model.ListItems[i].Id" data-caption="@Model.ListItems[i].Title">
+                                            <img src="@Model.ListItems[i].Images" class="card-img-top" alt="@Model.ListItems[i].Title" />
+                                        </a>
+                                        @if (Model.ListItems[i].ListItemsAlbums.Count() > 1)
+                                        {
+                                            for (int j = 1; j < Model.ListItems[i].ListItemsAlbums.Count(); j++)
+                                            {
+                                                <a href="@Model.ListItems[i].ListItemsAlbums[j].Images" data-fancybox="gallery_@Model.ListItems[i].Id" title="@Model.ListItems[i].ListItemsAlbums[j].Title"></a>
+                                            }
+                                        }
+                                        <div class="card-body">
+                                            <a href="@Model.ListItems[i].Images" data-fancybox="gallery_@Model.ListItems[i].Id" data-caption="@Model.ListItems[i].Title" class="card-title text-justify" title="@Model.ListItems[i].Title"><h5 class="font-weight-bold">@Model.ListItems[i].Title</h5></a>
+                                            <p>@Model.ListItems[i].CreatedDate</p>
+                                            <p>@Model.ListItems[i].ListItemsAlbums.Count() @Localizer["Image"].</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Tab -->
+            <div class="tab-pane fade" id="videos" role="tabpanel" aria-labelledby="videos-tab">
+                <div class="video_box">
+                    @if (ListVideos == null || ListVideos.Count() == 0)
+                    {
+                        <div class="text-center pb-3">Không có video nào</div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @for (int i = 0; i < ListVideos.Count(); i++)
+                            {
+                                <div class="gallery col-md-6 col-lg-4 col-12 h-100 mb-2">
+                                    <div class="card rounded-0 border-0">
+                                        @if (ListVideos[i].IdType == 1)
+                                        {
+                                            <a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListVideos[i].Id" asp-route-alias="@ListVideos[i].Alias">
+                                                <img src="https://img.youtube.com/vi/@ListVideos[i].Link/0.jpg" class="img-thumbnail" alt="@ListVideos[i].Alias" />
+                                                <div class="title-video py-2 font-weight-bold truncate-title">@ListVideos[i].Title</div>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListVideos[i].Id" asp-route-alias="@ListVideos[i].Alias">
+                                                <img src="@ListVideos[i].Image" class="img-thumbnail" alt="@ListVideos[i].Title" />
+                                                <div class="title-video py-2 font-weight-bold truncate-title">@ListVideos[i].Title</div>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Multimedia</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="PageDetail albums-container">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs mb-3" id="multimediaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="albums-tab" data-toggle="tab" data-target="#albums" type="button" role="tab" aria-controls="albums" aria-selected="true">
+                    <i class="fas fa-images"></i> Hình ảnh
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="videos-tab" data-toggle="tab" data-target="#videos" type="button" role="tab" aria-controls="videos" aria-selected="false">
+                    <i class="fas fa-video"></i> Videos
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="multimediaTabContent">
+            <!-- Albums Tab -->
+            <div class="tab-pane fade show active" id="albums" role="tabpanel" aria-labelledby="albums-tab">
+                <div class="album" data-plugin-album>
+                    <div class="row">
+                        @for (int i = 0; i < Model.ListItems.Count(); i++)
+                        {
+                            @if (Model.ListItems[i].ListItemsAlbums != null && Model.ListItems[i].ListItemsAlbums.Count() > 0)
+                            {
+                                <div class="image-gallery gallery col-lg-4 col-md-6 col-12">
+                                    <div class="card rounded-0 border-0 h-100">
+                                        <a href="@Model.ListItems[i].Images" data-fancybox="gallery_@Model.ListItems[i].Id" data-caption="@Model.ListItems[i].Title">
+                                            <img src="@Model.ListItems[i].Images" class="card-img-top" alt="@Model.ListItems[i].Title" />
+                                        </a>
+                                        @if (Model.ListItems[i].ListItemsAlbums.Count() > 1)
+                                        {
+                                            for (int j = 0; j < Model.ListItems[i].ListItemsAlbums.Count(); j++)
+                                            {
+                                                <a href="@Model.ListItems[i].ListItemsAlbums[j].Images" data-fancybox="gallery_@Model.ListItems[i].Id" title="@Model.ListItems[i].ListItemsAlbums[j].Title"></a>
+                                            }
+                                        }
+                                        <div class="card-body">
+                                            <a href="@Model.ListItems[i].Images" data-fancybox="gallery_@Model.ListItems[i].Id" data-caption="@Model.ListItems[i].Title" class="card-title text-justify" title="@Model.ListItems[i].Title"><h5 class="font-weight-bold" style="display: inline-block">@Model.ListItems[i].Title </h5><span style="margin-bottom: .5rem"> (@Model.ListItems[i].ListItemsAlbums.Count() hình ảnh)</span></a>
+                                            <p class="ngay-tao">@Model.ListItems[i].CreatedDate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Videos Tab -->
+            <div class="tab-pane fade" id="videos" role="tabpanel" aria-labelledby="videos-tab">
+                <div class="video_box">
+                    @if (ListVideos == null || ListVideos.Count() == 0)
+                    {
+                        <div class="text-center pb-3">Không có video nào</div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @for (int i = 0; i < ListVideos.Count(); i++)
+                            {
+                                <div class="gallery col-md-6 col-lg-4 col-12 h-100 mb-2">
+                                    <div class="card rounded-0 border-0">
+                                        @if (ListVideos[i].IdType == 1)
+                                        {
+                                            <a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListVideos[i].Id" asp-route-alias="@ListVideos[i].Alias">
+                                                <img src="https://img.youtube.com/vi/@ListVideos[i].Link/0.jpg" class="img-thumbnail" alt="@ListVideos[i].Alias" />
+                                                <div class="title-video py-2 font-weight-bold truncate-title">@ListVideos[i].Title</div>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListVideos[i].Id" asp-route-alias="@ListVideos[i].Alias">
+                                                <img src="@ListVideos[i].Image" class="img-thumbnail" alt="@ListVideos[i].Title" />
+                                                <div class="title-video py-2 font-weight-bold truncate-title">@ListVideos[i].Title</div>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<style>
+    .card-body {
+        display: block;
+        /*height: 40px;1*/
+        overflow: hidden;
+    }
+
+    /*style="width:255px; height:150px;" */
+</style>
+
+@section Scripts{
+    <script src="~/lib/fancybox-master/jquery.fancybox.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+           
+        });
+    </script>
+}

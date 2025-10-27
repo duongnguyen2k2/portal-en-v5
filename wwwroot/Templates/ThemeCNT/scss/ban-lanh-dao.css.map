@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACI,qBAAM;EACF,aAAa,EAAE,GAAG;EAClB,aAAa,EAAE,IAAI;AAGvB,2BAAY;EACR,WAAW,EAAE,IAAI;EACjB,cAAc,EAAE,SAAS;AAG7B,0BAAW;EACP,WAAW,EAAE,IAAI;EACjB,cAAc,EAAE,GAAG;EAEnB,oCAAU;IACN,WAAW,EAAE,IAAI",
+"sources": ["ban-lanh-dao.scss"],
+"names": [],
+"file": "ban-lanh-dao.css"
+}

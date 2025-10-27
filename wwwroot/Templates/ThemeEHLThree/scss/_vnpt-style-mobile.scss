@@ -1,0 +1,255 @@
+﻿
+@media only screen and (max-width: 991px) {
+    .font-zoom {
+        bottom: 60px;
+    }
+    // Align text to center.
+    .text-xs-center {
+        text-align: center !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .col-center {
+        padding-left: 15px;
+    }
+
+    .banner-item {
+        img {
+            width: 100%;
+        }
+    }
+
+    #main-one {
+        .col-left, .col-center, .col-features-right, .col-features-left {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 100%;
+            flex: 0 0 100%;
+            max-width: 100%;
+            margin: 0px;
+            padding: 0px 7px;
+        }
+
+        .col-center {
+            margin-left: 0px;
+        }
+    }
+
+
+    #block-slideshow {
+        background: url(../images/bg-header-easup.png);
+        img {
+            width: 100%;
+        }
+
+        .carousel-item {
+            background: none !important;
+        }
+
+        .carousel-indicators {
+            display: none;
+        }
+    }
+
+   
+
+    #marquee_document_right {
+        height: 150px;
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 1140px) {
+    #features-wrap {
+
+        .carousel-inner {
+            .features-item {
+                img {
+                    height: 140px !important;
+                }
+            }
+        }
+    }
+}
+@media only screen and (max-width: 500px) {
+    .topbar {
+        .nav-scroller {
+            background: none !important;
+            overflow: hidden;
+            margin-right: 0px;
+        }
+    }
+    #search-top {
+        width: 45%;
+    }
+    #banner-bottom-featured {
+        padding-bottom: 15px;
+        padding-top: 15px;
+
+        .banner-bottom-featured-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .banner-93-1, .banner-93-2 {
+            margin-bottom: 5px;
+            margin-right: 0px;
+        }
+    }
+
+    .col-left {
+        order: 3;
+
+        .banner-item {
+            /*display: none;*/
+        }
+    }
+
+    #ban-do-hanh-chinh {
+        margin-top:10px;
+        .card-body {
+            display: flex;
+
+           
+            a {
+                img {
+                    width: 100%;
+                }
+            }
+        }
+    }
+    #dao-duc-hcm{
+        margin-top:10px;
+    }
+
+    #wrap-scroll-nav {
+        display: block;
+    }
+
+    #nav-footer ul li a {
+        font-size: 11px;
+    }
+
+    #features-wrap {
+        padding-top: 6px;
+
+        .features-header {
+            display: none;
+        }
+
+        .features-list {
+            padding-left: 0px;
+
+
+
+            .mCSB_container {
+                margin-right: 0px;
+            }
+        }
+
+        .carousel-inner {
+            .features-item {
+                img {
+                    height: 120px !important;
+                }
+            }
+        }
+    }
+    #main-one {
+        footer {
+            font-size: 12px;
+            padding: 25px 0 80px 0;
+
+            h3 {
+                font-size: 13px;
+                padding: 0px;
+                text-align: center;
+            }
+
+            .vnpt{
+                text-align:center;
+            }
+        }
+    }
+    
+
+    .other-list {
+        h2 {
+            width: 100%;
+            display: block;
+            margin-top: 40px;
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+    }
+
+    .article-content {
+        img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    }
+    #khauhieu {
+        padding: 0px;
+
+        .bullhorn {
+            min-height: 25px;
+            padding: 7px 7px 0px;
+        }
+
+        .marquee {
+            font-size: 11px;
+        }
+    }
+    .category-list {
+        .card-header {
+            a {
+                .hoc-tap-va-lam-theo-tam-guong-dao-duc-ho-chi-minh {
+                    font-size: 10px;
+                }
+            }
+        }
+    }
+}
+#main-nav {
+    .call-btn-mobile {
+        text-align: left !important;
+    }
+
+    .close-menu {
+        text-align: right !important;
+    }
+}
+
+.box-title {
+    position: fixed;
+    top: 60%;
+    left: 10px;
+    z-index: 99;
+
+    .box-title__item {
+        margin-bottom: 3px;
+
+        .btn {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-zalo{
+            img{
+                width:100%;
+            }
+        }
+        a {
+            width: 45px;
+            padding: 5px;
+
+            i {
+                color: #fff;
+                font-size: 20px;
+            }
+        }
+    }
+}

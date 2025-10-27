@@ -1,0 +1,52 @@
+﻿
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using API.Areas.Admin.Models.CategoriesArticles;
+@using System.Globalization;
+
+@{
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySessionCatFeaturedHome = "CatFeaturedHome_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListCatFeaturedHome = Context.Session.GetString(KeySessionCatFeaturedHome);
+
+    List<CategoriesArticles> ListCatFeaturedHome = new List<CategoriesArticles>();
+    if(StrListCatFeaturedHome!=null && StrListCatFeaturedHome != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListCatFeaturedHome = JsonConvert.DeserializeObject<List<CategoriesArticles>>(StrListCatFeaturedHome);
+    }
+    else
+    {
+        ListCatFeaturedHome = API.Areas.Admin.Models.CategoriesArticles.CategoriesArticlesService.GetListFeaturedHome(IdCoQuan, CultureInfo.CurrentCulture.Name.ToLower());
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySessionCatFeaturedHome,JsonConvert.SerializeObject(ListCatFeaturedHome));
+        }
+        else
+        {
+            Context.Session.Remove(KeySessionCatFeaturedHome);
+        }
+
+    }
+
+}
+<div id="wrap-scroll-nav">
+    <div id="body-scroll-nav">
+        @if (ListCatFeaturedHome != null && ListCatFeaturedHome.Count() > 0)
+        {
+            
+            <div class="wrap-scroll-nav-content">
+                <div class="wrap-scroll-nav-item">
+                    <a href="/" class="active"><i class="fas fa-home"></i> Trang Chủ</a>
+                </div>
+                @for (int i = 0; i < ListCatFeaturedHome.Count(); i++)
+                {
+                    <div class="wrap-scroll-nav-item"><a asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[i].Id" asp-route-alias="@ListCatFeaturedHome[i].Alias">@ListCatFeaturedHome[i].Title</a></div>
+                }
+            </div>
+        }
+    </div>
+</div>
+

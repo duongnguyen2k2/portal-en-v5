@@ -1,0 +1,62 @@
+﻿@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySession = "Menu_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenu = Context.Session.GetString(KeySession);
+    List<Menus> ListMenu = new List<Menus>();
+    if(StrListMenu!=null && StrListMenu != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenu = MenusService.GetListByParrent(0, IdCoQuan, 0, ParentId, System.Globalization.CultureInfo.CurrentCulture.Name.ToLower());
+        //ListMenu = JsonConvert.DeserializeObject<List<Menus>>(StrListMenu);
+    }
+    else
+    {
+        ListMenu = MenusService.GetListByParrent(0, IdCoQuan, 0, ParentId, System.Globalization.CultureInfo.CurrentCulture.Name.ToLower());
+        //ListMenu = MenusService.GetListByParrent(0, IdCoQuan,0, ParentId);
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListMenu));
+        }
+        
+    }
+
+}
+@if (ListMenu.Count() > 0)
+{
+    <nav id="main-nav" style="background: #fff;position:relative; height: 56px; display: flex; align-items: center">
+        <div class="container p-0">
+            <div class="stellarnav">
+                <img src="../images/logo.png" alt="logo" style="height:106px; position: absolute; bottom: 0px" />
+                <ul class="text-left container" style="margin-left: 112px">
+                    <li id="menu-chil-home">
+                        <a href="/" class="text-uppercase font-weight-bold "><i class="fas fa-home"></i></a>
+                    </li>
+                    @for (int i = 0; i < ListMenu.Count(); i++)
+                    {
+                        if (ListMenu[i].ChildCount > 0)
+                        {
+                            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuChild", ListMenu[i])
+                            ;
+                        }
+                        else
+                        {
+                            <li>
+                                @if (ListMenu[i].Icon != null && ListMenu[i].Icon != "")
+                                {
+                                    <i class="@(ListMenu[i].Icon)"></i>
+                                }
+                                <a href="@ListMenu[i].Link" data-id="@ListMenu[i].Id.ToString()" class="text-uppercase font-weight-bold ">@ListMenu[i].Title</a>
+                            </li>
+                        }
+
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+}

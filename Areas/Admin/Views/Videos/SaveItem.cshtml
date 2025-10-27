@@ -1,0 +1,148 @@
+﻿@model API.Areas.Admin.Models.Videos.VideosModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Video";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Video";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>Chi tiết Video</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                <div class="col-5">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>
+
+                <div class="col-5">
+                    <div class="form-group">
+                        <label asp-for="Item.TitleEn">Tên En<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.TitleEn" name="TitleEn">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="Item.IdType">Loại <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.IdType" name="IdType" class="form-control" asp-items="Model.ListItemsType"></select>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <label class="control-label">&nbsp;</label>
+                    <div class="form-group">
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <label>&nbsp;</label>
+                    <div class="form-group">
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Featured" name="Featured" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Featured">Nổi bật</label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3 col-12">
+                    <div class="form-group">
+                        <label asp-for="Item.CatId">Danh mục <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.CatId" name="CatId" class="form-control" asp-items="Model.ListItemsCat"></select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-12">
+                    <div class="form-group">
+                        <label asp-for="Item.Link">Mã Video trên Youtube</label>
+                        <input type="text" class="form-control" asp-for="Item.Link" name="Link">
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="form-group images-main">
+                        <label>File video trên server:</label>
+                        <div class="input-group mb-3">
+                            <input type="text" name="LinkSv" id="Item_LinkSv_Article" class="form-control" asp-for="Item.LinkSv">
+                            <div class="input-group-append">
+                                <span class="input-group-text" onclick="ShowManagerFile('Item_LinkSv_Article')" id="basic-addon2">Chọn File</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-12">
+                    <div class="form-group">
+                        <label asp-for="Item.Ordering">Sắp Xếp</label>
+                        <input type="number" class="form-control" asp-for="Item.Ordering" name="Ordering">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+
+
+
+            </div>
+            <div class="form-group">
+                <div class="form-group images-main">
+                    <label>Hình đại diện</label>
+                    <img src="@Model.Item.Image" class="Item_Images_Main_Preview" style="max-height:200px;">
+                    <input type="hidden" name="Image" id="Item_Images_Main" class="form-control" asp-for="Item.Image">
+                    <a onclick="ShowManagerFile('Item_Images_Main')" class="btn btn-primary"><i class="far fa-eye"></i> Chọn hình</a>
+                    <a onclick="ViewImageMain('Item_Images_Main')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Item.Description">Mô tả</label>
+                <textarea asp-for="Item.Description" name="Description" id="full-textarea" class="form-control full-textarea"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.DescriptionEn">Mô tả En</label>
+                <textarea asp-for="Item.DescriptionEn" name="DescriptionEn" id="full-textarea" class="form-control full-textarea"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Hủy</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+            <input type="hidden" class="form-control" asp-for="Item.IdCoQuan" name="IdCoQuan">
+        </form>
+    </div>
+</div>
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+}

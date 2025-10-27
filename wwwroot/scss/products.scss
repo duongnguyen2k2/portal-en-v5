@@ -1,0 +1,118 @@
+﻿.product-details-area{
+    margin-bottom:15px;
+}
+.single-slider-product {
+    margin-bottom: 20px;
+    position: relative;
+
+    .single-slider-product__image {
+        border: 1px solid #f0f0f0;
+
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+    }
+
+    .rating {
+        .fas.fa-star {
+            color: #ffdd20;
+        }
+    }
+
+    .product-price {
+        padding: 0px;
+        margin: 0px;
+
+        .discounted-price {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 22px;
+            margin-right: 10px;
+            color: #3a9943;
+        }
+    }
+
+    .cart-icon {
+        position: absolute;
+        right: 15px;
+        bottom: 35px;
+        display: inline-block;
+
+        a {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 36px;
+            display: block;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            -webkit-transition: .6s;
+            transition: .6s;
+            text-align: center;
+            color: #333;
+            border-radius: 100%;
+            background: #f2f2f2;
+        }
+    }
+}
+
+.single-slider-product__content {
+    position: relative;
+    overflow: hidden;
+    padding: 17px 20px 16px 20px;
+    text-align: left;
+    border: 1px solid #f0f0f0;
+    border-top: 0;
+    background: transparent;
+
+    .product-title {
+        a {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 20px;
+            -webkit-transition: .3s;
+            transition: .3s;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+    }
+
+    .product-sku {
+        /*
+        float:left;
+        margin-right:10px;*/
+    }
+}
+
+
+#FormSearchOCOP {
+    padding: .75rem 1rem;
+    float: right;
+    padding-right: 0px;
+}
+#SearchIdCoQuanOCOP {
+    padding: 3px 3px;
+}
+.product-detail-content {
+    .product-sku {
+        float: left;
+        margin-right: 15px;
+    }
+}
+
+#ProductDetail {
+    margin-bottom: 10px;
+
+    .rating {
+        .fas.fa-star {
+            color: #ffdd20;
+        }
+    }
+}

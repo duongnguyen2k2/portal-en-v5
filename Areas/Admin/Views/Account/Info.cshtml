@@ -1,0 +1,153 @@
+﻿@model API.Areas.Admin.Models.USUsers.USUsersModel
+@{
+    ViewData["Title"] = "Cập Nhật thông tin - " + Model.Item.FullName;
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4><i class="far fa-user-circle"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Info" method="post">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.UserName">Tài Khoản <sup class="text-danger"> (*)</sup></label>
+                        <input readonly type="text" class="form-control" asp-for="Item.UserName" name="UserName">
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.FullName">Tên</label>
+                        <input asp-for="Item.FullName" name="FullName" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.UserCode">Mã User</label>
+                        <input asp-for="Item.UserCode" name="UserCode" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.IdRegency">Chọn Chức vụ</label>
+                        <select asp-for="Item.IdRegency" name="IdRegency" class="form-control" asp-items="Model.ListDMChucVu"></select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Email">Email <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Telephone">Điện Thoại</label>
+                        <input asp-for="Item.Telephone" name="Telephone" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.BirthdayShow">Ngày Sinh <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="BirthdayShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.BirthdayShow" name="BirthdayShow" class="form-control datetimepicker-input" data-target="#BirthdayShow" id="BirthdayShow" />
+                            <div class="input-group-append" data-target="#BirthdayShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Specialize">Chuyên Môn <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Specialize" name="Specialize">
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label asp-for="Item.Status">Trạng Thái Người dùng</label>
+                            <select readonly asp-for="Item.Status" name="Status" class="form-control" asp-items="Model.ListItemsStatus"></select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.IdGroup">Chọn Nhóm quyền</label>
+                        <select readonly asp-for="Item.IdGroup" name="IdGroup" class="form-control" asp-items="Model.ListItemsGroups"></select>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <label asp-for="Item.Gender">Giới Tính <sup class="text-danger"> (*)</sup></label>
+                    <div class="form-group">
+
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input asp-for="Item.Gender" value="1" type="radio" id="Gender_1" name="Gender" class="custom-control-input">
+                            <label class="custom-control-label" for="Gender_1">Nữ</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input asp-for="Item.Gender" value="2" type="radio" id="Gender_2" name="Gender" class="custom-control-input">
+                            <label class="custom-control-label" for="Gender_2">Nam</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input asp-for="Item.Gender" value="3" type="radio" id="Gender_3" name="Gender" class="custom-control-input">
+                            <label class="custom-control-label" for="Gender_3">Khác</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="Item.Description">Mô tả</label>
+                        <textarea asp-for="Item.Description" id="full-textarea" name="Description" class="form-control"></textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+
+        </form>
+    </div>
+</div>
+
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='~/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            $('#BirthdayShow').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+    </script>
+}
+

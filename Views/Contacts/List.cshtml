@@ -1,0 +1,87 @@
+﻿@model API.Areas.Admin.Models.Contacts.ContactsModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = "| " + ItemCoQuan.Title;
+    ViewData["Description"] = "Hỏi Đáp - Trả Lời";
+    ViewData["Keywords"] = "Hỏi Đáp - Trả Lời";
+    ViewData["Url"] = Domain + "/tra-loi-hoi-dap.html";
+    ViewData["Images"] = Domain + "/avatar_hoi_dap_tra_loi.jpg?v=" + DateTime.Now.ToString("yyyyMMddhh");
+    ViewData["Alias"] = "Hỏi Đáp - Trả Lời";
+    ViewData["Type"] = "article";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Localizer["Comunicate"] @ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">@Localizer["Nodata"]</p>
+        </div>
+
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+            <div class="col-md-12">
+                <div class="hoidap-item">
+                    <p><strong>@Model.ListItems[i].Title</strong></p>
+                    <p class="date">
+                        @Model.ListItems[i].PublishUpShow  - @Model.ListItems[i].Fullname
+                    </p>
+                    <p class="question">
+                        @Model.ListItems[i].Introtext
+                    </p>
+                    <button class="btn btn-success" data-toggle="collapse" data-target="#demo@(i)">@Localizer["Detail"] </button>
+                    <div id="demo@(i)" class="collapse" style="padding:20px 0; color:#555">
+                        <div>
+                            <p class="badge badge-warning" style="font-size:95%;padding:7px 10px">@Localizer["Answer"]:</p>
+                        </div>
+                        <div>
+                            @Html.Raw(@Model.ListItems[i].Description)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+<div class="row">
+    <div class="col-md-12 mb-3">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

@@ -1,0 +1,20 @@
+﻿@model API.Areas.Admin.Models.Menus.Menus;
+<li class="dropright">
+    <a class="leftmenu-dropdown-toggle" href="@Model.Link">
+        @(Model.Title)
+        <i class="fa fa-caret-right"></i>
+    </a>    
+    <ul class="leftmenu-dropdown-menu dropdown-menu-@Model.Id">
+        @for (int i = 0; i < Model.ListMenus.Count; i++)
+        {
+            if (Model.ListMenus[i].Link != null)
+            {
+                <li>
+                    <a href="@(Model.ListMenus[i].Link)">@(Model.ListMenus[i].Title)</a>
+                </li>
+            }
+
+        }
+    </ul>
+</li>
+

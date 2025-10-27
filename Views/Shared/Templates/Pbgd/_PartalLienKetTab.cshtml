@@ -1,0 +1,61 @@
+﻿@model List<API.Areas.Admin.Models.Banners.Banners>
+<div class="block-lien-ket-website">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab-lienkiet" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Sở - Ban - Ngành</button>
+            <button class="nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Huyện - Thành phố</button>            
+            <button class="nav-link" id="nav-khac-tab" data-toggle="tab" data-target="#nav-khac" type="button" role="tab" aria-controls="nav-khac" aria-selected="false">Các đơn vị khác</button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="row">
+                @if(Model!=null && Model.Count() > 0)
+                {
+                    for(int i=0; i < Model.Count; i++)
+                    {
+                        if (Model[i].CatId == 13)
+                        {
+                            <div class="col-12 col-md-4">
+                                <div class="block-lien-ket-content block-lien-ket-content-@Model[i].CatId">@Html.Raw(Model[i].Description)</div>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <div class="row">
+                @if (Model != null && Model.Count() > 0)
+                {
+                    for (int i = 0; i < Model.Count; i++)
+                    {
+                        if (Model[i].CatId == 14)
+                        {
+                                <div class="col-12 col-md-4">
+                                    <div class="block-lien-ket-content block-lien-ket-content-@Model[i].CatId">@Html.Raw(Model[i].Description)</div>
+                                </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+      
+        <div class="tab-pane fade" id="nav-khac" role="tabpanel" aria-labelledby="nav-khac-tab">
+            <div class="row">
+                @if (Model != null && Model.Count() > 0)
+                {
+                    for (int i = 0; i < Model.Count; i++)
+                    {
+                        if (Model[i].CatId == 16)
+                        {
+                                <div class="col-12 col-md-4">
+                                    <div class="block-lien-ket-content block-lien-ket-content-@Model[i].CatId">@Html.Raw(Model[i].Description)</div>
+                                </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>

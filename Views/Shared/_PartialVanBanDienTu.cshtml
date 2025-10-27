@@ -1,0 +1,35 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    Boolean flagShow = true;
+    string Link = "https://thongkelienthong.daklak.gov.vn/summary/index.iws";
+    if (Configuration["Security:SiteCode"] == "DNO")
+    {
+        Link = "https://thongkelienthong.daklak.gov.vn/summary/index.iws";
+    }
+    if (Model.CodeVanBan != null && Model.CodeVanBan != "")
+    {
+        Link = Link + "?unit="+Model.CodeVanBan;
+    }
+
+    List<string> arrCode = Configuration["Security:SiteCode"].ToString().Split('-').ToList();
+    if (arrCode.Count() > 1)
+    {
+        if (arrCode[1] == "EDU" || arrCode[1] == "TINHDOAN") { flagShow = false; }
+    }
+
+}
+
+@if (flagShow==true && Model.CodeVanBan!=null && Model.CodeVanBan != "")
+{
+    <div class="portlet-borderless-container" style="">
+        <div class="portlet-body">
+            <div class="trangchinh_thongkevanban">
+                <div class="trangchinh_iframe">
+                    <iframe src="@Link" title="Thống kê Văn bản điện tử"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+}

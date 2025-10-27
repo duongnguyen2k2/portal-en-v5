@@ -1,0 +1,93 @@
+﻿@model API.Areas.Admin.Models.HopTrucTuyen.HopTrucTuyenModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutHopTrucTuyen";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    ViewData["Title"] = "Họp trực tuyến";
+    ViewData["Description"] = "Họp trực tuyến";
+    ViewData["Keywords"] = "Họp trực tuyến";
+    ViewData["Url"] = Domain + "/hop-truc-tuyen.html";
+    ViewData["Images"] = "";
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Họp trực tuyến</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">Chưa có bài đăng</p>
+        </div>
+
+    }
+    else
+    {
+        for (int i = 0; i < Model.ListItems.Count(); i++)
+        {
+
+            <div class="col mb-4">
+                <div class="card h-100 card-hop-truc-tuyen">
+
+                    @if (Model.ListItems[i].Images == null || @Model.ListItems[i].Images == "" || Model.ListItems[i].Images.ToLower() == "/cms/content/tintuc/")
+                    {
+                        <img src="/images/no-hop-truc-tuyen.png" class="img-responsive">
+                    }
+                    else
+                    {
+                        <img class="img-responsive img-fluid " src="@Model.ListItems[i].Images" alt="@Model.ListItems[i].Title">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a target="_blank" href="@Model.ListItems[i].Link">@Model.ListItems[i].Title</a>
+                        </h5>
+                        <div class="course_text d-flex justify-content-between">
+                            <small class="course_coquan"><i class="fas fa-building"></i> @Model.ListItems[i].TenCoQuan</small>
+                            <small class="course_cat">
+                                <i class="fab fa-connectdevelop"></i>
+                                @if (Model.ListItems[i].CatId == 1)
+                                {
+                                    <span>Google Meet</span>
+                                }
+                                else if (Model.ListItems[i].CatId == 2)
+                                {
+                                    <span>Zoom</span>
+                                }
+                            </small>
+                        </div>
+                        <a class="btn-hoptructuyen" target="_blank" href="@Model.ListItems[i].Link">
+                            <i class="fas fa-video"></i> Vào họp
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

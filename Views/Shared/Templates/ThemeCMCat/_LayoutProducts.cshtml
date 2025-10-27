@@ -1,0 +1,322 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject IViewLocalizer Localizer
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    string DomainFolderUpload = Context.Session.GetString("DomainFolderUpload").ToString();
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string ActionName = this.ViewContext.RouteData.Values["action"].ToString();
+    List<SelectListItem> listLink = API.Areas.Admin.Models.Banners.BannersService.GetListItemsByCat(2, IdCoQuan);
+    List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanners = API.Areas.Admin.Models.Banners.BannersService.GetList(IdCoQuan, ParentId, DomainFolderUpload);
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan,Context);
+    List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+
+    string linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainFolderUpload") + ".css";
+    if (Context.Session.GetString("DomainCssName") != null && Context.Session.GetString("DomainCssName") != "")
+    {
+        linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainCssName") + "?v=" + DateTime.Now.ToString("yyyyMMddhh");
+    }
+    
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @await Html.PartialAsync("_PartialSEO", ItemConfig)
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="~/fonts/fonts.css" />
+    <link rel="stylesheet" href="@linkCss" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        window.Site = {
+            CODE: "@ItemCoQuan.Code",           
+        }
+    </script>
+    @Html.Raw(ItemCoQuan.DataHeader)
+</head>
+<body id="main-one">
+
+    <div class="page-home">
+        <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialHeaderTop" />
+        <section id="section-slideshow">
+            <div class="container header">
+                @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialSlideshows", new API.Areas.Admin.Models.Banners.BannersModel() { ListItems = ListBanners })
+            </div>
+        </section>
+        <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialMenu" />
+        <div class="container bg-white">
+            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialKhauHieu", ItemConfig)
+            <div class="row">
+                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 ">
+                    @RenderBody()
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-md-0">
+                    <div class="card border-0" id="featured-document">
+                        <div class="card-header">
+                            <h3>
+                                <a asp-controller="Articles" asp-action="Notification"><i class="fas fa-folder-open"></i> Thông báo</a>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="marquee_document_right" style="height:338px; overflow:hidden">
+                                <ul>
+                                    @if (NotificationList != null && NotificationList.Count() > 0)
+                                    {
+
+
+                                        @for (int i = 0; i < NotificationList.Count(); i++)
+                                        {
+                                            <li class="mb-2">
+                                                <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
+                                                    @NotificationList[i].Title
+                                                    <span>(@NotificationList[i].CreatedDate.ToString("dd/MM/yyy, HH:mm"))</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!---------Banner Right Bottom ---------->
+                    @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 5)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    }
+
+                    <div class="card border-0 card-style-one">
+                        <div class="card-header rounded-0">
+                            <a asp-controller="Videos" asp-action="Index">Videos</a>
+                        </div>
+                        <div class="card-body pl-0 pt-1 pb-0 pr-0 mb-2">
+                            <div id="myCarouselVideo" class="carousel slide" data-ride="carousel">
+                                <!-- Wrapper for slides -->
+
+                                <div class="carousel-inner" role="listbox">
+                                    @if (ListItemVideos != null && ListItemVideos.Count() > 0)
+                                    {
+                                        <div class="carousel-item active">
+                                            <video width="100%" controls class="video-item">
+                                                <source src="@ListItemVideos[0].Link" type="video/mp4">
+                                            </video>
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="item  active">
+                                            <video style="width:100%" controls class="video-item">
+                                                <source src="/CMS/Content/videos/chi-can-nu-cuoi.mp4" type="video/mp4">
+                                            </video>
+                                        </div>
+                                    }
+
+
+                                </div>
+                            </div>
+                            <ul class="ml-2 mb-0 pl-1 pb-2">
+                                @if (ListItemVideos.Count > 1)
+                                {
+                                    for (int i = 1; i < ListItemVideos.Count(); i++)
+                                    {
+                                        <li class="pt-1"><a asp-controller="Videos" asp-action="Detail" asp-route-id="@ListItemVideos[i].Id">@ListItemVideos[i].Title</a></li>
+                                    }
+                                }
+
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <!---------Banner Right Bottom ---------->
+                    @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 6)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    }
+
+                    @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 7)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    }
+
+                    <div class="card border-0 card-style-one mb-2" id="link-website">
+                        <div class="card-header rounded-0">
+                            @Localizer["LinkWebsite"]
+                        </div>
+                        <div class="card-body pl-0 pr-0">
+                            <select name="RedirectLink" id="RedirectLink" class="form-control rounded-0" asp-items="listLink"></select>
+                        </div>
+                    </div>
+
+                    <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialSiteVisit" />
+
+                    @await Html.PartialAsync("_PartialThongTinCanThiet", ItemCoQuan)
+                    <!---------Banner Right Bottom ---------->
+                    @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 8)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    }
+                    @await Html.PartialAsync("_PartialSurvey", ItemConfig)
+                    @await Html.PartialAsync("_PartialThongKeHoSo", ItemCoQuan)
+                    @await Html.PartialAsync("_PartialVanBanDienTu", ItemCoQuan)
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialFooter", ItemConfig)
+    <script src="~/lib/js/bootstrap.min.js"></script>
+    
+    <script src="~/lib/js/popper.min.js"></script>
+    <script src="~/lib/stellarnav/js/stellarnav.min.js"></script>
+    <script src="~/lib/js/jquery.easing.js"></script>
+    <script src="~/lib/js/jquery.marquee.min.js"></script>
+    <script src="~/lib/owl-carousel/js/owl.carousel.min.js"></script>
+
+    <script src="~/js/site.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+    <script src="~/js/read-html.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+
+
+    <script src="https://sp.zalo.me/plugins/sdk.js"></script>
+
+
+    <script type="text/javascript">
+        jQuery('.stellarnav').stellarNav({
+
+            breakpoint: 991,
+            position: 'right',
+            phoneBtn:  '@ItemCoQuan.Telephone',
+            closeLabel: 'Đóng'
+        });
+    </script>
+    <script type="text/javascript">
+
+        $('#RedirectLink').on('change', function () {
+            var url = $(this).val();
+            console.log(url);
+            if (url) {
+                window.open(url, '_blank');
+
+            }
+            return false;
+        });
+    </script>
+    <script>
+
+        $('.marquee').marquee({
+            speed: 100,
+            gap: 500,
+            direction: 'left',
+            duplicated: true,
+            pauseOnHover: true
+        });
+        $('#marquee_document_right').marquee({
+            duration: 15000,
+            gap: 13,
+            delayBeforeStart: 0,
+            direction: 'up',
+            duplicated: true,
+            startVisible: true
+        });
+
+        $(document).ready(function () {
+            $('#incfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) + 2;
+                if (curSize <= 20)
+                    $('body').css('font-size', curSize);
+            });
+            $('#decfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) - 2;
+                if (curSize >= 12)
+                    $('body').css('font-size', curSize);
+            });
+        });
+
+        function SubmitSearch() {
+            $('form#search-top').submit();
+        }
+
+        jQuery(document).ready(function () {
+            jQuery('#scrollToTop').fadeOut();
+            jQuery(window).scroll(function () {
+                if (jQuery(window).scrollTop() != 0) {
+                    jQuery('#scrollToTop').fadeIn();
+                } else {
+                    jQuery('#scrollToTop').fadeOut();
+                }
+            });
+            jQuery('#scrollToTop').click(function () {
+                jQuery('html, body').animate({ scrollTop: 0 }, 500);
+            });
+        });
+
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,164 @@
+﻿@model API.Areas.Admin.Models.CategoriesAblums.CategoriesAblumsModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Ablum Ảnh";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Ablum Ảnh";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string strClass = "";
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" enctype="multipart/form-data" asp-action="SaveItem" method="post">
+            <div id="imageList"></div>
+            <div class="row">
+                <div class="col-8">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                        <input id="txtTen" type="text" class="form-control Changetitle namepr" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="form-group">
+                        <label asp-for="Item.TitleEn">Tên En<sup class="text-danger"> (*)</sup></label>
+                        <input id="txtTen" type="text" class="form-control Changetitle namepr" asp-for="Item.TitleEn" name="TitleEn">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label asp-for="Item.Alias">Alias <sup class="text-danger"> (*)</sup></label>
+                        <input id="txtAlias" class="form-control slug" type="text" asp-for="Item.Alias" name="Alias">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        <label asp-for="Item.Description">Mô tả</label>
+                        <input id="txtDes" asp-for="Item.Description" name="Description" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        <label asp-for="Item.DescriptionEn">Mô tả En</label>
+                        <input id="txtDes" asp-for="Item.DescriptionEn" name="DescriptionEn" class="form-control" />
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="control-label">&nbsp;</label>
+                    <div class="form-group">
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Featured" name="Featured" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Featured">Nổi bật</label>
+                        </div>
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group images-main">
+                        <label>Hình đại diện</label>
+                        <img src="@Model.Item.Images" class="Item_Images_Article_Preview" style="max-height:200px;">
+                        <input type="hidden" name="Images" id="Item_Images_Article" class="form-control" asp-for="Item.Images">
+                        <a onclick="ShowManagerFile('Item_Images_Article')" class="btn btn-primary">Chọn hình (510px*330px)</a>
+                        <a onclick="ViewImageArtile('Item_Images_Article')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                    </div>
+                </div>
+
+                
+            </div>
+
+
+            <div class="row" style="margin-bottom: 15px;">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Hủy</a>
+                    <input id="txtId" type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                    <input type="hidden" class="form-control" asp-for="Item.IdCoQuan" name="IdCoQuan">
+                    <input id="txtIds" type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                    <input id="ParentId" type="hidden" class="form-control" asp-for="Item.ParentId" name="ParentId">
+                </div>
+            </div>
+
+
+            <table id="tbAlbums" role="presentation" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th width="150px">File</th>
+                        <th width="150px">Hình</th>
+                        <th>Tiêu đề</th>
+                        <th width="150px">STT</th>
+                        <th width="100px">
+                            <span class="btn btn-primary" onclick="AddItemAlbums()">Thêm</span>    
+                            <span class="btn btn-primary" onclick="AddItemsAlbums()">Thêm nhiều ảnh</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="files">
+                    @if (Model.ListItemsAlbums != null && Model.ListItemsAlbums.Count() > 0)
+                    {
+                        <input type="hidden" id="maxfile" value="@(Model.ListItemsAlbums.Count() - 1)">
+                        for (int j = 0; j < Model.ListItemsAlbums.Count(); j++)
+                        {
+                            strClass = "FileName_"+j+" _Preview";
+                            <tr>
+                                <td>
+                                    <a onclick="ShowManagerFile('FileName_@j',2)" type="button" class="btn btn-primary">Chọn File</a>
+                                </td>
+                                <td>
+                                    <img height="64px" width="64px" class="@strClass" id="strClass" src="@Model.ListItemsAlbums[j].Images"> 
+                                    <input type="hidden" id="FileName_@j" name="ListItemsAlbums[@j].Images"  asp-for="ListItemsAlbums[j].Images"></td>
+                                <td>
+                                    <input onchange="UpdateDataItemAlbums(@j,1,event)" name="ListItemsAlbums[@j].Title" class="form-control" placeholder="Tiêu Đề" asp-for="ListItemsAlbums[j].Title">
+                                </td>
+                                <td>
+                                    <input type="number" onchange="UpdateDataItemAlbums(@j,2,event)" name="ListItemsAlbums[@j].Ordering" class="form-control" asp-for="ListItemsAlbums[@j].Ordering">
+                                </td>
+                                <td><span class="btn btn-danger" onclick="DeleteItemAlbums(@j)">Xóa</span> <input type="hidden" name="ListItemsAlbums[@j].Status" asp-for="ListItemsAlbums[@j].Status"> 
+                                
+                                <input type="hidden" name="ListItemsAlbums[@j].Id" asp-for="ListItemsAlbums[@j].Id">
+                                <input type="hidden"  name="ListItemsAlbums[@j].Deleted" asp-for="ListItemsAlbums[@j].Deleted"></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <input type="hidden" id="maxfile" value="-1">
+                    }
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+
+
+
+
+<partial name="_PartialTinymce" />
+
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js@("?v="+version)' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js@("?v="+version)' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/ablums.js@("?v="+version)' referrerpolicy="origin"></script>
+
+}

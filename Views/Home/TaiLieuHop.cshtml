@@ -1,0 +1,97 @@
+﻿@model API.Areas.Admin.Models.TaiLieuHop.TaiLieuHopModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inject IViewLocalizer Localizer
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    string Culture = API.Models.MyHelper.StringHelper.ConverLan(CultureInfo.CurrentCulture.Name);
+    string version = DateTime.Now.ToString("yyyyMMddHH");
+    ViewData["Title"] = "Tài liệu họp";
+}
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;" id="block-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" fill="currentColor" id="bi-cloud-download-fill" class="bi bi-cloud-download-fill" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.5a.5.5 0 0 1 1 0V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0m-.354 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V11h-1v3.293l-2.146-2.147a.5.5 0 0 0-.708.708z" />
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" fill="currentColor" id="bi-download" class="bi bi-download" viewBox="0 0 16 16">
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+    </svg>
+</svg>
+<div class="row">
+    <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div id="tai-lieu-hop">
+<div class="row" >
+   
+    <div class="col-md-12 full-text article-content tai-lieu-hop">
+        <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+        <div class="introtext">@Html.Raw(Model.Item.Introtext)</div>
+        <div class="link-file">
+            <a asp-controller="Home" asp-action="DownloadTLHLink"
+            asp-route-Id="@Model.Item.Id" 
+            asp-route-MatKhau="@Model.Item.MatKhau"
+            asp-route-Code="@Model.Item.Code" asp-route-Link="@Model.Item.Link" target="_blank">
+                <svg class="bi"><use xlink:href="#bi-cloud-download-fill"></use></svg> Tải File chính
+            </a>
+        </div>
+        <div class="fulltext">@Html.Raw(Model.Item.FullText)</div>
+
+    </div>
+    @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+    {
+        <div class="listtailieu">
+            <div class="col-md-12">
+                @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+                {
+                    <ul>
+                        @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                        {
+                            <li class="">
+                                <a target="_blank" asp-controller="Home" asp-action="DownloadTLHFilePath"
+                                   asp-route-id="@Model.Item.Id"
+                                   asp-route-MatKhau="@Model.Item.MatKhau"
+                                   asp-route-Code="@Model.Item.Code" asp-route-Link="@Model.Item.ListFile[j].FilePath">
+                                    
+                                    @if (Model.Item.ListFile[j].Title == null || Model.Item.ListFile[j].Title == "")
+                                    {
+                                        <span>@j</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Model.Item.ListFile[j].Title</span>
+                                        <svg class="bi"><use xlink:href="#bi-download"></use></svg>
+                                    }
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    }
+</div>
+</div>
+<link rel="stylesheet" href="~/css/article-detail.css@("?v=" + version)" />

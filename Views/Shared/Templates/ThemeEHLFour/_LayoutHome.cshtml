@@ -1,0 +1,398 @@
+﻿@using API.Areas.Admin.Models.Survey
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    string DomainFolderUpload = Context.Session.GetString("DomainFolderUpload").ToString();
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string ActionName = this.ViewContext.RouteData.Values["action"].ToString();
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    Survey DetailSurvey = SurveyService.GetSurveyHome(Configuration["Security:SecretId"] + "HomeController", ItemCoQuan.Id);
+    var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan,Context);
+
+    List<SelectListItem> listLink = new List<SelectListItem>();//API.Areas.Admin.Models.Banners.BannersService.GetListItemsByCat(2, IdCoQuan);
+    listLink.Add(new SelectListItem() { Value = "", Text = @Localizer["LinkWebSelect"].Value.ToString() });
+
+    // ************* ListBanners **************
+    string KeySessionBanners = "Banners_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListBanners = Context.Session.GetString(KeySessionBanners);
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanners = new List<API.Areas.Admin.Models.Banners.Banners>();
+
+    
+
+    if(StrListBanners!=null && StrListBanners != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListBanners = JsonConvert.DeserializeObject<List<API.Areas.Admin.Models.Banners.Banners>>(StrListBanners);
+    }
+    else
+    {
+        ListBanners = API.Areas.Admin.Models.Banners.BannersService.GetList(IdCoQuan, ParentId, DomainFolderUpload, CultureInfo.CurrentCulture.Name.ToLower());
+
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySessionBanners,JsonConvert.SerializeObject(ListBanners));
+        }
+        else
+        {
+            Context.Session.Remove(KeySessionBanners);
+        }
+
+    }
+
+    // ************* End ListBanners **************
+
+    List<SelectListItem> ListWebXa = new List<SelectListItem>();
+    ListWebXa.Add(new SelectListItem() { Value = "", Text = @Localizer["ListWebXa"].Value.ToString() });
+
+    if (ListBanners != null && ListBanners.Count() > 0) {
+        for(int bn = 0;bn<ListBanners.Count();bn++)
+        {
+            if (ListBanners[bn].CatId == 11) {
+                ListWebXa.Add(new SelectListItem() { Value = ListBanners[bn].Link, Text = ListBanners[bn].Title });
+            }
+
+            if (ListBanners[bn].CatId == 2)
+            {
+                listLink.Add(new SelectListItem() { Value = ListBanners[bn].Link, Text = ListBanners[bn].Title });
+            }
+        }
+    }
+   
+
+    // ************* Menu Dọc **************
+    string KeySessionMenuDoc = "MenuDoc_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+    string StrListMenuDoc = Context.Session.GetString(KeySessionMenuDoc);
+    List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = new List<API.Areas.Admin.Models.Menus.Menus>();
+
+    if(StrListMenuDoc!=null && StrListMenuDoc != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenuDoc = JsonConvert.DeserializeObject<List<API.Areas.Admin.Models.Menus.Menus>>(StrListMenuDoc);
+    }
+    else
+    {
+        ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId, CultureInfo.CurrentCulture.Name.ToLower());
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySessionMenuDoc,JsonConvert.SerializeObject(ListMenuDoc));
+        }
+        else
+        {
+            Context.Session.Remove(KeySessionMenuDoc);
+        }
+
+    }
+    // ************* End Menu Dọc **************
+
+    string linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainFolderUpload") + ".css";
+
+    if (Context.Session.GetString("DomainCssName") != null && Context.Session.GetString("DomainCssName") != "")
+    {
+        linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainCssName")+"?v="+DateTime.Now.ToString("yyyyMMddhh");
+    }        
+    
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @await Html.PartialAsync("_PartialSEO", ItemConfig)
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/fonts/fonts.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="@linkCss" />   
+    <link rel="stylesheet" href="~/css/@(ItemCoQuan.FolderUpload+".css?v="+DateTime.Now.ToString("yyyyMMddhh"))" />
+    <link rel="stylesheet" href="~/lib/mCustomScrollbar/jquery.mCustomScrollbar.min.css" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        window.Site = {
+            CODE: "@ItemCoQuan.Code",           
+        }
+    </script>
+    @Html.Raw(ItemCoQuan.DataHeader)
+</head>
+
+<body id="main-one" class="theme-ehl">
+
+    <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialHeaderTop" />
+
+    <section id="section-slideshow">
+        @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialSlideshows", new API.Areas.Admin.Models.Banners.BannersModel() { ListItems = ListBanners })
+    </section>
+    
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenu", new API.Areas.Admin.Models.Menus.Menus { ListMenus = ListMenuDoc})
+
+    <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialCatMobile" />
+
+    <div class="container-wapper">
+
+        <div class="container bg-white">
+
+            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialKhauHieu", ItemConfig)
+
+            <div class="row">
+                <div class="col-left">
+                     @if (ListMenuDoc != null && ListMenuDoc.Count() > 0)
+                    {
+                        <div class="lmenu">
+                       
+                                <ul class="leftmenu-list-group">
+                                    @for (int mn = 0; mn < ListMenuDoc.Count(); mn++)
+                                    {
+                                        @if (ListMenuDoc[mn].ChildCount > 0)
+                                        {
+                                            @await Html.PartialAsync("Templates/" + Context.Session.GetString("TemplateName") + "/_PartialMenuChildDropdownBT", ListMenuDoc[mn]);
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                @if (!string.IsNullOrEmpty(ListMenuDoc[mn].Icon))
+                                                {
+                                                    <i class="@ListMenuDoc[mn].Icon"></i>
+                                                }
+                                                <a target="@ListMenuDoc[mn].Target" href="@ListMenuDoc[mn].Link">@ListMenuDoc[mn].Title</a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+
+                        </div>
+                    }
+                    @if(ListWebXa != null && ListWebXa.Count>1){
+                        <div id="link-website-xa">
+                            <div class="link-website-xa-body">
+                                <select name="RedirectLinkXa" id="RedirectLinkXa" class="form-control" asp-items="ListWebXa"></select>
+                            </div>
+                        </div>
+                    }
+                    <!---------Banner Left Top ---------->
+                    @* @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 5)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" alt="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    } *@
+                    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialNotification")
+
+                    @await Html.PartialAsync("_PartialThongKeHoSo", ItemCoQuan)
+
+                   
+                    @await Html.PartialAsync("_PartialSurvey", ItemConfig)
+                    
+
+                    @if(ItemCoQuan.MetadataCV.IsEnabledInforKnow == true)
+                    {
+                        @await Html.PartialAsync("_PartialThongTinCanThiet", ItemCoQuan)
+                    }
+
+                    <!---------Banner Right Bottom ---------->
+                    @if (ListBanners != null && ListBanners.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListBanners.Count(); i++)
+                        {
+                            if (ListBanners[i].CatId == 6)
+                            {
+                                <div class="banner-item">
+                                    <a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+                                        <img src="@ListBanners[i].Image" class="d-block w-100" alt="@ListBanners[i].Title" />
+                                    </a>
+                                </div>
+                            }
+
+                        }
+                    }
+
+
+
+                    @await Html.PartialAsync("_PartialVanBanDienTu", ItemCoQuan)
+
+                    <div class="card border-0 card-style-one mb-2" id="link-website">
+                        <div class="card-header rounded-0">
+                            @Localizer["LinkWebTitle"]
+                        </div>
+                        <div class="card-body pl-0 pr-0">
+                            <select name="RedirectLink" id="RedirectLink" class="form-control rounded-0" asp-items="listLink"></select>
+                        </div>
+                    </div>
+
+                    <partial name="_PartialSiteVisit" />
+
+                </div>
+                <main class="col-center">
+                    @RenderBody()
+                    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialChuyenMucKhac", new API.Areas.Admin.Models.Banners.BannersModel { ListItems = ListBanners })
+                </main>
+
+            </div>
+
+        </div>
+    </div>
+
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuFooter", ItemConfig)
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialFooter", ItemConfig)
+    @Html.Raw(ItemCoQuan.DataFooter)
+    <script src="~/lib/js/jquery.marquee.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+    <script src="~/lib/js/jquery.easing.js"></script>
+    <script src="~/lib/js/popper.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+    <script src="~/lib/js/bootstrap.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>    
+    <script src="~/lib/stellarnav/js/stellarnav.min.js"></script>    
+
+    <script src="~/lib/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="~/lib/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="~/js/site.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+
+
+    <script src="https://sp.zalo.me/plugins/sdk.js"></script>
+
+
+    <script type="text/javascript">
+        jQuery('.stellarnav').stellarNav({
+
+            breakpoint: 991,
+            position: 'right',
+            phoneBtn:  '@ItemCoQuan.Telephone',
+            closeLabel: 'Đóng'
+        });
+        $('.scrollWrap').mCustomScrollbar({
+            theme: 'dark-3'
+        });
+        $('#banner-lienket-anh-body').owlCarousel({
+                loop: true,
+                margin: 6,
+                autoplay: true,
+                nav: true,
+                responsive: {
+                    0: {
+                        items: 3
+                    },
+                    600: {
+                        items: 3
+                    },
+                    1000: {
+                        items: 5
+                    }
+                }
+            });
+    </script>
+    
+    <script>
+
+        $('#RedirectLink').on('change', function () {
+            var url = $(this).val();
+            console.log(url);
+            if (url) {
+                window.open(url, '_blank');
+            }
+            return false;
+        });
+        $('#RedirectLinkXa').on('change', function () {
+            var url = $(this).val();
+            console.log(url);
+            if (url) {
+                window.open(url, '_blank');
+            }
+            return false;
+        });
+
+        $('.marquee').marquee({
+            speed: 50,
+            gap: 500,
+            direction: 'left',
+            duplicated: true,
+            pauseOnHover: true
+        });
+        $('#marquee_document_right').marquee({
+            duration: 15000,
+            gap: 13,
+            delayBeforeStart: 0,
+            direction: 'up',
+            duplicated: true,
+            startVisible: true
+        });
+
+        $('#marquee_videos_top').marquee({
+            duration: 15000,
+            gap: 13,
+            delayBeforeStart: 0,
+            direction: 'up',
+            duplicated: true,
+            startVisible: true
+        });
+
+        $(document).ready(function () {
+            $('#incfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) + 2;
+                if (curSize <= 20)
+                    $('body').css('font-size', curSize);
+            });
+            $('#decfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) - 2;
+                if (curSize >= 12)
+                    $('body').css('font-size', curSize);
+            });
+        });
+
+        function SubmitSearch() {
+            $('form#search-top').submit();
+        }
+
+        jQuery(document).ready(function () {
+            jQuery('#scrollToTop').fadeOut();
+            jQuery(window).scroll(function () {
+                if (jQuery(window).scrollTop() != 0) {
+                    jQuery('#scrollToTop').fadeIn();
+                } else {
+                    jQuery('#scrollToTop').fadeOut();
+                }
+            });
+            jQuery('#scrollToTop').click(function () {
+                jQuery('html, body').animate({ scrollTop: 0 }, 500);
+            });
+        });
+
+
+
+
+    </script>
+   
+    @if (ItemCoQuan.MetadataCV.flagDisMarqueeHome == 0) { 
+            <script>
+                $('#marquee_document_right').marquee({
+                    duration: 15000,
+                    gap: 13,
+                    delayBeforeStart: 0,
+                    direction: 'up',
+                    duplicated: true,
+                    startVisible: true
+                });
+            </script>
+        }
+
+    @RenderSection("Scripts", required: false)
+
+
+</body>
+</html>

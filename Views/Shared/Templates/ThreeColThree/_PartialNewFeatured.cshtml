@@ -1,0 +1,138 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Microsoft.AspNetCore.Http;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+
+    int countBanner9 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 9)
+            {
+                countBanner9 = countBanner9 + 1;
+            }
+        }
+    }
+
+    string class_banner_9_ct = "banner-93-";
+    if (countBanner9 == 2)
+    {
+
+        class_banner_9_ct = "banner-92-";
+    }
+    if (countBanner9 == 4)
+    {
+        class_banner_9_ct = "banner-94-";
+    }
+    int bannerCount = 0;
+    string active = "active";
+}
+<section id="features-wrap">
+    <div class="card card-style-two border-0 features-header">
+        <h4 class="featured-news-home">
+            <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">@Localizer["FearuredNewHome"]</a>
+        </h4>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-7">
+            <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                    {
+                        @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                        {
+
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <div class="features-item">
+                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                        <img src="@ListArticlesHot[i].Images" class="d-block w-100" />
+                                    </a>
+                                    <div class="features-item-body">
+                                        <h1 class="title">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                @ListArticlesHot[i].Title
+                                                <small>(@ListArticlesHot[i].PublishUpShow)</small>
+                                            </a>
+                                        </h1>
+                                        <p class="overview">
+                                            @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-5">
+                    <ul class="list-group features-list scrollWrap">
+                        @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                        {
+                        <li class="features-list-item">
+                            <img src="@ListArticlesHot[0].Images" style="height:70px; width:115px;" />
+                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[0].Id" asp-route-alias="@ListArticlesHot[0].Alias" title="@ListArticlesHot[0].Title">
+                                @ListArticlesHot[0].Title
+                            </a>
+                            <span class="clearfix"></span>
+                        </li>
+
+                        @if (ListArticlesHot.Count() > 1) {                                                            
+                                @for (int i = 1; i < ListArticlesHot.Count(); i++)
+                                {
+                                    <li class="features-list-item">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                            @ListArticlesHot[i].Title
+                                            <small>(@ListArticlesHot[i].PublishUpShow)</small>
+                                        </a>
+                                    </li>
+
+                                }
+                            }
+                        }
+
+                    </ul>
+                </div>
+    </div>
+</section>
+
+
+@if (countBanner9 > 0)
+{
+    <section id="banner-bottom-featured">
+        <div class="carousel slide banner-bottom-featured-body"  data-ride="carousel">
+             
+            @if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+            {
+                <div class="carousel-inner">
+                    @for (int i = 0; i < Model.ListBanners.Count(); i++)
+                    {
+                        if (Model.ListBanners[i].CatId == 9)
+                        {
+                            bannerCount = bannerCount + 1;
+                            
+                            if (bannerCount == 0)
+                            {
+                                active = "active";
+                            }
+                            else {
+                                active = "";
+                            }
+
+                            <div class="carousel-item banner-bottom-featured-item @class_banner_9_ct@(bannerCount) active">
+                                <a href="@Model.ListBanners[i].Link"> <img src="@Model.ListBanners[i].Image" alt="@Model.ListBanners[i].Title" class="d-block w-100"></a>
+                            </div>
+
+                        }
+                    }
+                </div>
+            }
+
+        </div>
+    </section>
+}

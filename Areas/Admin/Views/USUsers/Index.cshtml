@@ -1,0 +1,253 @@
+﻿@model API.Areas.Admin.Models.USUsers.USUsersModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý Người dùng";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+
+     var Login = Context.Session.GetString("Login");
+    API.Areas.Admin.Models.USUsers.USUsersLogin MyInfo = JsonConvert.DeserializeObject<API.Areas.Admin.Models.USUsers.USUsersLogin>(Login);
+
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-users"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get" id="MySearchForm">
+            <div class="row">
+                <div class="col-lg-3">
+                    <input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto">
+                            <div class="form-group">
+                                <select asp-for="SearchData.IdCoQuan" name="IdCoQuan" class="form-control" asp-items="Model.ListDMCoQuan"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-group">
+                                <select asp-for="SearchData.IdGroup" name="IdGroup" class="form-control" asp-items="Model.ListItemsGroups"></select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-auto">
+                            <div class="form-group"><button type="submit" class="btn btn-primary">Tìm Kiếm</button>  </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3">                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Tìm kiếm"><i class="fas fa-search"></i></button>
+                        <button data-toggle="modal" data-target="#LoaddingModal" data-whatever="Đang tải dữ liệu. Xin vui lòng đợi." id="ExportExcel" type="button" class="btn btn-info"><i class="far fa-file-excel"></i></button>
+                        @if (IdGroup == 1)
+                        {
+                            <a href="/Admin/ImportExcel/ImportUsers" data-toggle="tooltip" data-placement="top" title="Đỗ dữ liệu Excel" class="btn btn-info"><i class="fas fa-file-import"></i></a>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover ">
+                        <thead>
+                            <tr>
+                                <th width="50px" class="text-center">STT</th>
+                                <th width="90px">Avatar</th>
+                                <th>Tài khoản</th>
+                                <th width="200px">Tên</th>
+                                <th width="50px"></th>
+                                <th width="200px">Cơ Quan</th>
+                                <th width="100px">Trạng Thái</th>
+                                <th width="80px">Đảng Viên</th>
+                                <th>Quyền Hạn</th>
+                                <th>Dân Tộc</th>
+                                <th>Tôn Giáo</th>
+                                <th>Trình độ</th>
+                                <th width="100px" class="text-center text-info" data-toggle="tooltip" data-placement="top" title="Mật khẩu mặc định là: Abc@123">Mật Khẩu</th>
+                                <th width="170px" class="btn-contain">
+                                    <a asp-controller="@ControllerName" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                            {
+                                <tr>
+                                    <td colspan="14" class="text-center">
+                                        <label>Không có dữ liệu!</label>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Model.ListItems.Count(); i++)
+                                {
+                                    @if (Model.ListItems[i].Id > 1)
+                                    {
+                                        <tr>
+                                            <td width="50px" class="text-center">@Model.ListItems[i].Ordering</td>
+                                            <td>
+                                                @if(Model.ListItems[i].Avatar != null && Model.ListItems[i].Avatar!="")
+                                                {
+                                                    <img src="@Model.ListItems[i].Avatar" style="width: 70px"/>
+                                                }
+                                                else { 
+                                                    <img src="@("/images/no-avatar_"+Model.ListItems[i].Gender+".png")" style="width: 70px" />
+                                                }
+                                            </td>
+                                            <td>@Model.ListItems[i].UserName
+                                                @if (Model.ListItems[i].IdPhongBan > 0)
+                                                {
+                                                    <br /> <span>@Model.ListItems[i].TitlePhongBan</span>
+                                                }
+                                            </td>
+                                            <td>@Model.ListItems[i].FullName</td>
+                                            <td class="text-center">
+                                                @if (Model.ListItems[i].Gender == 1)
+                                                {
+                                                    <i class="fas fa-female text-danger"></i>
+                                                }
+                                                else if (Model.ListItems[i].Gender == 2)
+                                                {
+                                                    <i class="fas fa-mars text-info"></i>
+                                                }
+                                            </td>
+                                            <td>@Model.ListItems[i].TenCoQuan</td>
+                                            <td class="text-center">
+                                                @if (@Model.ListItems[i].Status == 1)
+                                                {
+                                                    <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',0)" class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                                }
+                                                else
+                                                {
+                                                    <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',1)" class="fas fa-lock text-danger" aria-hidden="false"></a>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (@Model.ListItems[i].DangVien==1)
+                                                {
+                                                    <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',0,'DangVien')"  class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                                }
+                                                else
+                                                {
+                                                    <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',1,'DangVien')" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+                                                }
+                                            </td>
+                                            <td>@Model.ListItems[i].GroupsTitle</td>
+                                            <td>@Model.ListItems[i].TenDanToc</td>
+                                            <td>@Model.ListItems[i].TenTonGiao</td>
+                                            <td>@Model.ListItems[i].TenTrinhDo</td>
+                                            <td>
+                                                <ul class="list-inline action">
+                                                    <li class="list-inline-item"><a data-toggle="modal" data-target="#RessetPasswordModal" data-whatever="@Model.ListItems[i].UserName" data-ids="@Model.ListItems[i].Ids"><i class="fas fa-unlock-alt"></i> Phục hồi</a></li>
+                                                </ul>
+                                            </td>
+                                            <td>
+                                                <ul class="list-inline action">
+                                                    <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+                                                    @if (MyInfo.MasterId == 1)
+                                                    {
+                                                        <li class="list-inline-item"><a href="/Admin/Account/LoginMaster?Username=@Model.ListItems[i].UserName"><i class="fas fa-sign-in-alt"></i>Login</a></li>
+                                                    }
+                                                
+
+                                                    @if (IdUser != Model.ListItems[i].Id)
+                                                    {
+                                                        <li class="list-inline-item">
+                                                            <a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].UserName" data-ids="@Model.ListItems[i].Ids">
+                                                                <i class="fa fa-trash"></i> Xóa
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="RessetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="reset-title">Bạn có chắc chắn thiết lập lại mật khẩu ?</p>
+                <button class="btn btn-warning" data-ids="" id="ResetPasswordItemTrue">Cập nhật mật khẩu</button>
+                <button class="btn btn-danger" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+    jQuery('#RessetPasswordModal').on('show.bs.modal', function (event) {
+        var button = jQuery(event.relatedTarget); // Button that triggered the modal
+        var recipient = button.data('whatever'); // Extract info from data-* attributes
+        var ids = button.data('ids');
+        var modal = jQuery(this);
+        jQuery("#ResetPasswordItemTrue").attr("data-ids", ids);
+        modal.find('#reset-title').html('Bạn có chắc chắn thiết lập lại mật khẩu <strong>' + recipient + '</strong>?')
+    });
+
+    jQuery('#RessetPasswordModal').on('hide.bs.modal', function (event) {
+        console.log("hide.bs.modal");
+        $('#reset-title').html('Bạn có chắc chắn thiết lập lại mật khẩu ?')
+    });
+
+
+
+$("#ResetPasswordItemTrue").click(function () {
+    //var url = "/Admin/@ControllerName/";
+    var form = $('#AjaxDeleteForm');
+    var token = jQuery('input[name="__RequestVerificationToken"]', form).val();
+    var ids = jQuery("#ResetPasswordItemTrue").attr("data-ids");
+    var url = "/Admin/USUsers/RessetPassword?Id="+ids;
+    var headers = {};
+    headers["RequestVerificationToken"] = token;
+    return $.ajax({
+        type: "POST",
+        url: url,
+        headers: headers,
+        data: JSON.stringify({ "Ids": ids }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (data) {
+            $("#reset-title").html(data.Msg);
+            console.log(data);
+            //window.location.reload();
+        },
+        error: function () {
+            $("#reset-title").html(data.Msg);
+        }
+    });
+});
+    </script>
+}

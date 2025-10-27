@@ -1,0 +1,168 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    string DomainFolderUpload = Context.Session.GetString("DomainFolderUpload").ToString();
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string ActionName = this.ViewContext.RouteData.Values["action"].ToString();
+    List<SelectListItem> listLink = API.Areas.Admin.Models.Banners.BannersService.GetListItemsByCat(2, IdCoQuan);
+    List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanners = API.Areas.Admin.Models.Banners.BannersService.GetList(IdCoQuan, ParentId, DomainFolderUpload);
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan,Context);
+    List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+    string linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainFolderUpload") + ".css";
+    if (Context.Session.GetString("DomainCssName") != null && Context.Session.GetString("DomainCssName") != "")
+    {
+        linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainCssName");
+    }
+    
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    @await Html.PartialAsync("_PartialSEO", ItemConfig)
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="~/lib/owl-carousel/css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="@linkCss" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    
+    @Html.Raw(ItemCoQuan.DataHeader)
+</head>
+<body id="main-one">
+
+    <div class="page-home">
+        <div class="topbar">
+            <div class="container">
+                <div class="row" style="align-items: center;height: 58px;">
+                    <div class="col-lg-8 col-sm-12 d-sm-block">
+                        @* <span class="current-date">@API.Models.MyHelper.StringHelper.DayweekVN(DateTime.Now), ngày @DateTime.Now.ToString("dd") tháng @DateTime.Now.ToString("MM") năm @DateTime.Now.ToString("yyyy")</span> *@
+                        <span class="company-name">@ItemCoQuan.Title</span>
+                    </div>
+                    <div class="col-lg-4 col-sm-12 d-sm-block">
+                        <div class="nav-scroller ">
+                            <form class="form-inline float-right" id="search-top" action="/Home/Search">
+                                <input type="text" placeholder="Tìm Kiếm" aria-label="Tìm Kiếm" name="keyword">
+                                <button type="button" onclick="SubmitSearch()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                            <nav class="nav nav-underline float-right">
+                                <a class="nav-link p-0 m-0 mr-2" href="/home/lang?lang=vi"><span class="d-sm-block float-right ml-2" style="color: white; font-size: 14px; font-weight: 600">VI</span></a>
+                                <a class="nav-link p-0 m-0 mr-2" href="/home/lang?lang=en"><span class="d-sm-block float-right ml-2" style="color: white; font-size: 14px; font-weight: 600">EN</span></a>
+                                @*                                 <a class="nav-link p-0 m-0 mr-2" href="sitemap.html"><i class="fas fa-sitemap"></i> <span class="d-none d-sm-block float-right ml-2">Sơ đồ cổng</span></a>
+                                <a class="nav-link p-0 m-0 mr-2" href="/rss"><i class="fas fa-rss-square"></i> <span class="d-none d-sm-block float-right ml-2">Rss</span></a>
+                                <a class="nav-link p-0 m-0 mr-2" href="/api"><i class="fas fa-code"></i> <span class="d-none d-sm-block float-right ml-2">Api</span></a>
+                                <a class="nav-link text-dark p-0 m-0 ml-2" href="#"><i class="fas fa-paper-plane"></i> <span class="d-none d-sm-block float-right ml-2">Gửi cho bạn bè</span> </a> *@
+                            </nav>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialMenu" />
+        </div>
+        <div class="container bg-white" style="margin-top: 30px; min-height: 540px">
+            @* @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialKhauHieu", ItemConfig) *@
+            @RenderBody()
+        </div>
+
+    </div>
+
+
+
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialFooter", ItemConfig)
+    <script src="~/lib/js/bootstrap.min.js"></script>
+
+    <script src="~/lib/js/popper.min.js"></script>
+    <script src="~/lib/owl-carousel/js/owl.carousel.min.js"></script>
+    <script src="~/lib/stellarnav/js/stellarnav.min.js"></script>
+    <script src="~/lib/js/jquery.easing.js"></script>
+    <script src="~/lib/js/jquery.marquee.min.js"></script>
+    <script src="~/js/site.js"></script>
+
+    <script src="https://www.google.com/recaptcha/api.js?render=@Configuration["RecaptchaSettings:SiteKey"]"></script>
+    <script src="https://sp.zalo.me/plugins/sdk.js"></script>
+    <script>
+
+        grecaptcha.ready(function () {
+            grecaptcha.execute('@Configuration["RecaptchaSettings:SiteKey"]', { action: 'submit' }).then(function (token) {
+                $("#token_recaptcha").val(token);
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        jQuery('.stellarnav').stellarNav({
+            breakpoint: 991,
+            position: 'right',
+            phoneBtn:  '@ItemCoQuan.Telephone',
+            closeLabel: 'Đóng'
+        });
+    </script>
+
+    <script>
+
+        $('.marquee').marquee({
+            speed: 100,
+            gap: 500,
+            direction: 'left',
+            duplicated: true,
+            pauseOnHover: true
+        });
+        $('#marquee_document_right').marquee({
+            duration: 15000,
+            gap: 13,
+            delayBeforeStart: 0,
+            direction: 'up',
+            duplicated: true,
+            startVisible: true
+        });
+
+        $(document).ready(function () {
+            $('#incfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) + 2;
+                if (curSize <= 20)
+                    $('body').css('font-size', curSize);
+            });
+            $('#decfont').click(function () {
+                curSize = parseInt($('body').css('font-size')) - 2;
+                if (curSize >= 12)
+                    $('body').css('font-size', curSize);
+            });
+        });
+
+        function SubmitSearch() {
+            $('form#search-top').submit();
+        }
+
+        jQuery(document).ready(function () {
+            jQuery('#scrollToTop').fadeOut();
+            jQuery(window).scroll(function () {
+                if (jQuery(window).scrollTop() != 0) {
+                    jQuery('#scrollToTop').fadeIn();
+                } else {
+                    jQuery('#scrollToTop').fadeOut();
+                }
+            });
+            jQuery('#scrollToTop').click(function () {
+                jQuery('html, body').animate({ scrollTop: 0 }, 500);
+            });
+        });
+
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

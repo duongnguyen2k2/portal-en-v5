@@ -1,0 +1,47 @@
+﻿@using API.Areas.Admin.Models.Videos
+@using Microsoft.AspNetCore.Http;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<Videos> ListItems = VideosService.GetListFeatured(IdCoQuan);
+    string str = "active";
+    string str_2 = "active";
+}
+@if (ListItems != null && ListItems.Count > 0)
+{
+    <div class="card-videos">
+        <div class="card-videos-title">
+            <span>Videos</span> <a href="/videos.html">Xem tất cả</a>
+        </div>
+        <div class="card-video-body">
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    @for (int i = 0; i < ListItems.Count(); i++)
+                    {
+                        @if (i > 0) { str = ""; }
+                        <div class="carousel-item @str">
+                            @if (ListItems[i].IdType == 0)
+                            {
+                                <video width="100%" height="100%" controls>
+                                    <source src="@ListItems[i].LinkSv" type="video/mp4">
+                                </video>
+                            }
+                            else
+                            {
+                                <iframe width="100%" height="100%" src="@ListItems[i].Link" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            }
+                        </div>
+                    }
+
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+}

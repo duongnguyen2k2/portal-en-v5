@@ -1,0 +1,587 @@
+﻿
+@using Microsoft.AspNetCore.Http
+@{
+    ViewData["Title"] = "Quản lý Folder";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css@("?v="+version )" />
+<link rel="stylesheet" href="~/Templates/Default/css/manager_file.css@("?v="+version )">
+<style>
+    #content-wrapper {
+        background: #fff;
+    }
+</style>
+<div id="backend_manager_folder" class="app_vue" style="display:none">
+
+    <div id="manager_file_body">
+
+        <div id="manager-file-alert" style="display:none;">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <span class="tiny-alert-msg">Đang lấy dữ liệu. Xin vui lòng đợi</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <nav aria-label="breadcrumb " class="bg-white">
+                <ol class="breadcrumb bg-white py-2 pl-0 m-0">
+                    <li @@click="GetListItems(-2)" class="breadcrumb-item list-unstyled"><a href="javascript:void(0)"><i class="fas fa-home"></i></a></li>
+                    <template v-for="(item,index) in ListBreadcrumb" :key="item.id">
+                        <template v-if="item.IsActive">
+                            <li class="breadcrumb-item list-unstyled" aria-current="page" @@click="GetListBreadcrumb(index)"><a href="#" class="pe-auto">{{item.Name}}</a></li>
+                        </template>
+                        <template v-if="!item.IsActive">
+                            <li class="breadcrumb-item list-unstyled" aria-current="page">{{item.Name}}</li>
+                        </template>
+                    </template>
+                    <template v-if="(ListBreadcrumb==null || ListBreadcrumb.length==0)&&(flagLoading==false)">
+                        <li class="breadcrumb-item list-unstyled" aria-current="page"></li>
+                    </template>
+
+                </ol>
+            </nav>
+
+            <div class="">
+                <a @@click="showAddNewFile(-1)" class="btn btn-primary p-1" href="#"><i class="fas fa-upload"></i> Tải File lên</a>
+                <a @@click="showAddNewFolder(-1)" class="btn btn-info p-1 ml-1" href="#"><i class="fas fa-folder-plus"></i> Tạo Thư Mục</a>
+            </div>
+
+        </div>
+
+
+        <div id="manager_file_content">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="50px"></th>
+                        <th scope="col">Tên</th>
+                        <th width="100px" class="text-center">Loại</th>
+                        <th width="100px" class="text-center">Kích Thước</th>
+                        <th width="315px" class="text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template v-if="flagLoading==true">
+                        <tr v-for="(item,index) in ListSkeleton" :key="item">
+                            <td class="skeleton-loading">
+                                <div class="skeleton-bar"></div>
+                            </td>
+                            <td class="skeleton-loading">
+                                <div class="skeleton-bar"></div>
+                            </td>
+                            <td class="skeleton-loading">
+                                <div class="skeleton-bar"></div>
+                            </td>
+                            <td class="skeleton-loading">
+                                <div class="skeleton-bar"></div>
+                            </td>
+                            <td class="skeleton-loading">
+                                <div class="skeleton-bar"></div>
+                            </td>
+                        </tr>
+                    </template>
+
+                    <tr v-if="(ListItems==null || ListItems.length==0)&&(ListFiles==null && ListFiles.length==0)&&(flagLoading==false)">
+                        <td colspan="5" class="text-center">
+                            <label>Không có dữ liệu!</label>
+                        </td>
+                    </tr>
+                    <template v-if="(ListFolders!=null && ListFolders.length>0)&&(flagLoading==false)">
+                        <tr v-for="(item,index) in ListFolders" :key="item.id">
+                            <td class="p-0">
+                                <img @@click="GetListItems(index)" v-bind:src="item.Img" style="width:45px" v-bind:alt="item.Name" />
+                            </td>
+                            <td>
+                                <span @@click="GetListItems(index)" class="text-pointer">{{item.Name}}</span>
+                                <template v-if="item.StrPermission!=''">
+                                    <small class="font-italic">
+                                        ({{item.StrPermission}})
+                                    </small>
+                                </template>
+                                <template v-if="item.StrPermission==''">
+                                    <small class="font-italic text-danger">
+                                        (Chưa phân quyền)
+                                    </small>
+                                </template>
+                            </td>
+                            <td class="text-center">Folder <br /> <small>{{item.CreatedDateShow}}</small></td>
+                            <td><strong>{{item.FolderChildAll}}</strong> Folder <br /> <strong>{{item.FileChildAll}}</strong> File</td>
+                            <td class="text-center">
+                                <ul class="list-inline action m-0">
+
+                                    <li class="list-inline-item"><a href="javascript:void(0)" @@click="showAddNewFolder(index)"><i class="fa fa-edit"></i>Sửa</a></li>
+                                    <li class="list-inline-item"><a href="javascript:void(0)" @@click="showMoveFolder(index)"><i class="fas fa-exchange-alt"></i>Chuyển Folder</a></li>
+                                    <li class="list-inline-item"><a href="javascript:void(0)" @@click="showPermission(index)"><i class="fas fa-user-cog"></i> Phân quyền</a></li>
+                                    <li class="list-inline-item"><a href="javascript:void(0)" @@click="showDeleteFolder(index)"><i class="fa fa-trash"></i>Xóa</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </template>
+                    <template v-if="(ListFiles!=null && ListFiles.length>0)&&(flagLoading==false)">
+                        <tr v-for="(item,index) in ListFiles" :key="item.id">
+                            <td class="p-0">
+                                <template v-if="item.IsImage">
+                                    <img @@click="DownloadFile(index)" v-bind:src="item.Img" style="width:45px;" v-bind:alt="item.Name" />
+                                </template>
+                                <template v-if="!item.IsImage">
+                                    <img @@click="DownloadFile(index)" v-bind:src="'/images/tinymce/'+item.Extension+'.png'" style="width:45px;" v-bind:alt="item.Name" />
+                                </template>
+                            </td>
+                            <td><span @@click="DownloadFile(index)" class="text-pointer">{{item.Name}}</span> <small>({{item.CreatedDateShow}})</small></td>
+                            <td class="text-center"> <span class="text-uppercase">{{item.Extension}}</span>  File</td>
+                            <td>{{item.StrSize}}</td>
+                            <td class="text-center">
+                                <ul class="list-inline action m-0">
+                                    <li class="list-inline-item"><a href="javascript:void(0)" @@click="showUpdateFile(index)"><i class="fa fa-edit"></i>Sửa</a></li>
+                                    <li @@click="showDeleteFile(index)" class="list-inline-item"><a href="javascript:void(0)"><i class="fa fa-trash"></i>Xóa</a></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Modal UpdateFileModal -->
+    <div class="modal fade" id="UpdateFileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="UpdateFileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Cập nhật thông tin File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                    <div id="FormFolderDescription">
+                        <div class="form-group">
+                            <label for="Name">Tên File</label>
+                            <input type="text" class="form-control" id="Name" v-model="detailItemFile.Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Name">Mô tả</label>
+                            <textarea type="text" class="form-control" v-model="detailItemFile.Description"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="UpdateFile()"><i class="fas fa-save"></i> Cập Nhật</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal UploadFileModal -->
+    <div class="modal fade" id="UploadFileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Tải File tại Thư mục ({{detailItemFolder.Name}})</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                    <form id="FormFileFolder" method="post" enctype="multipart/form-data">
+                        <div class="form-row align-items-center">
+                            <div class="col-auto">
+                                <div class="custom-file" style="width:300px;">
+                                    <input multiple type="file" class="custom-file-input" id="UploadFileFolder" required>
+                                    <label class="custom-file-label" for="validatedCustomFile">Tải file</label>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button v-on:click="UploadFiles()" type="button" class="btn btn-primary mb-2"><i class="fas fa-folder-plus"></i> Tải File</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="60px">STT</th>
+                                <th scope="col">Tên</th>
+                                <th scope="col" width="100px">Kích Thước</th>
+                                <th scope="col" width="90px">Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="TinyBodyUploadFileFolder">
+
+                            <tr v-for="(item,index) in ListFilesUpload" :key="item.id">
+                                <th scope="row" class="text-center">{{index+1}}</th>
+                                <td>
+                                    {{item.Name}}
+                                    <span v-if="!item.Selected" class="text-danger">{{item.Msg}}</span>
+                                </td>
+                                <td>{{item.StrSize}}</td>
+                                <td class="text-center">
+                                    <i v-if="item.Selected" class='fas fa-check text-primary'></i>
+                                    <i v-if="!item.Selected" class='fas fa-times text-danger'></i>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="UploadFiles()"><i class="fas fa-save"></i> Upload File</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal FolderModal -->
+    <div class="modal fade" id="FolderModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                        <template v-if="detailItemFolder.Id>0">
+                            Chỉnh sửa thư mục {{detailItemFolder.Name}}
+                        </template>
+                        <template v-if="detailItemFolder.Id==0">
+                            Tạo, mới Thư mục
+                        </template>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                    <form asp-controller="@ControllerName" asp-action="SaveItem" method="post" id="FormFolderDescription">
+
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="FolderName">Tên thư mục</label>
+                            <input type="text" class="form-control" id="FolderName" v-model="detailItemFolder.Name">
+                        </div>
+                        <div class="row">
+                            
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold" for="Link">Link</label>
+                                    <input type="text" class="form-control" id="Link" v-model="detailItemFolder.Link">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold" for="Support">Người hỗ trợ</label>
+                                    <input type="text" class="form-control" id="Support" v-model="detailItemFolder.Support">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group images-main">
+                                    <label class="font-weight-bold">Hình đại diện Đầy Đủ</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="ImagesFull" id="Item_ImagesFull_Article" class="form-control" v-model="detailItemFolder.Img">
+                                        <a onclick="ShowManagerFile('Item_ImagesFull_Article')" class="btn btn-primary ml-2 mr-2">Chọn hình</a>
+                                        <a onclick="ViewImageArtile('Item_ImagesFull_Article')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="FolderDescription">Mô tả</label>
+                            <textarea type="text" class="form-control full-textarea " id="FolderDescription" v-model="detailItemFolder.Description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="SaveItemFolder()">
+                            <template v-if="detailItemFolder.Id==0">
+                                <i class="fas fa-save"></i> Tạo mới
+                            </template>
+                            <template v-if="detailItemFolder.Id>0">
+                                <i class="fas fa-save"></i> Cập Nhật
+                            </template>
+                        </button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal DeleteFolderModal -->
+    <div class="modal fade" id="DeleteFolderModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Xóa thư mục</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                    Bạn muốn xóa Folder {{detailItemFolder.Name}} ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="DeleteFolder()"><i class="fas fa-save"></i> Xóa</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal MoveFolderModal -->
+    <div class="modal fade" id="MoveFolderModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Chuyển Folder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                   
+
+                    
+                    <div class="form-group">
+                    <label for="MoveFolder_ParentId"> Bạn muốn chuyển Folder {{detailItemFolder.Name}} ?</label>
+                    <select class="form-control" v-model="detailItemFolder.ParentId" id="MoveFolder_ParentId">
+                        <option value="0">--- Chọn Danh Mục Cha ---</option>
+                        <option v-bind:value="item.Id" v-for="(item, index) in ListSelectBox" v-bind:key="item.Id">{{item.Name}}</option>
+                    </select>
+                    </div>
+                    
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="MoveFolder()"><i class="fas fa-save"></i> Chuyển Folder</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal DeleteFileModal -->
+    <div class="modal fade" id="DeleteFileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Xóa File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+                    Bạn muốn xóa Folder {{detailItemFile.Name}} ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="DeleteFile()"><i class="fas fa-save"></i> Xóa</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal PermissionModal -->
+    <div class="modal fade" id="PermissionModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Phân quyền Folder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template v-if="ListErrChild.length>0">
+                        <div class="alert alert-danger" role="alert">
+                            <ul class="m-0">
+                                <li v-for="(item, index) in ListErrChild"><span v-html="item"></span></li>
+                            </ul>
+                        </div>
+                    </template>
+
+                    <table id="myTable" class="table table-bordered ">
+                        <thead>
+                            <tr>
+                                <th width="50px" class="text-center">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" id="CheckAll" v-on:click="CheckAllPermission()" v-model="flagPermissionAll" class="custom-control-input">
+                                        <label class="custom-control-label" for="CheckAll"></label>
+                                    </div>
+                                </th>
+                                <th>Tên</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <template v-if="(ListGroups!=null && ListGroups.length>0)&&(flagLoadingChild==false)">
+                                <tr v-for="(item,index) in ListGroups" :key="item.id">
+                                    <td>{{index+1}}</td>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" v-bind:id="'permission_'+item.IdGroup" v-model="item.Selected">
+                                            <label class="custom-control-label" v-bind:for="'permission_'+item.IdGroup">{{item.GroupTitle}}</label>
+                                        </div>
+                                    </td>
+
+
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                    <template v-if="!flagLoadingChild">
+                        <button type="button" class="btn btn-primary" v-on:click="SaveManagerFolderGroup()"><i class="fas fa-save"></i> Phân quyền</button>
+                    </template>
+                    <template v-if="flagLoadingChild">
+                        <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="ArticleShowImage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gridModalLabel">Ản đại diện</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" id="ArticleShowImagePath" src="" />
+            </div>
+
+        </div>
+    </div>
+</div>
+<form asp-controller="ManagerFolder" enctype="multipart/form-data" asp-action="Index" method="post"></form>
+<partial name="_PartialTinymce" />
+<style>
+    .text-pointer:hover {
+        cursor: pointer;
+        color: #007bff !important;
+    }
+</style>
+
+@section Scripts{
+
+
+    <script src="~/lib/tinymce/tinymce.min.js@("?v="+version )"></script>
+    <script src="~/lib/tinymce/jquery.tinymce.min.js@("?v="+version )"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script src="~/js/vue.global.js@("?v="+version )"></script>
+    <script src="~/js/require.js@("?v="+version )"></script>
+
+    <script src='~/TemplatesAdmin/Default/js/manager_folder.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script>
+        function ViewImageArtile(id) {
+            $('#ArticleShowImagePath').attr("src", "/images/no-image.png");
+            $('#ArticleShowImage').modal('show');
+            $('#ArticleShowImagePath').attr("src", $('#' + id).val());
+        }
+    </script>
+
+}

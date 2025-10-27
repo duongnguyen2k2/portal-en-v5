@@ -1,0 +1,16 @@
+﻿@using Microsoft.AspNetCore.Http.Features
+
+@{
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+}
+
+@if (showBanner)
+{
+    <div id="mycookie" style="display:none;" data-cookie-string="@cookieString"></div>
+    <script>
+        document.cookie = document.getElementById("mycookie").dataset.cookieString;
+        console.log(document.getElementById("mycookie").dataset.cookieString);
+    </script>
+}

@@ -1,0 +1,206 @@
+﻿@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@{
+    
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutHome";
+
+
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+
+    var ListMenu = MenusService.GetListByParrent(0, IdCoQuan, 0, ParentId);
+    var ListMenu1 = MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+    var ListMenu2 = MenusService.GetListByParrent(0, IdCoQuan, 2, ParentId);
+
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    ViewData["Title"] = "SiteMap";
+    ViewData["Url"] = Domain;
+    ViewData["Images"] = Domain + ItemCoQuan.MetadataCV.UrlImage;
+    ViewData["Alias"] = ItemCoQuan.Title;
+    ViewData["Description"] = ItemCoQuan.Metadesc;
+    ViewData["Keywords"] = ItemCoQuan.Metakey;
+    ViewData["Placename"] = ItemCoQuan.MetadataCV.Placename;
+    ViewData["Type"] = "website";
+}
+<div class="row PageDetail PageDetail">
+
+    <div class="col-md-12">
+        <ul class="list-inline navigation nlist">
+            <li>
+                <a href="/">Trang chủ</a>
+                <i class="fa fa-angle-right"></i> Sơ đồ website
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-12 sitemap-body">
+        <div class="tree">
+            <ul>
+                <li>
+                    <span>
+                        <a style="color:#000; text-decoration:none;" data-toggle="collapse" href="#menu-top" aria-expanded="true" aria-controls="menu-top">
+                            <i class="collapsed"><i class="fas fa-folder"></i></i>
+                            <i class="expanded"><i class="far fa-folder-open"></i></i> Menu Chính
+                        </a>
+                    </span>
+
+                     <div id="menu-top" class="collapse show">
+                       
+                        <ul>
+                            @for (int i = 0; i < ListMenu.Count(); i++)
+                            {
+
+
+                                if (ListMenu[i].ChildCount > 0)
+                                {
+                                    <li>
+                                        <span>
+                                            <a style="color:#333; text-decoration:none;" data-toggle="collapse" href="#page_@(ListMenu[i].Id)" aria-expanded="true" aria-controls="page_@(ListMenu[i].Id)">
+                                                <i class="collapsed"><i class="fas fa-folder"></i></i>
+                                                <i class="expanded"><i class="far fa-folder-open"></i></i> @Html.Raw(ListMenu[i].Title)
+                                            </a>
+                                        </span>
+                                        
+                                        <ul>
+                                            <div id="page_@(ListMenu[i].Id)" class="collapse show">
+                                                @for (int c = 0; c < ListMenu[i].ListMenus.Count; c++)
+                                                {
+                                                <li><span><i class="far fa-file"></i><a href="@ListMenu[i].ListMenus[c].Link"> @Html.Raw(ListMenu[i].ListMenus[c].Title)</a></span></li>
+                                                }
+                                            </div>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                    <li><span><i class="far fa-file"></i><a href="@ListMenu[i].Link"> @Html.Raw(ListMenu[i].Title)</a></span></li>
+                                }
+                            }
+
+
+
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+
+            <!--Menu Dọc-->
+            <ul>
+                <li>
+                    <span>
+                        <a style="color:#000; text-decoration:none;" data-toggle="collapse" href="#menu-doc" aria-expanded="true" aria-controls="menu-doc">
+                            <i class="collapsed"><i class="fas fa-folder"></i></i>
+                            <i class="expanded"><i class="far fa-folder-open"></i></i> Menu Dọc
+                        </a>
+                    </span>
+
+                     <div id="menu-doc" class="collapse show">
+                       
+                        <ul>
+                            @for (int i = 0; i < ListMenu1.Count(); i++)
+                            {
+
+
+                                if (ListMenu1[i].ChildCount > 0)
+                                {
+                                    <li>
+                                        <span>
+                                            <a style="color:#333; text-decoration:none;" data-toggle="collapse" href="#page_@(ListMenu1[i].Id)" aria-expanded="true" aria-controls="page_@(ListMenu1[i].Id)">
+                                                <i class="collapsed"><i class="fas fa-folder"></i></i>
+                                                <i class="expanded"><i class="far fa-folder-open"></i></i> @Html.Raw(ListMenu1[i].Title)
+                                            </a>
+                                        </span>
+                                        
+                                        <ul>
+                                            <div id="page_@(ListMenu1[i].Id)" class="collapse show">
+                                                @for (int c = 0; c < ListMenu1[i].ListMenus.Count; c++)
+                                                {
+                                                    <li><span><i class="far fa-file"></i><a href="@ListMenu1[i].ListMenus[c].Link"> @Html.Raw(ListMenu1[i].ListMenus[c].Title)</a></span></li>
+                                                }
+                                            </div>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><span><i class="far fa-file"></i><a href="@ListMenu1[i].Link"> @Html.Raw(ListMenu1[i].Title)</a></span></li>
+                                }
+                            }
+
+
+
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <!--END Menu Dọc-->
+
+            <!--Menu Phụ-->
+            <ul>
+                <li>
+                    <span>
+                        <a style="color:#000; text-decoration:none;" data-toggle="collapse" href="#menu-footer" aria-expanded="true" aria-controls="menu-footer">
+                            <i class="collapsed"><i class="fas fa-folder"></i></i>
+                            <i class="expanded"><i class="far fa-folder-open"></i></i> Menu Phụ
+                        </a>
+                    </span>
+
+                     <div id="menu-footer" class="collapse show">
+                       
+                        <ul>
+                            @for (int i = 0; i < ListMenu2.Count(); i++)
+                            {
+
+
+                                if (ListMenu2[i].ChildCount > 0)
+                                {
+                                    <li>
+                                        <span>
+                                            <a style="color:#333; text-decoration:none;" data-toggle="collapse" href="#page_@(ListMenu2[i].Id)" aria-expanded="true" aria-controls="page_@(ListMenu2[i].Id)">
+                                                <i class="collapsed"><i class="fas fa-folder"></i></i>
+                                                <i class="expanded"><i class="far fa-folder-open"></i></i> @Html.Raw(ListMenu2[i].Title)
+                                            </a>
+                                        </span>
+                                        
+                                        <ul>
+                                            <div id="page_@(ListMenu2[i].Id)" class="collapse show">
+                                                @for (int c = 0; c < ListMenu2[i].ListMenus.Count; c++)
+                                                {
+                                                    <li><span><i class="far fa-file"></i><a href="@ListMenu2[i].ListMenus[c].Link"> @Html.Raw(ListMenu2[i].ListMenus[c].Title)</a></span></li>
+                                                }
+                                            </div>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><span><i class="far fa-file"></i><a href="@ListMenu2[i].Link"> @Html.Raw(ListMenu2[i].Title)</a></span></li>
+                                }
+                            }
+
+
+
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <!--END Menu Phụ-->
+        </div>
+
+    </div>
+</div>

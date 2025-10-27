@@ -1,0 +1,334 @@
+﻿@model API.Models.Home.PartialListCatFeaturedHome;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using System.Globalization;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.CategoriesArticles.CategoriesArticles> ListCatFeaturedHome = Model.ListCatFeaturedHome;
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticleByCat = new List<API.Areas.Admin.Models.Articles.Articles>();
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanner3 = new List<API.Areas.Admin.Models.Banners.Banners>();
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanner7 = new List<API.Areas.Admin.Models.Banners.Banners>();
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanner9 = new List<API.Areas.Admin.Models.Banners.Banners>();
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanner10 = new List<API.Areas.Admin.Models.Banners.Banners>();
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanner12 = new List<API.Areas.Admin.Models.Banners.Banners>();
+    int countBanner3 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 3)
+            {
+                countBanner3 = countBanner3 + 1;
+            }
+        }
+    }
+
+
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        for (int bn = 0; bn < Model.ListBanners.Count(); bn++)
+        {
+            if (Model.ListBanners[bn].CatId == 3)
+            {
+                ListBanner3.Add(Model.ListBanners[bn]);
+            }
+
+            if (Model.ListBanners[bn].CatId == 9)
+            {
+                ListBanner9.Add(Model.ListBanners[bn]);
+            }
+            if (Model.ListBanners[bn].CatId == 10)
+            {
+                ListBanner10.Add(Model.ListBanners[bn]);
+            }
+
+            if (Model.ListBanners[bn].CatId == 12)
+            {
+                ListBanner12.Add(Model.ListBanners[bn]);
+            }
+
+            if (Model.ListBanners[bn].CatId == 7)
+            {
+                ListBanner7.Add(Model.ListBanners[bn]);
+            }
+
+
+        }
+    }
+
+    string active = "active";
+}
+@if (ListCatFeaturedHome != null && ListCatFeaturedHome.Count() > 0)
+{
+    @for (int i = 0; i < ListCatFeaturedHome.Count(); i++)
+    {
+        if (countBanner3 > 0)
+        {
+            <section id="banner-home-top" class="">
+                <div class="carousel slide banner-bottom-featured-body"  data-ride="carousel">
+                    @if (ListCatFeaturedHome[i].Id == ItemCoQuan.PositionBannerHome)
+                    {
+                        if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+                        {
+                            <div class="carousel-inner">
+                                @for (int bn = 0; bn < Model.ListBanners.Count(); bn++)
+                                {
+                                    if (Model.ListBanners[bn].CatId == 3)
+                                    {
+                                        <div class="baner-home-item mb-2 @(bn == 0 ? "active" : "")">
+                                            <img src="@Model.ListBanners[bn].Image" alt="@Model.ListBanners[bn].Title" class="d-block w-100">
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+
+        }
+
+
+        ListArticleByCat = null;
+        if (ListCatFeaturedHome[i].Id > 0)
+        {
+            ListArticleByCat = API.Areas.Admin.Models.Articles.ArticlesService.GetListNew(ListCatFeaturedHome[i].Id, 5, IdCoQuan);
+            // Chỉ hiển thị danh mục khi có tin tức
+            if (ListArticleByCat != null && ListArticleByCat.Count() > 0)
+            {
+                <div class="category-list">
+                <div class="card border-0 cat-item">
+                    <div class="card-header">
+                        <ul class="list-inline">
+                            <li>
+                                <div class="category-list-title colored">
+                                    <a class="text-white text-uppercase font-weight-bold float-left" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[i].Id" asp-route-alias="@ListCatFeaturedHome[i].Alias">
+                                        @if(ListCatFeaturedHome[i].Icon!=null && ListCatFeaturedHome[i].Icon!=""){
+                                            <span class="cat-featured-icon cat-featured-icon-@(ListCatFeaturedHome[i].Id)">@Html.Raw(ListCatFeaturedHome[i].Icon)</span>
+                                        }
+                                        <span class="pl-2 @ListCatFeaturedHome[i].Alias">@ListCatFeaturedHome[i].Title</span>                                                                                
+                                        <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </li>                           
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        @if (ListArticleByCat != null && ListArticleByCat.Count() > 0)
+                        {
+                            <div class="news-layout-modern">
+                                <!-- Tin chính -->
+                                <div class="main-article">
+                                    <div class="main-article-image">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" title="@ListArticleByCat[0].Title">
+                                            @if (@ListArticleByCat[0].Images == null || @ListArticleByCat[0].Images == "" || ListArticleByCat[0].Images.ToLower() == "/cms/content/tintuc/")
+                                            {
+                                                <img src="~/images/no-image.png" class="main-img" alt="@ListArticleByCat[0].Title">
+                                            }
+                                            else
+                                            {
+                                                <img src="@ListArticleByCat[0].Images" class="main-img" alt="@ListArticleByCat[0].Title">
+                                            }
+                                            <div class="main-overlay"></div>
+                                        </a>
+                                    </div>
+                                    <div class="main-article-content">
+                                        <div class="main-meta">
+                                            <span class="main-date">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                @ListArticleByCat[0].PublishUpShow
+                                            </span>
+                                            <span class="main-category">
+                                                <i class="fas fa-tag"></i>
+                                                @ListCatFeaturedHome[i].Title
+                                            </span>
+                                        </div>
+                                        <h3 class="main-title">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" title="@ListArticleByCat[0].Title">
+                                                @ListArticleByCat[0].Title
+                                            </a>
+                                        </h3>
+                                        <p class="main-summary">
+                                            @API.Models.MyHelper.StringHelper.StringReadmore(@ListArticleByCat[0].IntroText, 150)
+                                        </p>
+                                       @*  <div class="main-action">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" class="btn-read-more-main">
+                                                <i class="fas fa-arrow-right"></i>
+                                                Đọc tiếp
+                                            </a>
+                                        </div> *@
+                                    </div>
+                                </div>
+
+                                <!-- Tin con -->
+                                @if (ListArticleByCat.Count() > 1)
+                                {
+                                    <div class="sub-articles">
+                                        @for (int m = 1; m < Math.Min(ListArticleByCat.Count(), 5); m++)
+                                        {
+                                            <div class="sub-article-item">
+                                                <div class="sub-article-image">
+                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[m].Id" asp-route-alias="@ListArticleByCat[m].Alias" title="@ListArticleByCat[m].Title">
+                                                        @if (@ListArticleByCat[m].Images == null || @ListArticleByCat[m].Images == "" || ListArticleByCat[m].Images.ToLower() == "/cms/content/tintuc/")
+                                                        {
+                                                            <img src="~/images/no-image.png" class="sub-img" alt="@ListArticleByCat[m].Title">
+                                                        }
+                                                        else
+                                                        {
+                                                            <img src="@ListArticleByCat[m].Images" class="sub-img" alt="@ListArticleByCat[m].Title">
+                                                        }
+                                                    </a>
+                                                </div>
+                                                <div class="sub-article-content">
+                                                    <h4 class="sub-title">
+                                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[m].Id" asp-route-alias="@ListArticleByCat[m].Alias" title="@ListArticleByCat[m].Title">
+                                                            @ListArticleByCat[m].Title
+                                                        </a>
+                                                    </h4>
+                                                    <div class="sub-meta">
+                                                        <span class="sub-date">
+                                                            <i class="fas fa-clock"></i>
+                                                            @ListArticleByCat[m].PublishUpShow
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+
+                                <!-- Nút xem tất cả nếu có nhiều hơn 5 tin -->
+                                @if (ListArticleByCat.Count() > 5)
+                                {
+                                    <div class="view-all-section">
+                                        <a asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[i].Id" asp-route-alias="@ListCatFeaturedHome[i].Alias" class="btn-view-all">
+                                            <i class="fas fa-plus-circle"></i>
+                                            Xem tất cả tin @ListCatFeaturedHome[i].Title
+                                            <span class="article-count">(+@(ListArticleByCat.Count() - 5) tin khác)</span>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            }
+        }
+
+            @if (i == 1)
+            {
+                <!--Hiển thị banner ở vị trí categories = 4-->
+                @if (ListBanner10 != null && ListBanner10.Count() > 0)
+                {
+                    <div id="CarouselBanner10" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            @for (int b3 = 0; b3 < ListBanner10.Count(); b3++)
+                            {
+                                if (b3 == 0)
+                                {
+                                    active = "active";
+                                }
+                                else
+                                {
+                                    active = "";
+                                }
+                                <div class="carousel-item @active">
+                                    @if (ListBanner10[b3].Link != null && ListBanner10[b3].Link != "")
+                                    {
+                                        <a href="@ListBanner10[b3].Link"><img src="@ListBanner10[b3].Image" class="d-block w-100" alt="@ListBanner10[b3].Title"></a>
+                                    }
+                                    else
+                                    {
+                                        <img src="@ListBanner10[b3].Image" class="d-block w-100" alt="@ListBanner10[b3].Title">
+                                    }
+
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!--END Hiển thị banner ở vị trí categories = 4-->
+            }
+        @if (i == 2)
+        {
+            <!--Hiển thị banner ở vị trí categories = 4-->
+            @if (ListBanner3 != null && ListBanner3.Count() > 0)
+            {
+                <div id="CarouselBanner10" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int b3 = 0; b3 < ListBanner3.Count(); b3++)
+                        {
+                            if (b3 == 0)
+                            {
+                                active = "active";
+                            }
+                            else
+                            {
+                                active = "";
+                            }
+                            <div class="carousel-item @active">
+                                @if (ListBanner3[b3].Link != null && ListBanner3[b3].Link != "")
+                                {
+                                    <a href="@ListBanner3[b3].Link"><img src="@ListBanner3[b3].Image" class="d-block w-100" alt="@ListBanner3[b3].Title"></a>
+                                }
+                                else
+                                {
+                                    <img src="@ListBanner3[b3].Image" class="d-block w-100" alt="@ListBanner3[b3].Title">
+                                }
+
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!--END Hiển thị banner ở vị trí categories = 4-->
+        }
+
+
+            @if (i == 3)
+            {
+                <!--Hiển thị banner ở vị trí ListBanner12 = 8-->
+                @if (ListBanner12 != null && ListBanner12.Count() > 0)
+                {
+                    <div id="CarouselBanner12" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            @for (int b3 = 0; b3 < ListBanner12.Count(); b3++)
+                            {
+                                if (b3 == 0)
+                                {
+                                    active = "active";
+                                }
+                                else
+                                {
+                                    active = "";
+                                }
+                                <div class="carousel-item @active">
+                                    @if (ListBanner12[b3].Link != null && ListBanner12[b3].Link != "")
+                                    {
+                                        <a href="@ListBanner12[b3].Link"><img src="@ListBanner12[b3].Image" class="d-block w-100" alt="@ListBanner12[b3].Title"></a>
+                                    }
+                                    else
+                                    {
+                                        <img src="@ListBanner12[b3].Image" class="d-block w-100" alt="@ListBanner12[b3].Title">
+                                    }
+
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!--END Hiển thị banner ở vị trí categories = 8-->
+            }
+        }
+    }

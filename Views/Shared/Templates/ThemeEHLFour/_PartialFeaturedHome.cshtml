@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.CategoriesArticles.CategoriesArticles> ListCatFeaturedHome = API.Areas.Admin.Models.CategoriesArticles.CategoriesArticlesService.GetListFeaturedHome(IdCoQuan);
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticleByCat = new List<API.Areas.Admin.Models.Articles.Articles>();
+}
+<!--block-featured-home-->
+<section id="block-featured-home">
+    @if (ListCatFeaturedHome != null && ListCatFeaturedHome.Count() > 0)
+    {
+        @for (int i = 0; i < ListCatFeaturedHome.Count(); i++)
+        {
+            ListArticleByCat = null;
+            if (ListCatFeaturedHome[i].ParentId == 0)
+            {
+                ListArticleByCat = API.Areas.Admin.Models.Articles.ArticlesService.GetListNew(ListCatFeaturedHome[i].Id, 6, IdCoQuan);
+                <div class="row">
+
+                    <div class="col-12">
+                        <div class="card border-0 list-item-home">
+                            <div class="card-header bg-primary p-0">
+                                <div class="panel-title p-2 m-0" style="overflow: auto;">
+                                    <a class="text-white text-uppercase font-weight-bold float-left" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[i].Id" asp-route-alias="@ListCatFeaturedHome[i].Alias">
+                                        <img src="~/Templates/Default/images/title-icon.png" alt="Title Icon" />
+                                        <span class="pl-2 pr-2">@ListCatFeaturedHome[i].Title </span>
+                                        <i class="fas fa-chevron-right text-main-2 font-weight-bold"></i>
+                                    </a>
+                                    <nav class="nav nav-underline float-left ml-2 mt-1" style="line-height:11px;">
+                                        @for (int j = 0; j < ListCatFeaturedHome.Count(); j++)
+                                        {
+                                            if (ListCatFeaturedHome[j].ParentId == ListCatFeaturedHome[i].Id)
+                                            {
+                                                <a class="nav-link p-0 m-0 pr-2 pl-2 text-white border-right" asp-controller="Articles" asp-action="GetByCat" asp-route-id="@ListCatFeaturedHome[j].Id" asp-route-alias="@ListCatFeaturedHome[j].Alias">@ListCatFeaturedHome[j].Title</a>
+                                            }
+                                        }
+                                    </nav>
+                                </div>
+                            </div>
+                            <div class="card-body pl-0 pr-0">
+                                <div class="row">
+                                    <div class="col-lg-7 col-md-7 col-xs-12 home-list-left">
+                                        @if (ListArticleByCat != null && ListArticleByCat.Count() > 0)
+                                        {
+                                            <div class="media">
+                                                <img style="max-width:180px;max-height:120px;" class="mr-3" src="@ListArticleByCat[0].Images" alt="@ListArticleByCat[0].Title">
+                                                <div class="media-body text-justify">
+                                                    <a class="mt-0 font-weight-bold" asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[0].Id" asp-route-alias="@ListArticleByCat[0].Alias" title="@ListArticleByCat[0].Title">@ListArticleByCat[0].Title</a>
+                                                    @ListArticleByCat[0].Title
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="col-lg-5 col-md-5 col-sm-5 home-list-right">
+                                        <div class="nav-scroller">
+                                            <nav class="nav">
+                                                @if (ListArticleByCat != null && ListArticleByCat.Count() > 1)
+                                                {
+                                                    @for (int m = 1; m < ListArticleByCat.Count(); m++)
+                                                    {
+                                                        <a class="nav-link pr-0 pl-0" asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticleByCat[m].Id" asp-route-alias="@ListArticleByCat[m].Alias" title="@ListArticleByCat[m].Title"><i class="fas fa-dot-circle"></i> @ListArticleByCat[m].Title </a>
+                                                    }
+                                                }
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+    }
+
+</section>
+<!--block-featured-home-->

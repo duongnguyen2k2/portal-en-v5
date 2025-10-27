@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Configuration;
+@using Newtonsoft.Json;
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    string TenCoQuan =Context.Session.GetString("TenCoQuan");
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));    
+    int? IdMenu = 0;
+    if (Context.Session.GetInt32("IdMenu") != null) {
+        IdMenu = Context.Session.GetInt32("IdMenu");
+    }
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    
+}
+<!-- Sidebar -->
+    <ul class="sidebar navbar-nav" data-partial="_PartialSidebar">
+        <li class="nav-item dropdown @if (IdMenu == 1) { @("show"); }">
+            <a class="nav-link" href="/Admin/Home" role="button"  aria-expanded="@if (IdMenu == 1) { @("true"); } else { @("false")}">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            
+        </li>
+
+        <li class="nav-item dropdown @if (IdMenu == 2) { @("show"); }">
+            <a onclick="UpdateSessionMenu(2)" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="@if (IdMenu == 2) {@("true");} else {@("false")}">
+                <i class="fas fa-book"></i>
+                <span>Nội Dung</span>
+            </a>
+            <div class="dropdown-menu @if (IdMenu == 2) { @("show"); }">
+                <a class="dropdown-item" asp-controller="Articles" asp-action="Index">Tin tức</a>
+                @if (Configuration["flagOcop"].ToString() == "1")
+                {
+                    <a class="dropdown-item" asp-controller="Products" asp-action="Index">Sản phẩm OCOP</a>
+                }
+            
+                <a class="dropdown-item" asp-controller="WorkSchedules" asp-action="Index">Lịch Công Tác</a>
+                <a class="dropdown-item" asp-controller="Documents" asp-action="Index">Văn Bản</a>
+            @if (ItemCoQuan.MetadataCV.flagTaiLieuHop == 1)
+            {
+                <a class="dropdown-item" asp-controller="TaiLieuHop" asp-action="Index">Tài liệu Họp</a>
+            }
+                <a class="dropdown-item" asp-controller="DocumentRefers" asp-action="Index">Tài liệu tham khảo</a>
+                <a class="dropdown-item" asp-controller="DocumentForms" asp-action="Index">Mẫu biểu hành chính</a>
+                <a class="dropdown-item" asp-controller="CategoriesArticles" asp-action="Index">Thể loại tin tức</a>
+                <a class="dropdown-item" asp-controller="DocumentRefersCategories" asp-action="Index">Loại tài liệu tham khảo</a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Liên thông tin tức </h6>
+                <a id="mr-phuc-lien-thong" class="dropdown-item" asp-controller="ArticlesTransfer" asp-action="Index">Tin tức mới</a>
+                <a id="pek-nam-lien-thong" class="dropdown-item" asp-controller="ArticlesTransfer" asp-action="IndexNam">Tin tức mới(N)</a>
+            </div>
+        </li>
+
+        
+        <li class="nav-item dropdown @if (IdMenu == 3) { @("show"); }">
+            <a onclick="UpdateSessionMenu(3)" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="@if (IdMenu == 3) {@("true");} else {@("false")}">
+                <i class="fas fa-plug"></i>
+                <span>Tiện ích</span>
+            </a>
+            <div class="dropdown-menu @if (IdMenu == 3) { @("show"); }">
+                <a class="dropdown-item" asp-controller="HopTrucTuyen" asp-action="Index">Họp trực tuyến</a>
+                @if (Configuration["flagOcop"].ToString() == "1")
+                {
+                    <a class="dropdown-item" asp-controller="CategoriesProducts" asp-action="Index">Thể Loại sản phẩm</a>
+                }                
+                <a class="dropdown-item" asp-controller="Banners" asp-action="Index">Banner</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" asp-controller="Contacts" asp-action="Index">Hỏi Đáp</a>
+                <a class="dropdown-item" asp-controller="Reviews" asp-action="Index">Đánh giá website</a>
+                <a class="dropdown-item" asp-controller="CategoriesAblums" asp-action="Index">Allbum</a>
+                <a class="dropdown-item" asp-controller="Videos" asp-action="Index">Video</a>
+                <a class="dropdown-item" asp-controller="FAQ" asp-action="Index">FAQ</a>
+                <a class="dropdown-item" asp-controller="Reviews" asp-action="Index">Đánh Giá (Reviews)</a>
+                @if (Configuration["flagOcop"].ToString() == "1")
+                {
+                    <a class="dropdown-item" asp-controller="Manufacturer" asp-action="Index">Hãng SX</a>
+                }
+                
+
+            </div>
+        </li>
+
+        <li class="nav-item dropdown @if (IdMenu == 5) { @("show"); }">
+            <a onclick="UpdateSessionMenu(5)" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="@if (IdMenu == 5) { @("true"); } else { @("false")}">
+                <i class="far fa-comment-dots"></i>
+                <span>Thăm dò ý kiến</span>
+            </a>
+            <div class="dropdown-menu @if (IdMenu == 5) { @("show"); } ">
+                <a class="dropdown-item" asp-controller="Survey" asp-action="Index">Nội dung khảo sát</a>
+                <a class="dropdown-item" asp-controller="Question" asp-action="Index">Câu hỏi</a>
+                <a class="dropdown-item" asp-controller="Answer" asp-action="Index">Kết quả</a>
+            </div>
+        </li>
+
+        <li class="nav-item dropdown @if (IdMenu == 6) { @("show"); }">
+            <a onclick="UpdateSessionMenu(1)" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="@if (IdMenu == 6) { @("true"); } else { @("false")}">
+                <i class="fas fa-file-alt"></i>
+                <span>Dự thảo văn bản</span>
+            </a>
+            <div class="dropdown-menu @if (IdMenu == 6) { @("show"); } ">
+                <a class="dropdown-item" asp-controller="DuThaoVanBan" asp-action="Index">Dự thảo văn bản</a>
+                <a class="dropdown-item" asp-controller="DuThaoVanBanGopY" asp-action="Index">Góp ý dự thảo</a>
+            </div>
+        </li>
+
+        <li class="nav-item dropdown @if (IdMenu == 4) { @("show"); }">
+            <a onclick="UpdateSessionMenu(4)" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="@if (IdMenu == 4) {@("true");} else {@("false")}">
+                <i class="fas fa-cog"></i>
+                <span>Hệ Thống</span>
+            </a>
+            <div class="dropdown-menu @if (IdMenu == 4) { @("show"); }">
+                <a class="dropdown-item" asp-controller="Menus" asp-action="Index">Quản lý menu</a>               
+            </div>
+        </li>
+              
+    </ul>

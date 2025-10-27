@@ -1,0 +1,113 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+
+	List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+   
+}
+
+<section class=" section-padding--lg bg-image--3">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12 col-sm-12 col-md-12">
+				<div class="section__title text-center white--title">
+					<h2 class="title__line">Tin gần đây</h2>
+					<p>@ItemCoQuan.MetadataCV.DescNewsHot</p>
+				</div>
+			</div>
+		</div>
+		<div class="row blog__wrapper mt--40">
+			 @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+			{
+				@for (int i = 0; i < ListArticlesHot.Count(); i++)
+				{
+					<!-- Start Single Blog -->
+					<div class="col-lg-4 col-md-6 col-sm-12">
+						<article class="blog">
+							<div class="blog__date">
+								<span>Ngày : @ListArticlesHot[i].CreatedDate.ToString("dd") Tháng @ListArticlesHot[i].CreatedDate.ToString("MM"), @ListArticlesHot[i].CreatedDate.ToString("yyyy")</span>
+							</div>
+							<div class="blog__thumb">
+								<a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+									<img src="@ListArticlesHot[i].Images" alt="blog images">
+								</a>
+							</div>
+							<div class="blog__inner">
+								<span>@ListArticlesHot[i].Title</span>
+								<h4><a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">Niềm Đam Mê Sinh Học Của Em Bé</a></h4>
+								<p>@Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))</p>
+								<ul class="blog__meta d-flex flex-wrap flex-md-nowrap flex-lg-nowrap justify-content-between">
+									<li><a href="#">Comments : 05</a></li>
+									<li><a href="#">Like : 07</a></li>
+								</ul>
+							</div>
+						</article>
+					</div>
+					<!-- End Single Blog -->
+
+				}
+			}
+			
+					
+		</div>
+	</div>
+</section>
+
+
+<section class="section-padding--lg bg--white">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12 col-sm-12 col-md-12">
+				<div class="section__title text-center">
+					<h2 class="title__line">Sự kiện sắp tới</h2>
+					<p>@ItemCoQuan.MetadataCV.DescNewsFeatured</p>
+				</div>
+			</div>
+		</div>
+		<div class="row upcomming__wrap mt--40">
+			@if (NotificationList != null && NotificationList.Count() > 0)
+			{
+				@for (int i = 0; i < NotificationList.Count(); i++)
+                {
+					<!-- Start Single Upcomming Event -->
+					<div class="col-lg-6 col-md-12 col-sm-12">
+						<div class="upcomming__event">
+							<div class="upcomming__thumb">
+								<img src="/Templates/@Context.Session.GetString("TemplateName")/images/upcomming/1.png" alt="@NotificationList[i].Title">
+							</div>
+							<div class="upcomming__inner">
+								<h6><a  asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">@NotificationList[i].Title</a></h6>
+								<p>@API.Models.MyHelper.StringHelper.StringReadmore(NotificationList[i].IntroText,200)</p>
+								<ul class="event__time">
+									<li><i class="fa fa-home"></i>@NotificationList[i].Title</li>									
+								</ul>
+							</div>
+							<div class="event__occur">
+								<img src="/Templates/@Context.Session.GetString("TemplateName")/images/upcomming/shape/1.png" alt="@NotificationList[i].Title">
+								<div class="enent__pub">
+									<span class="time">Ngày @NotificationList[i].CreatedDate.ToString("dd") </span>
+									<span class="bate">Tháng @NotificationList[i].CreatedDate.ToString("MM"),@NotificationList[i].CreatedDate.ToString("yyyy")</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- End Single Upcomming Event -->
+                    
+                }
+			}
+			
+		</div>
+	</div>
+</section>
+
+<partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialSubscribe" />

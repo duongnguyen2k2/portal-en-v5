@@ -1,0 +1,64 @@
+﻿#section-comment {
+    width: 100%;
+    padding: 15px 0;
+    position: relative;
+
+
+    .left {
+        h3 {
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .ykien_vne label {
+            font-weight: normal;
+            font-size: 18px;
+            line-height: 23px;
+        }
+    }
+
+    .input_comment textarea.block_input {
+        overflow-y: hidden;
+        height: 76px;
+        width: 100%;
+        -webkit-transition-duration: 200ms;
+        transition-duration: 200ms;
+        -webkit-transition-property: all;
+        transition-property: all;
+        -webkit-transition-timing-function: cubic-bezier(0.7, 1, 0.7, 1);
+        transition-timing-function: cubic-bezier(0.7, 1, 0.7, 1);
+    }
+
+    .comment_item p {
+        padding-bottom: 0;
+        font: 400 16px arial;
+        line-height: 150%;
+        color: #4f4f4f;
+    }
+
+    .block_btn_send {
+        text-align: right;
+    }
+}
+.btn_send_comment {
+    padding: 0;
+    height: 40px;
+    line-height: 38px;
+    border-radius: 4px;
+    width: 100px;
+    font-size: 15px;
+    color: #fff;
+    font-weight: 700;
+    background: #C92A57;
+    border: 1px solid #C92A57;
+    font-family: "Merriweather",serif;
+}
+#box_comment {
+    margin-top: 15px;
+
+    .comment_item{
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+}

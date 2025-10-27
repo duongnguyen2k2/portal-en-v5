@@ -1,0 +1,69 @@
+﻿@model API.Areas.Admin.Models.DuThaoVanBan.DuThaoVanBanModel
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DuThaoVanBan;
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    ViewData["Title"] = "Văn bản dự thảo";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<div class="PageDetail">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Draff"]</li>
+        </ol>
+    </nav>
+
+    <div class="alert alert-primary draft_justify">
+        @Localizer["Intro"]
+    </div>
+
+    <partial name="_PartialMsgInfo" />
+
+    <table class="table table-bordered myTable" style="margin-top: 15px;">
+        <thead>
+            <tr>
+                <th width="50px">@Localizer["No"]</th>
+                <th>@Localizer["Title"]</th>
+                <th width="100px" class="text-center">@Localizer["Feedback"]</th>
+                <th width="100px" class="text-center">@Localizer["Download"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+            {
+                <tr>
+                    <td colspan="5" class="text-center">@Localizer["Nodata"]</td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < Model.ListItems.Count(); i++)
+                {
+
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@Model.ListItems[i].Title</td>
+                        <td class="text-center"><a asp-controller="@ControllerName" asp-action="DuThaoVanBanGopY" asp-route-Id="@Model.ListItems[i].Id" asp-route-Ids="@Model.ListItems[i].Ids"> <i class="icofont-comment"></i> @Localizer["Feedback"]</a></td>
+                        <td class="text-center">
+                            <a href="@Model.ListItems[i].Link" target="_blank"> <i class="icofont-download"></i> @Localizer["Download"]</a>
+
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

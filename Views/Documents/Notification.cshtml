@@ -1,0 +1,144 @@
+﻿@model API.Areas.Admin.Models.Documents.DocumentsModel
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.Documents;
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    ViewData["Title"] = "Thông báo";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;" id="block-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" id="bi-eye-fill" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+    </svg>
+</svg>
+<div class="document-list">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Documents"]</li>
+        </ol>
+    </nav>
+
+    <div class="greyDiv searchDiv mb-3">
+        <form asp-controller="@ControllerName" asp-action="Index" method="GET">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div class="form-group">
+                        <label asp-for="SearchData.Keyword" class="">@Localizer["Documents"]</label>
+                        <input type="text" class="form-control form-control-sm" asp-for="SearchData.Keyword" name="Keyword">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div class="form-group">
+                        <label asp-for="SearchData.FieldId">@Localizer["Category"]</label>
+                        <select asp-for="SearchData.FieldId" name="FieldId" class="form-control form-control-sm" asp-items="Model.ListDocumentsField"></select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div class="form-group">
+                        <label asp-for="SearchData.TypeId">@Localizer["Institution"]</label>
+                        <select asp-for="SearchData.TypeId" name="TypeId" class="form-control form-control-sm" asp-items="Model.ListDocumentsType"></select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-4">
+                    <div class="form-group">
+                        <label style="display: block;">&nbsp; &nbsp;</label>
+                        <input type="submit" class="btn btn-primary btn-sm" name="Search" value="@Localizer["Find"]" />
+                    </div>
+
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+
+
+    <table class="table table-bordered myTable" style="margin-top: 15px;">
+        <thead>
+            <tr>
+                <th width="50px">@Localizer["No"]</th>
+                <th width="130px">@Localizer["Number"]</th>
+                <th width="130px">@Localizer["PublishedAt"]</th>
+                <th>@Localizer["Description"]</th>
+                <th width="150px" class="text-center"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+            {
+                <tr>
+                    <td colspan="5" class="text-center">@Localizer["Nodata"]</td>
+                </tr>
+            }
+            else
+            {
+                for (int i = 0; i < Model.ListItems.Count(); i++)
+                {
+                    if (Model.ListItems[i].Str_ListFile != null && Model.ListItems[i].Str_ListFile != "")
+                    {
+                        Model.ListItems[i].ListFile = JsonConvert.DeserializeObject<List<FileDocuments>>(Model.ListItems[i].Str_ListFile);
+                    }
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>
+                            <a asp-controller="Documents" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                @Model.ListItems[i].Code
+                            </a>
+                        </td>
+                        <td>@Model.ListItems[i].IssuedDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a asp-controller="Documents" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                @Html.Raw(Model.ListItems[i].Introtext)
+                            </a>
+
+                            @if (Model.ListItems[i].ListFile != null && Model.ListItems[i].ListFile.Count() > 0)
+                            {
+                                <ul class="ds-file-trich-yeu">
+                                    @for (int j = 0; j < Model.ListItems[i].ListFile.Count(); j++)
+                                    {
+                                        <li class="file-trich-yeu">
+                                            <a target="_blank" href="@Model.ListItems[i].ListFile[j].FilePath">
+                                                @if (Model.ListItems[i].ListFile[j].Title == null || Model.ListItems[i].ListFile[j].Title == "")
+                                                {
+                                                    <span>@Localizer["Supplement"] @j</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@Model.ListItems[i].ListFile[j].Title</span>
+                                                }
+                                                <i class="fa fa-download" style="margin-left:7px"></i>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </td>
+                        <td class="text-center nav-icon">
+                            <a asp-controller="Documents" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                <svg class="bi"><use xlink:href="#bi-eye-fill"></use></svg> @Localizer["View"]
+                            </a><br />
+                            <a href="@Model.ListItems[i].Link" target="_blank"> <i class="fa fa-download" style="margin-right:7px"></i> @Localizer["Download"]</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>

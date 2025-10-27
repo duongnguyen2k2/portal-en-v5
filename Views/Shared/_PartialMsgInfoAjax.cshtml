@@ -1,0 +1,11 @@
+﻿@inject IViewLocalizer Localizer
+<div id="MsgAjaxPrimary" style="display:none;" class="alert alert-primary" role="alert"></div>
+<div id="MsgAjaxSuccess" style="display:none;" class="alert alert-success" role="alert"></div>
+<div id="MsgAjaxDanger" style="display:none;" class="alert alert-danger" role="alert"></div>
+<div id="MsgAjaxInfo" style="display:none;" class="alert alert-info" role="alert"></div>
+<div id="MsgAjaxLoading" style="display:none;" class="alert alert-info" role="alert">
+    <span><i class="fas fa-sync fa-spin"></i></span> &nbsp; <span class="MsgAjaxLoadingTitle">@Localizer["Delete"]</span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>

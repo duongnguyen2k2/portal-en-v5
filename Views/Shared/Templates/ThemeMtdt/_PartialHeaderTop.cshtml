@@ -1,0 +1,31 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+<div class="topbar">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-sm-4 d-none d-sm-block">
+                <span class="current-date">@API.Models.MyHelper.StringHelper.DayweekVN(DateTime.Now) , @Localizer["Day"] @DateTime.Now.ToString("dd") @Localizer["Month"] @DateTime.Now.ToString("MM") @Localizer["Year"] @DateTime.Now.ToString("yyyy")</span>
+            </div>
+            <div class="col-lg-8 col-sm-8 col-12 ">
+
+                <div class="nav-scroller bg-white shadow-sm">
+                    <form class="form-inline float-right" id="search-top" action="/Home/Search">
+                        <span class="line-left hidden-xs"></span>
+                        <input type="text" placeholder="@Localizer["TitleSearch"]" aria-label="@Localizer["TitleSearch"]" name="keyword">
+                        <button type="button" onclick="SubmitSearch()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <nav class="nav nav-underline float-right">
+                        <a class="nav-link p-0 m-0 mr-2 lang-icon" id="lang-vi" href="/home/lang?lang=vi"><img src="/images/vi.png" alt="Việt Nam"></a>
+                        <a class="nav-link p-0 m-0 mr-2 lang-icon" id="lang-en" href="/home/lang?lang=en"><img src="/images/en.png" alt="English"></a>
+                        <a class="nav-link p-0 m-0 mr-2" href="/rss"><i class="fas fa-rss-square"></i> <span class="d-none d-sm-block float-right ml-2"></span></a>
+                        <a class="nav-link p-0 m-0 mr-2" href="/api"><i class="fas fa-code"></i> <span class="d-none d-sm-block float-right ml-2"></span></a>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

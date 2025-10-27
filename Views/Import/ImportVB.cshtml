@@ -1,0 +1,93 @@
+﻿@model API.Models.ImportVB.ImportVBModel
+@using API.Areas.Admin.Models.CategoriesArticles
+@{
+    ViewData["Title"] = "Index";
+ Layout = "~/Views/Shared/_Layout.cshtml";
+ string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-12 mt-4 mb-4">
+            <h1>Import văn bản</h1>
+        </div>
+    </div>
+
+
+    <form asp-controller="@ControllerName" asp-action="ImportVB" method="get">
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2>Import</h2>
+            </div>
+
+
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label class="show-group-all">Danh mục</label>
+                    <input asp-for="SearchData.CatId" name="CatId" placeholder="Tìm kiếm" class="form-control" />
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label class="show-group-all">Link</label>
+                    <input asp-for="SearchData.Link" name="Link" placeholder="Tìm kiếm" class="form-control" />
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label class="show-group-all">Doit</label>
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-xs" name="btn" value="search">Import dữ liệu</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <div>
+        @if (Model.ListItems != null) {
+            int i = 0;
+            @foreach (var item in Model.ListItems)
+        {
+                i++;
+                <div class="col-12">
+                <h1>@i</h1>
+                <table class="table table-striped">
+                    <tr><td>@item.Code</td></tr>
+                    <tr><td>@item.Introtext</td></tr>
+                    <tr><td>@item.TypeTitle</td></tr>
+                    <tr><td>@item.FieldTitle</td></tr>
+                    <tr><td>@item.LevelTitle</td></tr>
+                    <tr><td>@item.IssuedDateShow</td></tr>
+                    <tr><td>@item.EffectiveDateShow</td></tr>
+                    <tr><td>@item.ExpriedStatus</td></tr>
+                    <tr><td>@item.OrganizationName</td></tr>
+                    <tr><td>@item.SignBy</td></tr>
+                    <tr>
+                        @if(item.ListFile!=null && item.ListFile.Count > 0)
+                        {
+                            <td>
+                                @item.ListFile[0].FilePath
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
+                    </tr>
+                    <tr><td>@item.FullText</td></tr>
+
+                </table>
+            </div>
+        }
+        }
+
+    </div>
+</div>
+

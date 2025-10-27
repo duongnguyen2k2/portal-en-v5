@@ -1,0 +1,111 @@
+﻿@model API.Areas.Admin.Models.Videos.VideosModel
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@using System.Globalization;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inject IViewLocalizer Localizer;
+
+@{
+    ViewData["Title"] = (Model.Categories.Title);
+    ViewData["Description"] = (Model.Categories.Metadesc);
+    ViewData["Keywords"] = (Model.Categories.Metakey);
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+
+<div class="sec-main-ct">
+
+    <div class="container">
+        <div class="sec-main-body">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white font-italic justify-content-center mb-0 pb-2">
+
+                    @if (Configuration["Security:SiteCode"] == "KTTT")
+                    {
+                        <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    }
+                    <li class="breadcrumb-item active" aria-current="page">@(Model.Categories.Title)</li>
+                </ol>
+            </nav>
+            <h4 class="title-post" style="text-align: center; padding-bottom: initial;"></h4>
+
+            <div class="video_box">
+                @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                {
+                    @if (Configuration["Security:SiteCode"] == "KTTT")
+                    {
+                        <div class="text-center pb-3">@Localizer["NoRecord"]</div>
+                    }
+                    else
+                    {
+                        <div class="text-center pb-3">Không có video nào</div>
+                    }
+                }
+                else
+                {
+                    <div class="row">
+
+                        @for (int i = 0; i < Model.ListItems.Count(); i++)
+                        { 
+                            <div class="gallery col-md-6 col-lg-4 col-12 h-100 mb-2">
+                                <div class="card rounded-0 border-0">
+                                    @if (Model.ListItems[i].IdType == 1)
+                                    {
+                                        <a asp-controller="Videos" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                            <img src="https://img.youtube.com/vi/@Model.ListItems[i].Link/0.jpg" class="img-thumbnail" alt="@Model.ListItems[i].Alias" />
+                                            <div class="title-video py-2 font-weight-bold truncate-title">@Model.ListItems[i].Title</div>
+                                        </a>
+                                    }                                    
+                                    else
+                                    {
+                                        <a asp-controller="Videos" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                            <img src="@Model.ListItems[i].Image" class="img-thumbnail" alt="@Model.ListItems[i].Title" />
+                                            <div class="title-video py-2 font-weight-bold truncate-title">@Model.ListItems[i].Title</div>
+                                        </a>
+                                    }
+
+                                </div>
+                            </div>
+
+                        }
+
+                    </div>
+
+                }
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/fancybox-master/jquery.fancybox.min.js"></script>
+    
+    <script>
+        $('[data-fancybox]').fancybox({
+            youtube: {
+               
+            },
+            vimeo: {
+                color: 'f00'
+            }
+        });
+    </script>
+}
+
+<!--
+
+https://img.youtube.com/vi/13H5fgV3EYg/mqdefault.jpg
+-->

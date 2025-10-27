@@ -1,0 +1,100 @@
+﻿@model API.Areas.Admin.Models.NhatKyNongHo.NhatKyNongHoModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Nhật Ký Nông hộ";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Nhật Ký Nông Hộ";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+
+
+<div class="container-fluid">
+ 
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="page-title">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <form asp-controller="@ControllerName" asp-action="SaveItem" method="post" class="needs-validation" novalidate>
+                                <div class="position-relative mb-3">
+                                    <label class="form-label" asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                                    <input type="text" class="form-control" asp-for="Item.Title" name="Title" required>
+                                    <div class="invalid-tooltip">
+                                        Vui lòng nhập Nguồn gốc cây trồng
+                                    </div>
+                                </div>
+
+                                <div class="position-relative mb-3">
+                                    <div class="form-group">
+                                        <label>Ngày Đăng <sup class="text-danger"> (*)</sup></label>
+                                        <div class="input-group date" id="PublishUpShow" data-target-input="nearest">
+                                            <input type="text" asp-for="Item.PublishUpShow" name="PublishUpShow" class="form-control datetimepicker-input" data-target="#PublishUpShow" id="PublishUpShow" />
+                                            <div class="input-group-append" data-target="#PublishUpShow" data-toggle="datetimepicker">
+                                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 col-md-4">
+                                        <div class="position-relative mb-3">
+                                            <label asp-for="Item.Status">Trạng Thái</label>
+                                            <div class="row g-3 align-items-center">
+                                                <div class="col-auto">
+                                                    <label>Trạng thái:</label>
+                                                </div>
+                                                <div class="col-auto me-3">
+                                                    <input type="checkbox" asp-for="Item.Status" name="Status" data-switch="success" />
+                                                    <label asp-for="Item.Status" data-on-label="Bật" data-off-label="Tắt">&nbsp;</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="position-relative mb-3">
+                                    <label asp-for="Item.FullText">Nội dung</label>
+                                    <textarea asp-for="Item.FullText" name="FullText" class="form-control"></textarea>
+                                </div>
+
+                                <div class="position-relative mt-2">
+                                    <div class="col-lg-12">
+                                        <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                                            <i class="fas fa-save"></i> Lưu lại
+                                        </button>
+                                        <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index" asp-route-IdNguonGocCayTrong="@Model.Item.IdNguonGocCayTrong"><i class="fas fa-backward"></i> Quay Lại</a>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                                <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                                <input type="hidden" class="form-control" asp-for="Item.IdNguonGocCayTrong" name="IdNguonGocCayTrong">
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+

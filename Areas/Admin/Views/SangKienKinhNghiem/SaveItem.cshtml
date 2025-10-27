@@ -1,0 +1,201 @@
+﻿@model API.Areas.Admin.Models.SangKienKinhNghiem.SangKienKinhNghiemModel;
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Sáng kiến kinh nghiệm";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Sáng kiến kinh nghiệm";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    //string Link = "/" + Model.Item.Alias + "-" + Model.Item.Id + ".html";
+    //string Link_EN = "/" + Model.Item.Alias_EN + "-" + Model.Item.Id + ".html";
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="article-vi-tab" data-toggle="tab" href="#article-vi" role="tab" aria-controls="article-vi" aria-selected="true">Tiếng Việt</a>
+                </li>
+                @*<li class="nav-item" role="presentation">
+                    <a class="nav-link" id="article-en-tab" data-toggle="tab" href="#article-en" role="tab" aria-controls="article-en" aria-selected="false">English</a>
+                </li>*@
+            </ul>
+            <div class="tab-content mt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="article-vi" role="tabpanel" aria-labelledby="article-vi-tab">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.Ten">Tên <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.Ten" name="Ten">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.LinhVuc">Lĩnh vực</label>
+                                <select asp-for="Item.LinhVuc" name="LinhVuc" class="form-control" asp-items="Model.ListLinhVuc"></select>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.CapQuanLy">Cấp quản lý</label>
+                                <select asp-for="Item.CapQuanLy" name="CapQuanLy" class="form-control" asp-items="Model.ListCapQuanLy"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.MaSo">Mã số <sup class="text-danger"> (*)</sup></label>
+                                <input type="text" class="form-control" asp-for="Item.MaSo" name="MaSo">
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.DonViChuTri">Đơn vị chủ trì</label>
+                                <input type="text" class="form-control" asp-for="Item.DonViChuTri" name="DonViChuTri">
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.KetQua">Kết quả</label>
+                                <input type="text" class="form-control" asp-for="Item.KetQua" name="KetQua">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                                    <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <div class="form-group images-main">
+                                <label class="">Image</label>
+                                <img src="@Model.Item.Image" class="Item_Images_EN_Main_Preview" style="max-height:200px;">
+                                <input type="hidden" name="Image" id="Item_Images_EN_Main" class="form-control" asp-for="Item.Image">
+                                <a onclick="ShowManagerFile('Item_Images_EN_Main')" class="btn btn-primary text-white">Select Image</a>
+                                <a onclick="ViewImageMain('Item_Images_EN_Main')" class="text"> <i class="fas fa-eye"></i> View</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Item.TacGia">Tác giả</label>
+                                <input type="text" class="form-control" asp-for="Item.TacGia" name="TacGia">
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Ngày thực hiện từ </label>
+                                <div class="input-group date" id="ThoiGianThucHienTu" data-target-input="nearest">
+                                    <input type="text" asp-for="Item.ThoiGianThucHienTu" name="ThoiGianThucHienTu" class="form-control datetimepicker-input" data-target="#ThoiGianThucHienTu" id="ThoiGianThucHienTu" />
+                                    <div class="input-group-append" data-target="#ThoiGianThucHienTu" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Ngày thực hiện đến </label>
+                                <div class="input-group date" id="ThoiGianThucHienDen" data-target-input="nearest">
+                                    <input type="text" asp-for="Item.ThoiGianThucHienDen" name="ThoiGianThucHienDen" class="form-control datetimepicker-input" data-target="#ThoiGianThucHienDen" id="ThoiGianThucHienDen" />
+                                    <div class="input-group-append" data-target="#ThoiGianThucHienDen" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+
+                </div><!--End VI-->
+                <!--Start EN-->
+                @*<div class="tab-pane fade" id="article-en" role="tabpanel" aria-labelledby="article-en-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Title_EN">Title </label>
+                                <input type="text" class="form-control" asp-for="Item.Title_EN" name="Title_EN">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label asp-for="Item.Link_EN">Link </label>
+                                <input type="text" class="form-control" asp-for="Item.Link_EN" name="Link_EN">
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group images-main">
+                                <label class="">Image</label>
+                                <img src="@Model.Item.Image_EN" class="Item_Images_EN_Main_Preview" style="max-height:200px;">
+                                <input type="hidden" name="Image_EN" id="Item_Images_EN_Main" class="form-control" asp-for="Item.Image_EN">
+                                <a onclick="ShowManagerFile('Item_Images_EN_Main')" class="btn btn-primary text-white">Select Image</a>
+                                <a onclick="ViewImageMain('Item_Images_EN_Main')" class="text"> <i class="fas fa-eye"></i> View</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>*@
+            </div>
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+            <input type="hidden" class="form-control" asp-for="SearchData.IdCoQuan" name="IdCoQuan">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index" asp-route-lvid="@Model.Item.LinhVuc" asp-route-cqlid="@Model.Item.CapQuanLy"><i class="fas fa-backward"></i> Hủy</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <script>
+        $(function () {
+
+            $('#ThoiGianThucHienTu').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+
+        $(function () {
+
+            $('#ThoiGianThucHienDen').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+    </script>
+}

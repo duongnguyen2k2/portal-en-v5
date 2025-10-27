@@ -1,0 +1,37 @@
+﻿
+@model API.Areas.Admin.Models.Menus.Menus;
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@{
+    string clsShowChild = "";
+    List<API.Areas.Admin.Models.Menus.TypeShow> ListTypeShow = API.Areas.Admin.Models.Menus.MenusService.GetListItemsTypeShow();
+    for (int cl = 0; cl<ListTypeShow.Count; cl++)
+    {
+        if (Model.TypeShowId == ListTypeShow[cl].Id)
+        {
+            clsShowChild = ListTypeShow[cl].Code;
+        }
+    }
+}
+
+<li class="@clsShowChild">
+    <a class="text-uppercase font-weight-bold" href="@Model.Link">@(Model.Title)</a>
+    <ul>
+        @for (int i = 0; i < Model.ListMenus.Count; i++)
+        {
+            if (Model.ListMenus[i].Link != null)
+            {
+                <li><a class="text-uppercase " href="@(Model.ListMenus[i].Link)"><i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+            else if (Model.ListMenus[i].ArticleId != 0)
+            {
+                <li><a class="text-uppercase " href="/gioi-thieu.html"> <i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+            else
+            {
+                <li><a class="text-uppercase" href="#"><i class="@(Model.ListMenus[i].Icon)"></i>@(Model.ListMenus[i].Title)</a></li>
+            }
+        }
+    </ul>
+</li>
+

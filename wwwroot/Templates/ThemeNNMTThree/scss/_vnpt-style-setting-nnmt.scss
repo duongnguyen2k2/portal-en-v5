@@ -1,0 +1,56 @@
+﻿$color-primary: #1f5cb0; // màu chủ đạo
+$color-secondary: #0a68dc; // xanh phụ nhạt hơn, đồng bộ với chủ đạo
+$color-secondary2: #033775; // xanh đậm hơn để làm nổi khối
+$color-main: #1f5cb0; // đồng bộ màu chính
+$color-main-2: #fce38f; // giữ vàng pastel để làm điểm nhấn nhẹ
+$khauhieu: #bd140a; // đỏ điểm nhấn (giữ nguyên nếu cần)
+$bg-main: #ffffff; // nền trắng
+$bg-footer: #033775; // xanh đậm hơn footer
+$bg-menu: #1f5cb0; // menu = màu chính
+$color-menu: #ffffff; // chữ trắng để nổi
+$bg-header-cat: #1f5cb0; // header = màu chính
+$color-header-cat: #ffffff;
+$bg-menu-mobile: #ffffff; // mobile menu trắng
+$icon-header: '../images/icon-tin-noi-bat.png';
+$bg-footer-image: '../images/bg-fotter.png';
+$bg-image: '../images/bg.jpg';
+$zoom-img: '../images/zoom-green.png';
+$bg-leftmenu: #0a68dc; // xanh nhạt hơn
+$home-cat-dot-circle: #1f5cb0; // chấm tròn đồng bộ màu chính
+$home-cat-dot-circle-hover: #033775; // hover xanh đậm hơn
+$bg-webxa: '../images/danh-sach-website-xa-blue.jpg';
+$thongbao-tieudeh1: #1f5cb0;
+$thongkevanban-tieudeh1: #1f5cb0;
+$bg-stellarnav-mobile: #1f5cb0;
+$bg-emc: #0a68dc;
+$bg-menu-footer: #033775; // footer menu xanh đậm
+
+
+.menu-select-css {
+    .list-color {
+        .color-item {
+            width: 40px;
+            height: 20px;
+            border-radius: 2px;
+            border: 1px solid #fff;
+            cursor: pointer;
+            display: block;
+        }
+
+        .vnpt-style {
+            background: #e04d58;
+        }
+
+        .vnpt-style-2 {
+            background: #0a68dc;
+        }
+
+        .vnpt-style-3 {
+            background: #44951A;
+        }
+
+        .vnpt-style-4 {
+            background: #0058c0;
+        }
+    }
+}

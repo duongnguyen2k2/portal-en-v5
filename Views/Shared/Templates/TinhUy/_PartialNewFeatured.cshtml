@@ -1,0 +1,125 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Microsoft.AspNetCore.Http;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+    
+
+   
+}
+
+<div class="row">
+    <div class="col-features-left">
+        <section id="features-wrap">
+            <div class="card card-style-two border-0 features-header">
+                <h4 class="featured-news-home">
+                    <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">TIN NỔI BẬT</a>                    
+                </h4>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-7">
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                            {
+                                @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                                {
+
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <div class="features-item">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                <img src="@ListArticlesHot[i].Images" class="d-block w-100" style="height:195px" />
+                                            </a>
+                                            <div class="features-item-body">
+                                                <h1 class="title">
+                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                        @ListArticlesHot[i].Title
+                                                    </a>
+                                                </h1>
+                                                <p class="overview">
+                                                    @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-6 col-5">
+                    <ul class="list-group features-list scrollWrap">
+                        @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                        {
+                        <li class="features-list-item">
+                            <img src="@ListArticlesHot[0].Images" style="height:70px; width:115px;" />
+                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[0].Id" asp-route-alias="@ListArticlesHot[0].Alias" title="@ListArticlesHot[0].Title">
+                                @ListArticlesHot[0].Title
+                            </a>
+                            <span class="clearfix"></span>
+                        </li>
+
+                        @if (ListArticlesHot.Count() > 1) {                                                            
+                                @for (int i = 1; i < ListArticlesHot.Count(); i++)
+                                {
+                                    <li class="features-list-item">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                            @ListArticlesHot[i].Title
+                                        </a>
+                                    </li>
+
+                                }
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+
+        
+    </div>
+
+    <div class="col-features-right">
+        <div class="card card-style-two border-0 " id="featured-document">
+            <div class="card-header">
+                <h3>
+                    <a asp-controller="Articles" asp-action="Notification"><i class="fas fa-folder-open"></i> Thông báo</a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div id="marquee_document_right" >
+                    <ul>
+                        @if (NotificationList != null && NotificationList.Count() > 0)
+                        {
+
+
+                            @for (int i = 0; i < NotificationList.Count(); i++)
+                            {
+                                <li class="mb-2">
+                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
+                                        @NotificationList[i].Title
+                                        <span>(@NotificationList[i].PublishUp.ToString("dd/MM/yyy, HH:mm"))</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            
+
+        </div>
+    </div>
+
+
+</div>
+
+

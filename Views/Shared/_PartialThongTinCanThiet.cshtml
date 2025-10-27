@@ -1,0 +1,45 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    Boolean flagShow = true;
+    string Link = "https://thongkelienthong.daklak.gov.vn/summary/index.iws";
+    if (Configuration["Security:SiteCode"] == "DNO")
+    {
+        Link = "https://thongkelienthong.daklak.gov.vn/summary/index.iws";
+    }
+    if (Model.CodeVanBan != null && Model.CodeVanBan != "")
+    {
+        Link = Link + "?unit=" + Model.CodeVanBan;
+    }
+    
+
+    List<string> arrCode = Configuration["Security:SiteCode"].ToString().Split('-').ToList();
+    if (arrCode.Count() > 1)
+    {
+        if (arrCode[1] == "EDU") { flagShow = false; }
+    }
+}
+
+@if (flagShow) 
+{
+    <div class="portlet-borderless-container" style="">
+        <div class="portlet-body">
+            <div>
+                <div class="trangchinh_thongbao">
+                    <div class="tieude-h1">@Localizer["Title_TTCT"]</div>
+                    <ul class="thongtin-canbiet">
+                        <li><strong style="font-size: 10px;"><a href="https://nchmf.gov.vn/Kttvsite/vi-VN/1/dac-lak-w13.html" rel="nofollow" target="_blank">@Localizer["DBTT"] </a></strong></li>
+                        <li><strong style="font-size: 10px;"><a href="http://giacaphe.com/" rel="nofollow" target="_blank">@Localizer["GCP"]</a></strong></li>
+                        <li><strong style="font-size: 10px;"><a href="http://hcm.24h.com.vn/ttcb/giavang/giavang.php" rel="nofollow" target="_blank">@Localizer["TGV"]</a></strong></li>
+                        <li><strong style="font-size: 10px;"><a href="http://www.vietcombank.com.vn/exchangerates/" rel="nofollow" target="_blank">@Localizer["TGNT"]</a></strong></li>
+                        <li><strong style="font-size: 10px;"><a href="http://chungkhoan.24h.com.vn/" rel="nofollow" target="_blank">@Localizer["CK"]</a></strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,138 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@inject IViewLocalizer Localizer
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+}
+<div class="footer_wr">
+    <footer>
+        <div class="container-page">
+            <!-- Top section with address -->
+            <div class="footer-top">
+                <div class="footer-address">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>@Localizer["Address"]: @ItemCoQuan.Address</span>
+                </div>
+            </div>
+            
+            <!-- Main footer content -->
+            <div class="footer-main">
+                <div class="footer-col-left">
+                    <h3 class="footer-title">Về chúng tôi</h3>
+                    <div class="footer-about">
+                        <p>
+                            Sở Nông nghiệp và Môi trường Đắk Lắk là cơ quan chuyên môn thuộc UBND tỉnh, 
+                            có chức năng tham mưu, giúp UBND tỉnh thực hiện quản lý nhà nước về các lĩnh vực: 
+                            nông nghiệp, lâm nghiệp, thủy sản, thủy lợi, môi trường và biến đổi khí hậu trên địa bàn tỉnh.
+                        </p>
+                        <div class="footer-contact">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>@Localizer["Phone"]: @ItemCoQuan.Telephone</span>
+                                @if(@ItemCoQuan.Fax!=null && @ItemCoQuan.Fax != "")
+                                {
+                                    <span class="fax-info">| Fax: @ItemCoQuan.Fax</span>
+                                } 
+                            </div>
+                            @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                            {
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>@Localizer["Email"]: @ItemCoQuan.Email</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-col-right">
+                    <h3 class="footer-title">@ItemCoQuan.Title</h3>
+                    <div class="footer-org-info">
+                        @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                        {
+                            <p>@ItemCoQuan.CTNC</p>
+                        }
+                        @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                        {
+                            <p>@ItemCoQuan.MetadataCV.DescFooter</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom section with made by -->
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <span>@Localizer["MadeBy"] <a href="@Model.CopyrightLink" target="_blank">@Model.CopyrightTitle</a> - Đắk Lắk</span>
+                    <img src="/images/vnpt-logo.png" alt="VNPT Logo" class="vnpt-logo">
+                </div>
+                <ul class="list-inline menu-select-css">
+                    <li class="list-inline-item">
+                        <ul class="list-inline list-color">
+                            <li class="list-inline-item">
+                                <a class="color-item vnpt-style-2 " href="/Home/SelectCssName?CssName=vnpt-style-2.css"></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a class="color-item vnpt-style-3" href="/Home/SelectCssName?CssName=vnpt-style-3.css"></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a class="color-item vnpt-style-4" href="/Home/SelectCssName?CssName=vnpt-style-4.css"></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</div>
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>
+</div>
+<!-- IPv6-test.com button END -->
+
+<!-- https://tinnhiemmang.vn/ button BEGIN -->
+<div class="button-tinnhiemmang" id="@(ItemCoQuan.FolderUpload+"-button-tinnhiemmang")">
+    <a href='https://tinnhiemmang.vn/tim-kiem-theo-ten?type=web&q=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/handle_cert.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='Chung nhan Tin Nhiem Mang' title='Chung nhan Tin Nhiem Mang' border='0' />
+    </a>
+</div>
+<!-- https://tinnhiemmang.vn/ button END -->
+
+@if(ItemCoQuan.Code=="portal-eakar.vnptdaklak.vn" || ItemCoQuan.Code == "eakar.daklak.gov.vn" || ItemCoQuan.Code == "localhost:54516")
+        {
+            <style>
+             @@media only screen and (max-width: 600px) {
+                #block-slideshow{
+                    background:url('../images/bg-header-eakar.png');
+                }
+            }
+            </style>
+            
+        }
+<div class="modal fade" id="SurveyChart" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="SurveyChartLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SurveyChartLabel">Kết quả khảo sát</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="SurveyChartBody">
+            </div>
+
+        </div>
+    </div>
+</div>

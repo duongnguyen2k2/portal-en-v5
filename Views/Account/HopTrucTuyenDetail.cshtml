@@ -1,0 +1,54 @@
+﻿@model API.Areas.Admin.Models.HopTrucTuyen.HopTrucTuyenModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = (Model.Item.Title);
+   
+    ViewData["Url"] = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Images;
+
+    if (Model.Item.CatId == 1)
+    {
+        ViewData["Title"] = (Model.Item.Title + " | " + ItemCoQuan.Title);
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+}
+<div class="row PageDetail PageDetail-@Model.Item.Alias" id="PageDetail">
+
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-0">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Họp trực tuyến</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-4 text-right">
+        <span class="date">Cập nhật lúc: @Model.Item.PublishUpShow</span>
+    </div>
+
+    <div class="col-md-12 full-text article-content">
+        @if (Model.Item.CatId != 1)
+        {
+            <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+        }
+
+        @Html.Raw(Model.Item.Description)
+    </div>
+
+</div>

@@ -1,0 +1,426 @@
+﻿@model API.Areas.Admin.Models.Products.ProductsModel
+@{
+	Layout = "_layoutAdmin";
+	if (Model.Item.Id == 0)
+	{
+		ViewData["Title"] = "Thêm mới Sản Phẩm OCOP";
+	}
+	else
+	{
+		ViewData["Title"] = "Cập nhật Sản Phẩm OCOP";
+	}
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css@("?v="+version)" />
+
+<div class="container-fluid" id="app-dmloaicoquan">
+	<div class="row">
+		<div class="col-12">
+			<div class="page-title-box">
+				<div class="page-title-right">
+					<ol class="breadcrumb m-0">
+						<li class="breadcrumb-item">
+							<a href="/Admin">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16">
+									<path fill-rule="evenodd" d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+									<path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+								</svg> Trang Chủ
+							</a>
+						</li>
+						<li class="breadcrumb-item active">@ViewData["Title"]</li>
+					</ol>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-body">
+					<div asp-validation-summary="All" class="text-danger"></div>
+					<form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+						<div class="row">
+							<div class="col-6">
+								<div class="form-group">
+									<label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+									<input type="text" class="form-control Changetitle namepr" asp-for="Item.Title" name="Title">
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="form-group">
+									<label asp-for="Item.Alias" class="control-label"></label>
+									<input asp-for="Item.Alias" name="Alias" class="form-control slug" />
+									<span asp-validation-for="Item.Alias" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="col-3">
+								<div class="form-group">
+									<label asp-for="Item.Sku">Sku <sup class="text-danger"> (*)</sup></label>
+									<input type="text" class="form-control" asp-for="Item.Sku" name="Sku">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.PriceDeal">Giá gốc <sup class="text-danger"> (*)</sup> <span id="PriceDeal_Show" class="text-info font-weight-bold"> @Model.Item.PriceDealDisplay@("(VNĐ)")</span></label>
+										<input type="number" class="form-control" asp-for="Item.PriceDeal" onkeyup="PriceDealChange()" name="PriceDeal">
+									</div>
+								</div>
+							</div>
+
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.Price">Giá bán <sup class="text-danger"> (*)</sup> <span id="Price_Show" class="text-info font-weight-bold"> @Model.Item.PriceDisplay@("(VNĐ)")</span> </label>
+										<input type="number" class="form-control" asp-for="Item.Price" onkeyup="PriceChange()" name="Price">
+									</div>
+								</div>
+							</div>
+
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.Discount">% Giảm giá</label>
+										<input readonly="readonly" type="text" class="form-control" asp-for="Item.Discount" name="Discount">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.PriceDeal">Số lượng <sup class="text-danger"> (*)</sup></label>
+										<input type="number" min="0" class="form-control" asp-for="Item.Quantity" name="Quantity">
+									</div>
+								</div>
+							</div>
+
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.Price">Đã Bán <sup class="text-danger"> (*)</sup></label>
+										<input type="number" min="0" class="form-control" asp-for="Item.Sold" name="Sold">
+									</div>
+								</div>
+							</div>
+
+							<div class="col-4">
+								<div class="form-group">
+									<div class="form-group">
+										<label asp-for="Item.Available">Còn Tồn Kho</label>
+										<input type="number" min="0" readonly="readonly" class="form-control" asp-for="Item.Available" name="Available">
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-3">
+								<div class="form-group">
+									<label>Ngày Đăng <sup class="text-danger"> (*)</sup></label>
+									<div class="input-group date" id="PublishUpShow" data-target-input="nearest">
+										<input type="text" asp-for="Item.PublishUpShow" name="PublishUpShow" class="form-control datetimepicker-input" data-target="#PublishUpShow" id="PublishUpShow" />
+										<div class="input-group-append" data-target="#PublishUpShow" data-toggle="datetimepicker">
+											<div class="input-group-text">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-fill" viewBox="0 0 16 16">
+													<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5h16V4H0V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5z" />
+												</svg>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<label class="control-label">&nbsp;</label>
+								<div class="form-group">
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="checkbox" asp-for="Item.Status" name="Status">
+										<label class="form-check-label" asp-for="Item.Status">Trạng Thái</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="checkbox" asp-for="Item.Featured" name="Featured">
+										<label class="form-check-label" asp-for="Item.Featured">Nổi Bật</label>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-12 col-md-4">
+								<div class="form-group">
+									<label asp-for="Item.IdCoQuan">Cơ Quan</label>
+									<select asp-for="Item.IdCoQuan" name="IdCoQuan" class="form-control" asp-items="Model.ListDMCoQuan"></select>
+								</div>
+							</div>
+
+							<div class="col-12 col-md-4">
+								<div class="form-group">
+									<label asp-for="Item.Star">Đánh giá Số Sao</label>
+									<select asp-for="Item.Star" name="Star" class="form-control" asp-items="Model.ListStar"></select>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-4">
+								<div class="form-group images-main">
+									<label>Hình đại diện</label>
+									<img src="@Model.Item.Image" class="Item_Images_Article_Preview" style="max-height:200px;">
+									<input type="hidden" name="Image" id="Item_Images_Article" class="form-control" asp-for="Item.Image">
+									<a onclick="ShowManagerFile('Item_Images_Article')" class="btn btn-primary">Chọn hình (600px*400px)</a>
+									<a onclick="ViewImageArtile('Item_Images_Article')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+								</div>
+							</div>
+
+							<div class="col-12 col-md-4">
+								<div class="form-group">
+									<label asp-for="Item.IdManufacturer">Chọn Hãng SX</label>
+									<select asp-for="Item.IdManufacturer" name="IdManufacturer" class="form-control" asp-items="Model.ListItemsManufacturer"></select>
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<div class="form-group">
+									<label asp-for="Item.CatId">Danh mục <sup class="text-danger"> (*)</sup></label>
+									<select asp-for="Item.CatId" name="CatId" class="form-control" asp-items="Model.ListItemsCategories"></select>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								<fieldset class="scheduler-border">
+									<legend class="scheduler-border">File hình ảnh</legend>
+									<div class="file-list">
+										@if (Model.Item.ListImage != null && Model.Item.ListImage.Count() > 0)
+										{
+											<input type="hidden" id="maxfile" value="@(Model.Item.ListImage.Count() - 1)">
+											for (int j = 0; j < Model.Item.ListImage.Count(); j++)
+											{
+												<div class="image-item">
+													<div class="row file-item file-item-@j">
+														<div class="col-lg-4">
+															<input class="form-control" type="text" asp-for="@Model.Item.ListImage[j].Title" name="ListImage[@j].Title" id="FileName_Title_@j" placeholder="Tiêu đề">
+														</div>
+														<div class="col-lg-2">
+															<input class="form-control" type="number" asp-for="@Model.Item.ListImage[j].Ordering" name="ListImage[@j].Ordering" id="FileName_Ordering_@j" placeholder="Thứ tự">
+														</div>
+														<div class="row col-lg-4">
+															<div class="col-lg-3"><a onclick="ShowManagerFile('FileName_@j')" class="btn btn-primary">Chọn hình ảnh</a></div>
+															<div class="col-lg-9"><input type="text" asp-for="@Model.Item.ListImage[j].ImagePath" name="ListImage[@j].ImagePath" class="FileName w-100" id="FileName_@j"></div>
+														</div>
+														<div class="col-lg-1">
+															<span class="btn btn-danger xoaimage" onclick="DeleteImage('@j')"> Xóa </span>
+														</div>
+													</div>
+												</div>
+											}
+										}
+										else
+										{
+											<input type="hidden" id="maxfile" value="-1">
+										}
+									</div>
+									<p style="margin:10px 5px; cursor:pointer" class="text-primary" onclick="AddImage()">
+										<i class="fa fa-plus-square"></i> Thêm hình ảnh
+									</p>
+								</fieldset>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="form-group">
+									<label asp-for="Item.Introtext">Mô tả ngắn sản phẩm</label>
+									<textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label asp-for="Item.Description">Nội dung Sản phẩm</label>
+							<textarea asp-for="Item.Description" id="full-textarea" name="Description" class="form-control full-textarea"></textarea>
+						</div>
+
+						<div class="row">
+							<div class="col-4">
+								<div class="form-group">
+									<label asp-for="Item.MetadataCV.MetaTitle">Meta Title</label>
+									<input type="text" class="form-control" asp-for="Item.MetadataCV.MetaTitle" name="MetadataCV.MetaTitle">
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="form-group">
+									<label asp-for="Item.MetadataCV.MetaH1">Meta H1</label>
+									<input type="text" class="form-control" asp-for="Item.MetadataCV.MetaH1" name="MetadataCV.MetaH1">
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="form-group">
+									<label asp-for="Item.MetadataCV.MetaH3">Meta H3</label>
+									<input type="text" class="form-control" asp-for="Item.MetadataCV.MetaH3" name="MetadataCV.MetaH3">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Item.Metadesc" class="control-label"></label>
+									<textarea asp-for="Item.Metadesc" name="Metadesc" class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Item.Metakey" class="control-label"></label>
+									<textarea asp-for="Item.Metakey" name="Metakey" class="form-control"></textarea>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row">
+							<div class="col-lg-12">
+								<button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save2" viewBox="0 0 16 16">
+										<path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
+									</svg> Lưu lại
+								</button>
+								<a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+										<path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+										<path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+									</svg> Quay Lại
+								</a>
+							</div>
+						</div>
+
+						<input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+						<input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+						@*Update ocop status*@
+						<input type="hidden" class="form-control" asp-for="Item.OCOP" name="OCOP">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+	<script src='~/lib/tinymce/tinymce.min.js@("?v="+version)' referrerpolicy="origin"></script>
+	<script src='/lib/tinymce/js/tinymce_config.js@("?v="+version)' referrerpolicy="origin"></script>
+	<script src="~/lib/js/moment.js@("?v="+version)"></script>
+	<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js@("?v="+version)"></script>
+
+	<script type="text/javascript">
+		var imageCount = 0;
+		var listImage = "";
+
+		$(function () {
+
+			$('#PublishUpShow').datetimepicker({
+				format: 'DD/MM/YYYY',
+			});
+		});
+
+		function SaveItemFeatured() {
+			$('#Item_Featured').attr('checked', 'checked');
+			$("#Myform").submit();
+		}
+
+		function SaveItemStatus() {
+			$('#Item_Status').attr('checked', 'checked');
+			$("#Myform").submit();
+		}
+
+		function ViewImageArtile(id) {
+			$('#ArticleShowImagePath').attr("src", "/images/no-image.png");
+			$('#ArticleShowImage').modal('show');
+			$('#ArticleShowImagePath').attr("src", $('#' + id).val());
+		}
+
+		function addCommas(str) {
+			if (str == null) {
+				return "0";
+			} else {
+				var parts = (str + "").split("."),
+					main = parts[0],
+					len = main.length,
+					output = "",
+					first = main.charAt(0),
+					i;
+
+				if (first === '-') {
+					main = main.slice(1);
+					len = main.length;
+				} else {
+					first = "";
+				}
+				i = len - 1;
+				while (i >= 0) {
+					output = main.charAt(i) + output;
+					if ((len - i) % 3 === 0 && i > 0) {
+						output = "." + output;
+					}
+					--i;
+				}
+				// put sign back
+				output = first + output;
+				// put decimal part back
+				if (parts.length > 1) {
+					output += "," + parts[1];
+				}
+				return output;
+			}
+		}
+
+		function PriceDealChange() {
+			var Price = $("#Item_PriceDeal").val();
+			let show = addCommas(Price);
+			console.log(show);
+			$("#PriceDeal_Show").html(show);
+		}
+
+		function PriceChange() {
+			var Price = $("#Item_Price").val();
+			let show = addCommas(Price);
+			console.log(show);
+			$("#Price_Show").html(show);
+		}
+
+		function AddImage() {
+			var max = parseInt($("#maxfile").val()) + 1;
+			var str = "";
+			str = '<div class="image-item">';
+			str = str + '<div class="row file-item file-item-' + imageCount + '">';
+			str = str + '<div class="col-lg-4"><input class="form-control" type="text" name="ListImage[' + max + '].Title" id="FileName_Title_' + max + '" placeholder="Tiêu đề"></div>';
+			str = str + '<div class="col-lg-2"><input class="form-control" type="number" name="ListImage[' + max + '].Ordering" id="FileName_Ordering_' + max + '" placeholder="Thứ tự"></div>';
+			str = str + '<div class="row col-lg-4"><div class="col-lg-3"><a onclick="ShowManagerFile(\'FileName_' + max + '\')" class="btn btn-primary">Chọn hình ảnh</a></div><div class="col-lg-9"><input type="text" name="ListImage[' + max + '].ImagePath" class="FileName w-100" id="FileName_' + max + '"></div></div>';
+			str = str + '<div class="col-lg-1"><span class="btn btn-danger xoaimage" onclick = "DeleteImage(' + imageCount + ')" > Xóa </span></div>';
+			str = str + '</div></div>'
+			$(".file-list").append(str);
+			$("#maxfile").val(max);
+			imageCount++;
+		}
+
+		$('.file-list').on('click', '.file-item .xoaimage', function (event) {
+			$(this).parent().find(".lblFileName").empty();
+			$(this).parent().find(".FileName").val("");
+		})
+
+		function DeleteImage(i) {
+			var getValue = document.getElementById("FileName_" + i);
+			if (getValue.value != "") {
+				getValue.value = "";
+			}
+		}
+	</script>
+}
+
+<style>
+	.link-article-item {
+		margin-top: 10px;
+	}
+</style>

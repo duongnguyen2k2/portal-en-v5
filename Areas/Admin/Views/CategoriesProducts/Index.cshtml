@@ -1,0 +1,353 @@
+﻿@model API.Areas.Admin.Models.DMLoaiCoQuan.DMLoaiCoQuanModel
+@{
+	Layout = "_layoutAdmin";
+	ViewData["Title"] = "Danh mục sản phẩm";
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="/lib/toast-jquery/jquery.toast.min.css">
+<div class="container-fluid" id="app-categoriesproducts">
+	<div class="row">
+		<div class="col-12">
+			<div class="page-title-box">
+				<div class="page-title-right">
+					<ol class="breadcrumb m-0">
+						<li class="breadcrumb-item">
+							<a href="/Admin">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16">
+									<path fill-rule="evenodd" d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+									<path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+								</svg> Trang Chủ
+							</a>
+						</li>
+						<li class="breadcrumb-item active">@ViewData["Title"]</li>
+					</ol>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+
+			<div class="card">
+				<div class="card-body">
+					<partial name="_PartialMsgInfoAdmin" />
+					<div class="row mb-2">
+						<div class="col-lg-10">
+							<div class="row">
+								<div class="col-auto">
+									<div class="form-group">
+										<input type="search" class="form-control" v-on:keyup="ChangeKeyWord(event)" v-model="SearchItems.Keyword" id="SearchItems_Keyword" placeholder="Tìm kiếm...">
+									</div>
+								</div>
+								<div class="col-auto">
+									<div class="d-flex align-items-center">
+										<div class="form-group">
+											<select class="form-control" id="status-select" v-model="SearchItems.Status" v-on:change="SearchChange()">
+												<option value="-1">--- Trạng Thái ----</option>
+												<option value="1">Bật</option>
+												<option value="0">Tắt</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-auto">
+									<a class="btn btn-primary text-white float-end" v-on:click="SearchChange()">
+										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+											<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+										</svg> Tìm kiếm
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-12 col-lg-2">
+							<a class="btn btn-primary float-right text-white" asp-controller="@ControllerName" asp-action="SaveItem">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+									<path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+								</svg> Thêm mới
+							</a>
+						</div>
+					</div>
+
+					<div class="table-responsive-sm">
+
+						<table class="table table-striped table-centered mb-0">
+							<thead>
+								<tr>
+									<th width="70px" class="text-center">Id</th>
+									<th width="70px" class="text-center">Code</th>
+									<th>Tên</th>
+									<th class="text-center">Mã</th>
+									<th class="text-center">Trạng Thái </th>
+									<th class="text-center">Nổi Bật</th>
+									<th class="text-center">Sắp xếp</th>
+									<th width="240px" class="btn-contain text-center">
+										Thao tác
+									</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								<template v-if="flagLoading">
+									<tr v-for="(item,index) in ListSkeleton" :key="item">
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+										<td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+
+									</tr>
+								</template>
+								<template v-if="!flagLoading">
+									<tr v-if="ListItems.length==0">
+										<td colspan="10" class="text-center">không có dữ liệu</td>
+									</tr>
+									<tr v-for="(item, index) in ListItems" v-bind:key="item.Id" v-bind:data-id="item.ID">
+										<th class="text-center">{{(index+1)}}</th>
+										<th class="text-center">{{(item.Id)}}</th>
+										<td>
+											<span class="text-pointer"> {{item.Title}}</span>
+										</td>
+										<td class="text-center">{{item.Code}}</td>
+										<td class="text-center">
+											<template v-if="ListItems[index].Status==1">
+												<span v-on:click="changeStatus(index)" class="fas fa-check-circle text-primary" aria-hidden="true"></span>
+											</template>
+
+											<template v-if="ListItems[index].Status==0">
+												<span v-on:click="changeStatus(index)" class="far fa-times-circle text-danger" aria-hidden="true"></span>
+											</template>
+										</td>
+										<td class="text-center">
+											<template v-if="ListItems[index].Featured==1">
+												<span v-on:click="changeFeatured(index)" class="fas fa-check-circle text-primary" aria-hidden="true"></span>
+											</template>
+
+											<template v-if="ListItems[index].Featured==0">
+												<span v-on:click="changeFeatured(index)" class="far fa-times-circle text-danger" aria-hidden="true"></span>
+											</template>
+										</td>
+										<td class="text-center">{{item.Ordering}}</td>
+										<td class="table-action text-center">
+											<a class="action-icon text-primary" title="Sửa" v-bind:href="'/Admin/@ControllerName/SaveItem/'+item.Ids">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+													<path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+													<path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+												</svg> Sửa
+											</a>
+
+											<a class="action-icon text-danger" title="Xóa" @@click="showDeleted(index)">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+													<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+													<path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+												</svg> Xóa 
+											</a>
+										</td>
+									</tr>
+
+								</template>
+							</tbody>
+
+						</table>
+						<form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+					</div>
+
+					<div class="row mt-2 float-end">
+						<template v-if="ListItems!=null && ListItems.length>0 && SearchItems.PageCount>0">
+							<paginate v-model="SearchItems.CurrentPage"
+									  :page-count="SearchItems.PageCount"
+									  :page-range="3"
+									  :margin-pages="2"
+									  :click-handler="pageChanged"
+									  :first-button-text="'Đầu'"
+									  :last-button-text="'Cuối'"
+									  :prev-text="'Trước'"
+									  :next-text="'Sau'"
+									  :first-last-button="true"
+									  :container-class="'pagination pagination-rounded'"
+									  :next-class="'page-item'"
+									  :next-link-class="'page-link'"
+									  :prev-class="'page-item'"
+									  :prev-link-class="'page-link'"
+									  :page-link-class="'page-link'"
+									  :page-class="'page-item'">
+							</paginate>
+						</template>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<div id="permission-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="detail-modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="standard-modalLabel">
+						Phân quyền Danh mục
+					</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+				</div>
+				<div class="modal-body">
+					<table id="myTable" class="table table-bordered ">
+						<thead>
+							<tr>
+								<th width="50px" class="text-center">
+									<div class="custom-control custom-checkbox">
+										<input type="checkbox" id="CheckAll" v-on:click="CheckAllPermission()" v-model="flagPermissionAll" class="custom-control-input">
+										<label class="custom-control-label" for="CheckAll"></label>
+									</div>
+								</th>
+								<th>Tên</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							<template v-if="(ListGroups!=null && ListGroups.length>0)&&(flagLoadingChild==false)">
+								<tr v-for="(item,index) in ListGroups" :key="item.id">
+									<td>{{index+1}}</td>
+									<td>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" v-bind:id="'permission_'+item.IdGroup" v-model="item.Selected">
+											<label class="custom-control-label" v-bind:for="'permission_'+item.IdGroup">{{item.GroupTitle}}</label>
+										</div>
+									</td>
+
+
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+
+					<button class="btn btn-primary" type="button" disabled v-if="flagLoadingChild">
+						<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+						Đang Lưu
+					</button>
+					<button type="button" class="btn btn-primary" v-if="!flagLoadingChild" v-on:click="SaveManagerCatGroup()">
+						<template v-if="detailItem.Id==0">
+							Thêm mới
+						</template>
+						<template v-if="detailItem.Id>0">
+							Cập nhật
+						</template>
+					</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+	<div id="detail-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="detail-modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="standard-modalLabel">
+						<template v-if="detailItem.Id==0">
+							Thêm mới Loại sản phẩm
+						</template>
+						<template v-if="detailItem.Id>0">
+							Cập nhật Loại sản phẩm
+						</template>
+					</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+				</div>
+				<div class="modal-body">
+					<form id="CategoriesProductsForm" class="needs-validation" novalidate>
+						<div class="position-relative mb-3">
+							<label for="Title" class="form-label">Tên<sup class="text-danger"> (*)</sup></label>
+							<input v-bind:class="{'form-control':true, 'is-invalid' : (validDetailItem.Title!='')}" v-model="detailItem.Title" type="text" id="DetailItem_Title" placeholder="Tên loại cơ quan">
+							<div class="invalid-tooltip">{{validDetailItem.Title}}</div>
+						</div>
+						<div class="position-relative mb-3">
+							<label for="Code" class="form-label">Code</label>
+							<input v-bind:class="{'form-control':true, 'is-invalid' : (validDetailItem.Code!='')}" v-model="detailItem.Code" type="text" id="DetailItem_Code" placeholder="Mã loại cơ quan">
+							<div class="invalid-tooltip">{{validDetailItem.Code}}</div>
+						</div>
+						<div class="position-relative mb-3">
+							<div class="row g-3 align-items-center">
+								<div class="col-auto">
+									<label>Trạng thái:</label>
+								</div>
+								<div class="col-auto me-3">
+									<input type="checkbox" id="ItemStatus" name="TrangThai" data-switch="success" v-model="detailItem.Status" />
+									<label for="ItemStatus" data-on-label="Bật" data-off-label="Tắt">&nbsp;</label>
+								</div>
+							</div>
+						</div>
+						<div class="position-relative mb-3">
+							<label for="Ordering" class="form-label">Sắp Xếp</label>
+							<input v-bind:class="{'form-control':true, 'is-invalid' : (validDetailItem.Ordering!='')}" v-model="detailItem.Ordering" type="number" id="DetailItem_Ordering" placeholder="Số thứ tự">
+							<div class="invalid-tooltip">{{validDetailItem.Ordering}}</div>
+						</div>
+						<div class="form-group">
+							<label for="Description" class="form-label">Mô tả</label>
+							<textarea v-model="detailItem.Description" name="Description" class="form-control"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+
+					<button class="btn btn-primary" type="button" disabled v-if="flagLoadingChild">
+						<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+						Đang Lưu
+					</button>
+					<button type="button" class="btn btn-primary" v-if="!flagLoadingChild" v-on:click="saveItem()">
+						<template v-if="detailItem.Id==0">
+							Thêm mới
+						</template>
+						<template v-if="detailItem.Id>0">
+							Cập nhật
+						</template>
+					</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+
+	<div id="delete-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delete-modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header modal-colored-header bg-danger">
+					<h4 class="modal-title" id="danger-header-modalLabel">Bạn muốn xóa ?</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+				</div>
+				<div class="modal-body">
+					Bạn muốn xóa Loại Cơ quan <strong>{{deleteItem.Title}}</strong>?
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger" type="button" disabled v-if="flagLoadingChild">
+						<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+						Đang Xóa
+					</button>
+					<button type="button" class="btn btn-danger" v-if="!flagLoadingChild" v-on:click="deletedItem()">Xóa</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+
+</div>
+
+
+
+@section Scripts{
+	<script src="~/lib/js/vuejs.js@("?v="+version)"></script>
+	<script src="~/lib/js/vuejs-paginate.js@("?v="+version )"></script>
+	<script src="~/lib/toast-jquery/jquery.toast.min.js@("?v="+version )"></script>
+	<script src="~/TemplatesAdmin/js-app/categoriesproducts-app.js@("?v="+version )"></script>
+
+}

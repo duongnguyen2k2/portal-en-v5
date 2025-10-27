@@ -1,0 +1,24 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Http;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+    ViewData["Title"] = "Lịch công tác";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+
+}
+
+@if (Configuration["Security:SiteCode"] == "DLK" && Model.CodeLCT != null && Model.CodeLCT != "")
+{
+    <div class="lichcongtac" style="">
+        <div class="portlet-body">
+            <div class="trangchinh_lichcongtac">
+                <div class="trangchinh_iframe">
+                    <iframe src="@("https://"+Model.CodeLCT)" title="Lịch công tác" style="width: 100%; overflow: hidden; min-height: 1500px; border: 0px;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+}

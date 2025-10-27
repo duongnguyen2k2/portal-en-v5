@@ -1,0 +1,38 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+
+<div class="other-list" style="display:block">
+    @if (Configuration["Security:SiteCode"] == "KTTT")
+    {
+        <h2>@Localizer["OtherArticles"]</h2>
+    }
+    else
+    {
+        <h2>@Localizer["OtherArticles"]</h2>
+        @* <h2>Các tin khác</h2> *@
+    }
+    <ul>
+        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+        {
+            @if (Configuration["Security:SiteCode"] == "KTTT")
+            {
+                <li>@Localizer["NoPost"]</li>
+            }else
+            {
+                <li>@Localizer["NoPost"]</li>
+                @* <li>Chưa có bài đăng</li> *@
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+                <li><a asp-controller="Articles" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id"  asp-route-alias="@Model.ListItems[i].Alias">@(Model.ListItems[i].Title)</a></li>
+            }
+        }
+    </ul>
+</div>

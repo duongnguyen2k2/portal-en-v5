@@ -1,0 +1,228 @@
+﻿@model API.Models.Home.PartialNewFeatured;
+@using Microsoft.AspNetCore.Http;
+@inject IViewLocalizer Localizer
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = new List<API.Areas.Admin.Models.Articles.Articles>();
+    List<API.Areas.Admin.Models.Documents.Documents> NotificationListDocument = new List<API.Areas.Admin.Models.Documents.Documents>();
+    if (Model.ItemCoQuan.ThongBao.ToLower() == "documents")
+    {
+
+        NotificationListDocument = API.Areas.Admin.Models.Documents.DocumentsService.GetListNew(8, IdCoQuan);
+    }
+    else {
+        NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+    }
+
+
+    int countBanner9 = 0;
+    if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+    {
+        @for (int i = 0; i < Model.ListBanners.Count(); i++)
+        {
+            if (Model.ListBanners[i].CatId == 9)
+            {
+                countBanner9 = countBanner9 + 1;
+            }
+        }
+    }
+
+
+    string class_banner_9_ct = "banner-93-";
+    if (countBanner9 == 2)
+    {
+
+        class_banner_9_ct = "banner-92-";
+    }
+    if (countBanner9 == 4)
+    {
+        class_banner_9_ct = "banner-94-";
+    }
+    int bannerCount = 0;
+}
+<div class="row">
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 ">
+        <section id="features-wrap">
+            <h4 class="featured-news-home">
+                <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">@Localizer["FearuredNewHome"]</a>
+            </h4>
+            <div class="row">
+                <div class="col-md-8 col-sm-7 col-xs-12 features-wrap-left">
+
+                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                            {
+                                @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                                {
+
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <div class="features-item">
+                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                <img src="@ListArticlesHot[i].Images" style="width:100%;max-height:400px;" class="img-fluid" />
+                                            </a>
+                                            <div class="features-item-body">
+                                                <h1 class="title">
+                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                                        @ListArticlesHot[i].Title
+                                                    </a>
+                                                </h1>
+                                                <p class="overview">
+                                                    @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-5 col-xs-12 features-wrap-right">
+
+                    <ul class="features-list scrollWrap m-0 p-0 rounded-left rounded-bottom">
+                        @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
+                        {
+                            @for (int i = 0; i < ListArticlesHot.Count(); i++)
+                            {
+                                <li>
+                                    <a class="img" asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                        <img src="@ListArticlesHot[i].Images" title="@ListArticlesHot[i].Title" />
+                                    </a>
+                                    <p class="title">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
+                                            @ListArticlesHot[i].Title
+                                        </a>
+                                    </p>
+                                    <span class="clearfix"></span>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pl-md-0">
+        <div class="card border-0" id="featured-document">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-folder-open"></i> @Localizer["Notification"]
+                </h3>
+            </div>
+            <div class="card-body border">
+                <div id="marquee_document_right" style="height: 365px; overflow: hidden">
+                    @if (Model.ItemCoQuan.ThongBao == "Documents")
+                    {
+                        <ul class="ml-0 pl-3">
+                            @if (NotificationListDocument != null && NotificationListDocument.Count() > 0)
+                            {
+
+
+                                @for (int i = 0; i < NotificationListDocument.Count(); i++)
+                                {
+                                    <li class="mb-2">
+                                        <a asp-controller="Documents" asp-action="Detail" asp-route-id="@NotificationListDocument[i].Id" asp-route-alias="@NotificationListDocument[i].Alias" title="@NotificationListDocument[i].Title">
+                                            @NotificationListDocument[i].Title
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="ml-0 pl-3">
+                            @if (NotificationList != null && NotificationList.Count() > 0)
+                            {
+
+
+                                @for (int i = 0; i < NotificationList.Count(); i++)
+                                {
+                                    <li class="mb-2">
+                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
+                                            @NotificationList[i].Title
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (countBanner9 > 0)
+{
+    <section id="banner-bottom-featured">
+        <div class="banner-bottom-featured-body">
+            @if (Model.ListBanners != null && Model.ListBanners.Count() > 0)
+            {
+                @for (int i = 0; i < Model.ListBanners.Count(); i++)
+                {
+                    if (Model.ListBanners[i].CatId == 9)
+                    {
+                        bannerCount = bannerCount + 1;
+
+                        <div class="banner-bottom-featured-item @class_banner_9_ct@(bannerCount)">
+                            <a href="@Model.ListBanners[i].Link"> <img src="@Model.ListBanners[i].Image" alt="@Model.ListBanners[i].Title" class="d-block w-100"></a>
+                        </div>
+
+                    }
+                }
+            }
+
+        </div>
+    </section>
+}
+
+<div class="row partial-lien-ket-tin-tuc-cmg-three-two" id="partial-lien-ket-tin-tuc">
+    <div class="col-lg-4">
+        <div class="partial-lien-ket-tin-tuc-card">
+            <div class="partial-lien-ket-tin-tuc-title">
+                <a><i class="fas fa-bullhorn"></i> @Localizer["ProvinceInFo"]</a>
+            </div>
+            <div class="partial-lien-ket-tin-tuc-body">
+                <div class="partial-lien-ket-tin-tuc-content" id="site-ctttinhdaklak">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="partial-lien-ket-tin-tuc-card">
+            <div class="partial-lien-ket-tin-tuc-title">
+                <a><i class="far fa-newspaper"></i> @Localizer["NoticeFromDistrict"]</a>
+            </div>
+            <div class="partial-lien-ket-tin-tuc-body">
+                <div class="partial-lien-ket-tin-tuc-content" id="site-huyencumgar">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="partial-lien-ket-tin-tuc-card">
+            <div class="partial-lien-ket-tin-tuc-title">
+                <a><i class="far fa-newspaper"></i> @Localizer["NewsFromDistrict"]</a>
+            </div>
+            <div class="partial-lien-ket-tin-tuc-body">
+                <div class="partial-lien-ket-tin-tuc-content" id="site-xa">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

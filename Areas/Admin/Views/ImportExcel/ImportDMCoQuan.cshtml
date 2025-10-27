@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewData["Title"] = "Import Excel DMCoQuan";
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div class="col-lg-12">
+            <partial name="_PartialMsgInfoAjax" />
+        </div>
+        <form method="post" enctype="multipart/form-data" asp-controller="UploadFiles" asp-action="Index">
+            <div class="form-group">
+                <div class="col-lg-5">
+                    <p>Chọn file Excel <strong class="text-danger">Cơ Quan</strong> (Hoặc download file mẫu tại <a href="/ReportTemplate/import_dm_coquan.xlsx">đây</a>)</p>
+                    <input type="file" name="files" id="FileDMCoQuan">
+                </div>
+
+            </div>
+            <div class="form-group">
+                <div class="col-lg-2">
+                    <input type="button" class="btn btn-primary" onclick="UploadFile()" value="Tải file">
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">Id</th>
+                            <th width="120px">Mã</th>
+                            <th>Tên cơ quan</th>
+                            <th>IdCha</th>
+                            <th>Address</th>
+                            <th>Mô tả</th>
+                            <th width="120px">Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="BodyAjax"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7">
+                                <button class="btn btn-primary" onclick="SaveListItem()">Lưu dữ liệu</button>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+    var ListItemImportExcel = [];
+    function SaveListItem() {
+        ResetInfoAjax();
+        $(".MsgAjaxLoadingTitle").html("Đang Lưu dữ liệu ...");
+        $('#MsgAjaxLoading').show();
+        $('html, body').animate({scrollTop: 0}, 800);
+        if (ListItemImportExcel != null || ListItemImportExcel.length > 0) {
+
+            $.ajax({
+                   url : '/Admin/ImportExcel/ImportListDMCoQuan',
+                   type : 'POST',
+                   data : JSON.stringify(ListItemImportExcel),
+                   contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                   success: function (data) {
+                       $('#MsgAjaxLoading').hide();
+                       str_html = "";
+                       if (data.Success == true) {
+                          $('#MsgAjaxInfo').html("Thêm dữ liệu thành công");
+                       } else {
+
+                       }
+                       $('#MsgAjaxInfo').show();
+                       $("#BodyAjax").html(str_html);
+                       ListItemImportExcel = [];
+
+
+                   }
+            });
+        } else {
+            $(".MsgAjaxDanger").html("Dữ liệu rỗng. Xin vui lòng upload file Excel");
+        }
+
+    }
+
+    function UploadFile() {
+        var str_html = "";
+
+        $(".MsgAjaxLoadingTitle").html("Đang tải file lên...");
+        ResetInfoAjax();
+        $("#MsgAjaxLoading").show();
+        $("#BodyAjax").html(str_html);
+
+        var formData = new FormData();
+        formData.append('file', $('#FileDMCoQuan')[0].files[0]);
+
+        $.ajax({
+               url : '/Admin/ImportExcel/UploadExcelDMCoQuan',
+               type : 'POST',
+               data : formData,
+               processData: false,  // tell jQuery not to process the data
+               contentType: false,  // tell jQuery not to set contentType
+               success: function (data) {
+                   $('#MsgAjaxLoading').hide();
+                   str_html = "";
+                   if (data.Success == true) {
+                       if (data.Data != null) {
+                           if (data.Data.length > 0) {
+                               str_html = str_html + "<tr>";
+                               for (let i = 0; i < data.Data.length; i++) {
+                                   str_html = str_html + "<tr>";
+                                   str_html = str_html + "<td>" + data.Data[i].Id + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Code + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Title + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].ParentId + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Address + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Description + "</td>";
+                                   str_html = str_html + "<td>" + data.Data[i].Status + "</td>";
+                                   str_html = str_html + "</tr>";
+                                   ListItemImportExcel.push(
+                                       { Id: 0, Title: data.Data[i].Title,
+                                         Code: data.Data[i].Code,
+                                         ParentId:data.Data[i].ParentId,
+                                         FolderUpload:data.Data[i].FolderUpload,
+                                         TemplateName:data.Data[i].TemplateName,
+                                         CompanyName:data.Data[i].CompanyName,
+                                         Slogan:data.Data[i].Slogan,
+                                         Description:data.Data[i].Description,
+                                         CategoryId:data.Data[i].CategoryId,
+                                         Address:data.Data[i].Address,
+                                         Telephone:data.Data[i].Telephone,
+                                         Fax:data.Data[i].Fax,
+                                         Email:data.Data[i].Email,
+                                         CssName:data.Data[i].CssName,
+                                         MetadataCV:{MST:data.Data[i].MetadataCV.MST},
+                                         Status:data.Data[i].Status 
+                                       }
+                                   );
+                               }
+                           } else {
+                               str_html = str_html + '<tr><td colspan="6" class="text-center"><label>Không có dữ liệu!</label> </td></tr>';
+                           }
+
+                       } else {
+                           str_html = str_html + '<tr><td colspan="6" class="text-center"><label>Dữ liệu rỗng!</label> </td></tr>';
+                       }
+
+                   } else {
+                       $("#MsgAjaxDanger").html(data.Msg);
+                       $("#MsgAjaxDanger").show();
+                       str_html = str_html + '<tr><td colspan="6" class="text-center"><label>Dữ liệu rỗng!</label> </td></tr>';
+
+                   }
+                   $("#BodyAjax").html(str_html);
+                   $("#FileDMCoQuan").val("");
+
+               }
+        });
+
+
+    }
+    function ResetInfoAjax() {
+        $("#MsgAjaxSuccess").hide();
+        $("#MsgAjaxDanger").hide();
+        $("#MsgAjaxInfo").hide();
+    }
+
+    </script>
+}

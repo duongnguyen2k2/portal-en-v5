@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+}
+
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">    
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>    
+</div>
+<!-- IPv6-test.com button END -->
+
+<!-- https://tinnhiemmang.vn/ button BEGIN -->
+<div class="button-tinnhiemmang" id="@(ItemCoQuan.FolderUpload+"-button-tinnhiemmang")">
+    <a href='https://tinnhiemmang.vn/tim-kiem-theo-ten?type=web&q=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/handle_cert.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='Chung nhan Tin Nhiem Mang' title='Chung nhan Tin Nhiem Mang' border='0' />
+    </a>
+</div>
+<!-- https://tinnhiemmang.vn/ button END -->
+
+@if (ItemCoQuan.Code == "portal-bmt.vnptdaklak.vn" || ItemCoQuan.Code == "buonmathuot.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-bmt.webp');
+            }
+        }
+    </style>
+
+}
+@if (ItemCoQuan.Code == "portal-easup.vnptdaklak.vn" || ItemCoQuan.Code == "easup.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-easup.png');
+            }
+        }
+    </style>
+
+}
+@if (ItemCoQuan.Code == "portal-eakar.vnptdaklak.vn" || ItemCoQuan.Code == "eakar.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-eakar.png');
+            }
+        }
+    </style>
+
+}
+@if (ItemCoQuan.Code == "portal-buondon.vnptdaklak.vn" || ItemCoQuan.Code == "buondon.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-buondon.png');
+            }
+        }
+    </style>
+
+}
+
+@if (ItemCoQuan.Code == "portal-buonho.vnptdaklak.vn" || ItemCoQuan.Code == "buonho.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-buonho.png');
+            }
+        }
+    </style>
+
+}
+
+@if (ItemCoQuan.Code == "portal-krongbong.vnptdaklak.vn" || ItemCoQuan.Code == "krongbong.daklak.gov.vn" || ItemCoQuan.Code == "localhost:44396")
+{
+    <style>
+        @@media only screen and (max-width: 600px) {
+            #block-slideshow {
+                background: url('../images/bg-header-buonho.png');
+            }
+        }
+    </style>
+}

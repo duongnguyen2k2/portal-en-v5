@@ -1,0 +1,28 @@
+﻿
+@media only screen and (min-width: 1200px) {
+    #features-wrap {
+        margin-bottom: 38px;
+    }
+    .category-list {
+        .sub-article-list {
+        }
+
+        .blog-item {
+            min-height: 130px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            -webkit-transition: background .6s;
+            transition: background .6s;
+            
+            .image {
+                /*height: 140px;
+                width: 40%;*/
+                overflow: hidden;
+            }
+        }
+    }
+}

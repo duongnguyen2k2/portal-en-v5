@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    
+    var Login = Context.Session.GetString("Login");
+    API.Areas.Admin.Models.USUsers.USUsersLogin MyInfo = JsonConvert.DeserializeObject<API.Areas.Admin.Models.USUsers.USUsersLogin>(Login);
+}
+<nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+    
+    <a class="navbar-brand mr-1" href="/Admin">@MyInfo.CompanyName</a>
+
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    @if (MyInfo.MasterId == 1)
+    {
+        <form asp-controller="Account" asp-action="LoginMaster" method="get" class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input name="Username" type="text" class="form-control" placeholder="Username" aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-unlock-alt"></i> Đăng nhập
+                    </button>
+
+                    <a class="btn btn-danger" href="/Admin/Account/LoginMaster?Username=@MyInfo.UserName">
+                        <i class="fas fa-sign-in-alt"></i> Master
+                    </a>
+                </div>
+            </div>
+        </form>
+    }
+    else
+    {
+        <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
+    }
+
+    <!-- Navbar -->
+    <ul class="navbar-nav ml-auto ml-md-0">
+        <li class="nav-item no-arrow">
+            <a class="nav-link" target="_blank" href="/">
+                <i class="fas fa-home"></i> Trang Chủ
+            </a>
+
+        </li>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user-circle fa-fw"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" asp-controller="Account" asp-action="Info">Thông tin tài khoản</a>
+                <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+                <a class="dropdown-item" asp-controller="Account" asp-action="UpdateDMCoQuan">Thông tin cơ quan</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Thoát</a>
+            </div>
+        </li>
+    </ul>
+
+</nav>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc chắn thoát khỏi hệ thống?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Sau khi ấn nút Thoát, Hệ thống sẽ xóa session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Không</button>
+                <a class="btn btn-primary"  href="/Home/Logout"><i class="fas fa-sign-out-alt"></i> Thoát</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,145 @@
+﻿@model API.Areas.Admin.Models.CategoriesArticles.CategoriesArticlesModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Danh Mục";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Danh Mục";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Link = "/categories/" + Model.Item.Alias + "-" + Model.Item.Id + ".html";
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="SaveItem" enctype="multipart/form-data" method="post">
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="form-group">
+                        <label asp-for="Item.Title" class="control-label">Tên</label>
+                        <input asp-for="Item.Title" readonly="readonly" class="form-control Changetitle namepr" />
+                        <span asp-validation-for="Item.Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="Item.Icon" class="control-label"></label>
+                        <input asp-for="Item.Icon" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Alias" class="control-label"></label>
+                        <input asp-for="Item.Alias" readonly="readonly" class="form-control slug" />
+                        <span asp-validation-for="Item.Alias" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.ParentId">Danh mục cha <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.ParentId" readonly="readonly" class="form-control" asp-items="Model.ListItemsDanhMuc"></select>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input asp-for="Item.Status" readonly="readonly" class="custom-control-input" />
+                                    <label class="custom-control-label" readonly="readonly"  asp-for="Item.Status">Trạng Thái</label>
+                                </div>
+
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input asp-for="Item.FeaturedHome" class="custom-control-input" />
+                                    <label class="custom-control-label" asp-for="Item.FeaturedHome">Hiện trang chủ</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label asp-for="Item.Ordering" class="control-label"> Sắp Xếp</label>
+                                <input asp-for="Item.Ordering" class="form-control" />
+                                <span asp-validation-for="Item.Ordering" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label asp-for="Item.Hits" class="control-label">Lượt truy cập</label>
+                                <input asp-for="Item.Hits" readonly="readonly"  class="form-control" />
+                                <span asp-validation-for="Item.Hits" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group images-main">
+                        <label>Hình đại diện</label>
+                        <img src="@Model.Item.Images" class="Item_Images_Main_Preview" style="max-height:200px;">
+                        <input type="hidden" id="Item_Images_Main" class="form-control" asp-for="Item.Images">
+                        <a onclick="ShowManagerFile('Item_Images_Main')" class="btn btn-primary">Chọn hình</a>
+                        <a onclick="ViewImageMain('Item_Images_Main')"> <i class="fas fa-eye"></i> Xem ảnh</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Item.Description" class="control-label">Mô tả</label>
+                        <textarea asp-for="Item.Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Metadesc" class="control-label"></label>
+                        <textarea asp-for="Item.Metadesc"  class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Metakey" class="control-label"></label>
+                        <textarea asp-for="Item.Metakey"  class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label class="control-label">Link Danh mục tin tức</label>
+                        <input class="form-control" readonly="readonly"  value="@Link" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+            <input type="hidden" class="form-control" asp-for="Item.Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids">
+
+        </form>
+    </div>
+</div>
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+}

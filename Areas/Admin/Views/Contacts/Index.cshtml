@@ -1,0 +1,128 @@
+﻿@model API.Areas.Admin.Models.Contacts.ContactsModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.USUsers;
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý Liên Hệ - Hỏi Đáp";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4><i class="far fa-question-circle"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get" id="MySearchForm">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-row align-items-center">
+                        
+                        <div class="col-auto">
+                            <div class="form-group">
+                                <select onchange="MySearchForm()" asp-for="SearchData.TypeId" name="TypeId" class="form-control" asp-items="Model.ListItemsTypes"></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th width="250px">Tiêu đề</th>
+                            <th>Câu Hỏi</th>
+                            <th width="150px">Loại</th>
+                            <th width="120px">Ngày Gửi</th>
+                            <th width="80px">Hiện</th>
+                            <th width="130px" class="btn-contain">
+                                <a asp-controller="@ControllerName" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">                                    
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@(i + 1)</td>
+                                    <td>@Model.ListItems[i].Title</td>
+                                    <td>@Model.ListItems[i].Introtext</td>
+                                    <td>
+                                        @if (Model.ListItems[i].TypeId == 0)
+                                        {
+                                            <span class="text-info">Hỏi Đáp</span>
+                                        }
+                                        else if (Model.ListItems[i].TypeId == 2)
+                                        {
+                                            <span class="text-primary">Góp ý ứng dụng</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-primary">Liên Hệ</span>
+                                        }
+                                    </td>
+                                    <td><span class="">@Model.ListItems[i].PublishUpShow</span></td>
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].Status)
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                        }
+                                        else
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+                                        }
+                                    </td>
+                                    
+                                    <td>
+                                        <ul class="list-inline action">
+                                            <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+                                            <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,111 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    var FeaturedVideo = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan, CultureInfo.CurrentCulture.Name.ToLower());
+}
+
+<section>
+    <div class="row">
+        <div class="col-12">
+            <div class="category-list">
+                <div class="card border-0 list-item-home">
+                    <div class="card-header d-flex">
+                        <ul class="list-inline flex-fill">
+                            <li>
+                                <div class="category-list-title colored">
+                                    <a class="text-uppercase font-weight-bold float-left" asp-controller="Videos" asp-action="Index">
+                                        <span class="category-list-title-icon"><i class="fas fa-video"></i></span>
+                                        <span class="pl-2">@Localizer["VideoLibrary"]</span>
+                                    </a>
+                                </div>
+                            </li>
+
+                        </ul>
+                        <ul class="list-inline flex-fill">
+                            <li>
+                                <div class="category-list-title pr-1">
+                                    <nav class="nav nav-underline m-0 justify-content-end">
+                                        <i class="fa fa-caret-right mr-2 mt-1 py-auto text-black-50" aria-hidden="true"></i>
+                                        <a class="nav-link" asp-controller="Videos" asp-action="Index">@Localizer["Showmore"]</a>
+                                    </nav>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="card-body p-0 m-0">
+                        @if (FeaturedVideo.Count() == 0)
+                        {
+                            <div class="row mt-1">
+                                <h3>@Localizer["Nodata"]</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="row mt-1">
+                                <div class="col-lg-5 col-12 h-100">
+                                    <div class="first-video-item">
+                                        <a class="p-0" asp-controller="Videos" asp-action="Detail" asp-route-id="@FeaturedVideo[0].Id" asp-route-alias="@FeaturedVideo[0].Alias">
+                                            <div class="first-video-image">
+                                                <img src="@FeaturedVideo[0].Image" class="video-thumb" loading="lazy">
+                                                <img src="/Templates/ThemeCNT/images/youtube.png" class="youtube-icon" loading="lazy">
+                                            </div>
+
+                                            <div class="first-video-info">
+                                                <h6 class="font-weight-bold text-white">
+                                                    @FeaturedVideo[0].Title
+                                                </h6>
+                                                <p class="text-white">@FeaturedVideo[0].CreatedDate.ToString("HH:mm, dd/MM/yyyy")</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                @if (FeaturedVideo.Count() == 1)
+                                {
+                                    <div class="col-lg-7 col-12">
+                                        <h3>@Localizer["Nodata"]</h3>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-7 col-12 list-videos-home h-100 mt-lg-0 mt-2">
+                                        <div class="row">
+                                            @for (int i = 1; i < FeaturedVideo.Count(); i++)
+                                            {
+                                                <div class="col-12 col-md-6">
+                                                    <a asp-controller="Videos" asp-action="Detail" asp-route-id="@FeaturedVideo[i].Id" asp-route-alias="@FeaturedVideo[i].Alias">
+                                                    
+                                                        <div class="item d-flex mb-2">
+                                                            <div class="list-image-thumb">
+                                                                <img src="@FeaturedVideo[i].Image" alt="@FeaturedVideo[i].Title" class="video-thumb" loading="lazy" />
+                                                                <img src="/Templates/ThemeCNT/images/youtube.png" class="youtube-icon" loading="lazy">
+                                                            </div>
+                                                            <div class="info">
+                                                                <p class="truncate-title">
+                                                                    @FeaturedVideo[i].Title
+                                                                </p>
+                                                                <p class="ngaytao">@FeaturedVideo[i].CreatedDate.ToString("HH:mm, dd/MM/yyyy")</p>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            }
+                                        </div>
+
+
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

@@ -1,0 +1,131 @@
+﻿@model API.Areas.Admin.Models.DocumentRefers.DocumentRefersModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý tài liệu Họp";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>
+            <i class="fas fa-table"></i> @ViewData["Title"]
+            <span class="float-right">Tổng dòng: <strong>@if (Model.ListItems != null && Model.ListItems.Count() > 0)
+                    {
+                        <span>@Model.ListItems[0].TotalRows</span>
+                    }
+                    else
+                    {
+                        <span>0</span>
+                    }</strong></span>
+        </h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="IndexTaiLieuHop" method="get">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <select asp-for="SearchData.CatId" name="CatId" class="form-control" asp-items="Model.ListDocumentsCategories"></select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+
+                    <select asp-for="SearchData.Status" name="Status" class="form-control" asp-items="Model.ListItemsStatus"></select>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                        
+                    </div>
+                </div>
+
+            </div>
+            
+        </form>
+        <div class="row">
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center align-middle">STT</th>
+                            <th class="align-middle">Tiêu đề </th>
+                            <th class="text-center">Tên File</th>
+                            <th class="text-center">Tác giả</th>
+                            <th width="100px" class="align-middle">Trạng Thái</th>
+                            <th width="130px" class="btn-contain align-middle">
+                                <a asp-controller="@ControllerName" asp-action="SaveItemTaiLieuHop" asp-route-CatId="@Model.SearchData.CatId" class="btn btn-primary">THÊM MỚI</a>
+                            </th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    <label *ngIf="flagListitems==2">Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@(i + 1)</td>
+                                    <td>@Model.ListItems[i].Title</td>
+                                    <td class="text-center">@Model.ListItems[i].LinkPrivate</td>
+                                    <td class="text-center">@Model.ListItems[i].Author</td>
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].Status)
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                        }
+                                        else
+                                        {
+                                            <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <ul class="list-inline action">
+                                            
+                                            <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/moment.js"></script>
+    <script src="~/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.binarytransport.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#ShowStartDate').datetimepicker({ format: 'DD/MM/YYYY', });
+            $('#ShowEndDate').datetimepicker({ format: 'DD/MM/YYYY', });
+        });
+    </script>
+
+}

@@ -1,0 +1,123 @@
+﻿@model API.Areas.Admin.Models.CategoriesArticles.CategoriesArticlesModel
+@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Danh mục tin tức";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    int IdUser = int.Parse(Context.Session.GetString("IdUser"));
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-table"></i> @ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th style="width:5%" class="text-center align-middle">STT</th>
+                            <th style="width:70%" class="align-middle">Tên danh mục</th>
+                            <th style="width:6%" class="text-info text-center align-middle" data-toggle="tooltip" data-placement="top" title="Hiển thị danh mục ra ngoài trang chủ">Trang chủ</th>
+                            <th style="width:7%" class="text-info text-center align-middle" data-toggle="tooltip" data-placement="top" title="Sắp xếp số thứ tự">Thứ tự</th>
+                            <th style="width:7%" class="text-info text-center align-middle" data-toggle="tooltip" data-placement="top" title="Trạng thái">Trạng thái</th>
+                            
+                            <th style="width:10%" class="btn-contain">
+                                @if (IdUser == 1)
+                                {
+                                    <a asp-controller="@ControllerName" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+                                }
+                                else { 
+                                    <span>Thao Tác</span>
+                                }
+                             </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                   
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@((i + 1))</td>
+                                    <td>
+                                        @Model.ListItems[i].Title
+                                        @if(Model.ListItems[i].Title_EN!=null && Model.ListItems[i].Title_EN != "")
+                                        {
+                                            <span>@Model.ListItems[i].Title_EN</span>
+                                        }
+                                        (<span>Alias</span>: @Model.ListItems[i].Alias) (@Model.ListItems[i].Id)
+                                        <br />
+                                        <code>@("/categories/"+Model.ListItems[i].Alias + "-" + Model.ListItems[i].Id + ".html")</code>
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].FeaturedHome)
+                                        {
+                                            <a onclick="UpdateFeaturedHome('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-star text-primary" aria-hidden="true"></a>
+                                        }
+                                        else
+                                        {
+                                            <a onclick="UpdateFeaturedHome('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-star text-danger" aria-hidden="false"></a>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @Model.ListItems[i].Ordering
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @(Model.ListItems[i].Status ? "bg-success py-2 px-4 text-light" : "bg-danger py-2 px-4 text-light")">
+                                            @(Model.ListItems[i].Status ? "Mở" : "Đóng")
+                                        </span>
+                                    </td>
+
+                                    @if (IdGroup == 1)
+                                    {
+                                        <td>
+                                            <ul class="list-inline action">
+                                                <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+                                                @if (@Model.ListItems[i].Id != 1)
+                                                {
+                                                    <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i> Xóa</a></li>
+                                                }
+
+                                            </ul>
+                                        </td>
+                                    }
+                                    else { 
+                                        <td>
+                                            <ul class="list-inline action text-center">
+                                                <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItemInfo" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i> Sửa</a></li>
+                                            </ul>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    string DomainFolderUpload = Context.Session.GetString("DomainFolderUpload").ToString();
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string ActionName = this.ViewContext.RouteData.Values["action"].ToString();
+    List<SelectListItem> listLink = API.Areas.Admin.Models.Banners.BannersService.GetListItemsByCat(2, IdCoQuan);
+    List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListBanners = API.Areas.Admin.Models.Banners.BannersService.GetList(IdCoQuan, ParentId, DomainFolderUpload);
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan,Context);
+    List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+    string linkJs = "/Templates/" + Context.Session.GetString("TemplateName") + "/js/";
+    string linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainFolderUpload") + ".css";
+    if (Context.Session.GetString("DomainCssName") != null && Context.Session.GetString("DomainCssName") != "")
+    {
+        linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainCssName");
+    }
+    
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
+    <!-- Stylesheets -->
+   
+    <link rel="stylesheet" href="@linkCss" />
+    <!-- Modernizer js -->
+        
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="@(linkJs+"vendor/modernizr-3.5.0.min.js")"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    @await Html.PartialAsync("_PartialSEO", ItemConfig)
+    <script>
+        window.Site = {
+            CODE: "@ItemCoQuan.Code",
+        }
+    </script>
+    @Html.Raw(ItemCoQuan.DataHeader)
+</head>
+<body id="wrapper" class="wrapper">
+
+    <div class="page-home">
+        <header id="header" class="jnr__header header--one clearfix">
+            <!-- Start Header Top Area -->
+			<div class="junior__header__top">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-7 col-lg-6 col-sm-12">
+							<div class="jun__header__top__left">
+								<ul class="top__address d-flex justify-content-start align-items-center flex-wrap flex-lg-nowrap flex-md-nowrap m-0 p-0">
+									<li><i class="fa fa-envelope"></i><a href="mailto:@ItemCoQuan.Email">@ItemCoQuan.Email</a></li>
+									<li><i class="fa fa-phone"></i><span>Liên Hệ:</span><a href="tel:@ItemCoQuan.Telephone.Replace(".","").Trim()">@ItemCoQuan.Telephone</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-5 col-lg-6 col-sm-12">
+							<div class="jun__header__top__right">
+								<ul class="accounting d-flex justify-content-lg-end justify-content-md-end justify-content-start align-items-center m-0 p-0">
+									<li><a class="login-trigger" href="/sitemap.html"><i class="fas fa-sitemap"></i> <span class="d-none d-sm-block float-right ml-2">Sơ đồ cổng</span></a></li>
+									<li><a class="accountbox-trigger" href="/rss"><i class="fas fa-rss-square"></i> <span class="d-none d-sm-block float-right ml-2">Rss</span></a></li>
+									<li><a class="accountbox-trigger" href="/api"><i class="fas fa-code"></i> <span class="d-none d-sm-block float-right ml-2">Api</span></a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End Header Top Area -->
+            <!-- Start Mainmenu Area -->
+            
+             <section class="mainmenu__wrapper bg__cat--1 poss-relative header_top_line sticky__header is-sticky">
+                <div class="container header">
+                    <partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialMenu" />
+                </div>
+            </section>
+            <!-- End Mainmenu Area -->
+        </header>
+         <section id="section-slideshow">
+            
+                @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialSlideshows", new API.Areas.Admin.Models.Banners.BannersModel() { ListItems = ListBanners })
+            
+        </section>
+        <div class="container bg-white">            
+            @RenderBody()
+        </div>
+
+    </div>
+
+
+
+    @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialFooter", ItemConfig)
+    <!-- JS Files -->
+    <script src="~/lib/js/bootstrap.min.js"></script>
+
+    <script src="~/lib/js/popper.min.js"></script>
+    <script src="~/js/site.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+
+    <script src="@(linkJs+"plugins.js")"></script>
+    <script src="@(linkJs+"active.js")"></script>
+    
+    <script src="https://sp.zalo.me/plugins/sdk.js"></script>
+    
+    <script>
+
+        function SubmitSearch() {
+            $('form#search-top').submit();
+        }
+
+      
+
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

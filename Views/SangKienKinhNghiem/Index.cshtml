@@ -1,0 +1,173 @@
+﻿@model API.Areas.Admin.Models.SangKienKinhNghiem.SangKienKinhNghiemModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@{
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    ViewData["Title"] = "Danh sách sáng kiến";
+    ViewData["Description"] = "Danh sách sáng kiến";
+    ViewData["Keywords"] = "Danh sách sáng kiến";
+    ViewData["Url"] = Domain + "/" + "danh-sach-sang-kien.html";
+    ViewData["Images"] = Domain + "/uploads/kinhtetapthe/banner/social-kttt.webp";
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Localizer["SangKien"]</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form asp-controller="@ControllerName" asp-action="Index" method="get" id="MySearchForm">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <input asp-for="SearchData.Keyword" name="Keyword" placeholder="Tìm kiếm" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                                <div class="form-group">
+                                    <select onchange="MySearchForm()" asp-for="SearchData.LinhVuc" name="LinhVuc" class="form-control" asp-items="Model.ListLinhVuc"></select>
+                                </div>
+                        </div>
+                        <div class="col-6">
+                                    <div class="form-group">
+                                        <select onchange="MySearchForm()" asp-for="SearchData.CapQuanLy" name="CapQuanLy" class="form-control" asp-items="Model.ListCapQuanLy"></select>
+                                    </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                                <div class="form-group">
+                                    <label>Từ Ngày</label>
+                                    <div class="input-group date" id="ShowStartDate" data-target-input="nearest">
+                                        <input asp-for="SearchData.ShowStartDate" name="ShowStartDate" type="text" class="form-control datetimepicker-input" data-target="#ShowStartDate" id="ShowShowStartDate" />
+                                        <div class="input-group-append" data-target="#ShowStartDate" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+
+                        <div class="col-6">
+                                <div class="form-group">
+                                    <label>Đến Ngày</label>
+                                    <div class="input-group date" id="ShowEndDate" data-target-input="nearest">
+                                        <input asp-for="SearchData.ShowEndDate" name="ShowEndDate" type="text" class="form-control datetimepicker-input" data-target="#ShowEndDate" id="ShowShowEndDate" />
+                                        <div class="input-group-append" data-target="#ShowEndDate" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row categoryList">
+    @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+    {
+        <div class="col-lg-12">
+            <p class="text-center">@Localizer["NoRecord"] </p>
+        </div>
+
+    }
+    else
+    {
+        @if (Configuration["Security:SiteCode"] == "KTTT")
+        {
+            for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+                <div class="col-12">
+                    <div class="first-htx-item mb-2 h-100">
+                        <div class="d-flex" title="@Model.ListItems[i].Ten">
+                            <div class="img">
+                                @if (@Model.ListItems[i].Image == null || @Model.ListItems[i].Image == "" || @Model.ListItems[i].Image.ToLower() == "/cms/content/tintuc/")
+                                {
+                                    <img src="~/images/no-image.png" class="w-100">
+                                }
+                                else
+                                {
+                                    <img src="@Model.ListItems[i].Image" class="w-100">
+                                }
+                            </div>
+
+                            <div class="first-article-body">
+                                <p class="m-0 mb-1 title truncate-title">
+                                    @Localizer["TenDeTai"]: @Model.ListItems[i].Ten
+                                </p>
+                                <p class="m-0 mb-1 publish truncate-title">
+                                    @Localizer["NhomTacGia"]: @Model.ListItems[i].TacGia
+                                </p>
+                                <p class="m-0 mb-1 publish">
+                                    @Localizer["TenLinhVuc"]: @Model.ListItems[i].TenLinhVuc
+                                </p>
+                                <p class="m-0 mb-1 publish">
+                                    @Localizer["CapQuanLy"]: @Model.ListItems[i].TenCapQuanLy
+                                </p>
+                                <p class="m-0 cat-desc truncate-content">
+                                    @Localizer["ThoiGianThucHienTu"]: @Model.ListItems[i].ThoiGianThucHienTu.ToString("dd/MM/yyyy")
+                                </p>
+                                <p class="m-0 cat-desc truncate-content">
+                                    @Localizer["ThoiGianThucHienDen"]: @Model.ListItems[i].ThoiGianThucHienDen.ToString("dd/MM/yyyy")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+    </div>
+
+</div>
+
+<script src="~/lib/js/moment.js"></script>
+<script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script type="text/javascript" src="~/lib/js/jquery.base64.min.js"></script>
+<script type="text/javascript" src="~/lib/js/jquery.binarytransport.js"></script>
+<script type="text/javascript" src="~/TemplatesAdmin/Default/js/admin-article.js"></script>
+<script type="text/javascript">
+
+    <script>
+        function MySearchForm() {
+            jQuery("#MySearchForm").submit();
+        }
+</script>

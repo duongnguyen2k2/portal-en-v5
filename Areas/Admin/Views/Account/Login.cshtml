@@ -1,0 +1,139 @@
+﻿@model API.Areas.Admin.Models.USUsers.AccountLogin
+
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@{
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature?.CreateConsentCookie();
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan,Context);
+    Layout = "_layoutLogin";
+    ViewData["Title"] = "Đăng nhập";
+}
+
+
+@if (showBanner)
+{
+    <div id="mycookie" style="display:none;" data-cookie-string="@cookieString"></div>
+    <script>
+        document.cookie = document.getElementById("mycookie").dataset.cookieString;
+        console.log(document.getElementById("mycookie").dataset.cookieString);
+    </script>
+}
+
+<div class="container h-100">
+    <div class="d-flex justify-content-center h-100">
+
+        <div class="user_card">
+            
+            <div class="logo">
+                @if (ItemCoQuan.FolderUpload == "tinhuy")
+                {
+                    <img src="~/TemplatesAdmin/Default/images/logo-tinhuy.png" />
+                }
+                else{
+                    <img src="~/TemplatesAdmin/Default/images/logo-vnpt.png" />                    
+                }
+
+            </div>
+            <div class="text-center">
+                <h5 class="head">ĐĂNG NHẬP HỆ THỐNG</h5>
+            </div>
+
+            <div class="d-flex justify-content-center form_container">
+
+                <form asp-controller="Account" asp-action="Login" method="post" id="myform" class="login_container" style="width:100%;">
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-primary"><i class="fas fa-user"></i></span>
+                        </div>
+                        <input autofocus type="text" asp-for="UserName" class="form-control input_user" placeholder="Tài Khoản">
+                    </div>
+                    <div class="input-group mb-2">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-primary"><i class="fas fa-key"></i></span>
+                        </div>
+                        <input type="password" asp-for="Password" class="form-control input_pass" placeholder="Mật Khẩu">
+                        <div class="input-group-append border-0">
+                            <span class="input-group-text bg-success" id="icon-show-pass"><i class="fas fa-eye-slash"></i></span>
+                        </div>
+                        <input type="hidden" id="token_recaptcha" name="TokenRecaptcha">
+                    </div>
+
+                    <div class="text-danger small" id="MessageErrorLogin">@TempData["MessageError"]</div>
+                </form>
+            </div>
+            <div class="d-flex justify-content-center mt-3 login_container">
+                <button id="send" type="button" name="button" class="btn login_btn">Đăng nhập</button>
+            </div>
+            <div class="mt-5">
+                @if (ItemCoQuan.FolderUpload != "tinhuy")
+                {
+                    <div class="d-flex justify-content-center links small">
+                        Sản phẩm của <a href="https://daklak.vnpt.vn/" target="_blank" style="margin-left:3px"> VNPT Đắk Lắk</a>
+                    </div>
+                }
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display:none">
+    <div>@Context.Session.GetString("LoginError")</div>
+    <div>@Context.Session.GetString("Login")</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        
+
+        $("#send").click(function (e) {
+            
+            CheckLogin();
+            
+        });
+
+        $('input').keypress(function (e) {
+            if (e.which == 13) {
+
+                CheckLogin();
+                return false;    //<---- Add this line
+            }
+        });
+
+
+    });
+
+    function CheckLogin() {
+        var UserName = $("#UserName").val();
+        var Password = $("#Password").val();
+        if (UserName == null || UserName.trim() == "") {
+            $("#MessageErrorLogin").html("Tài khoản không được để trống");
+        } else if (Password == null || Password.trim() == "") {
+            $("#MessageErrorLogin").html("Mật khẩu không được để trống");
+        } else {            
+            $("#myform").submit();
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('#icon-show-pass').on('click', function () {
+            var passInput = $("#Password");
+            if (passInput.attr('type') == 'password') {
+                passInput.attr('type', 'text');
+                $("#icon-show-pass").html('<i class="far fa-eye"></i>');
+                
+            } else {
+                $("#icon-show-pass").html('<i class="fas fa-eye-slash"></i>');
+                passInput.attr('type', 'password');
+            }
+        })
+    })
+
+</script>

@@ -1,0 +1,147 @@
+﻿@model API.Areas.Admin.Models.DMPhuongXa.DMPhuongXaModel
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Quản lý Phường Xã";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-table"></i> Danh mục phường xã</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get">
+            <div class="row">
+
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        <input asp-for="SearchData.Keyword" name="Keyword" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-row align-items-center">
+                        <div class="col-auto">
+                            <select asp-for="SearchData.IdTinhThanh" name="IdTinhThanh" class="form-control" asp-items="Model.ListItemsTinhThanh"></select>
+                        </div>
+                        <div class="col-auto">
+                            <select asp-for="SearchData.IdQuanHuyen" name="IdQuanHuyen" class="form-control" asp-items="Model.ListItemsQuanHuyen" data-id="@Model.SearchData.IdQuanHuyen"></select>                            
+                        </div>
+                        <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                    </div>                    
+                </div>
+               
+
+                <div class="col-lg-2">
+                    <ul class="list-inline float-right">
+                        <li class="list-inline-item">
+                            <div class="form-group">
+                                <select asp-for="SearchData.ItemsPerPage" class="form-control" name="ItemsPerPage">
+                                    <option>10</option>
+                                    <option>20</option>
+                                    <option>30</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </select>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+        </form>
+        <div class="row">
+
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th>Tên chức vụ</th>
+                            <th width="170px">Tỉnh Thành</th>
+                            <th width="170px">Quận Huyện</th>
+                            <th>Mô tả</th>
+                            <th width="130px" class="btn-contain">
+                                <a asp-controller="DMPhuongXa" asp-action="SaveItem" class="btn btn-primary">THÊM MỚI</a>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div *ngIf="flagListitems==1" class="lds-dual-ring"></div>
+                                    <label *ngIf="flagListitems==2">Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@(i + 1)</td>
+                                    <td>@Model.ListItems[i].Ten</td>
+                                    <td class="text-center">@Model.ListItems[i].TenTinhThanh</td>
+                                    <td class="text-center">@Model.ListItems[i].TenQuanHuyen</td>
+                                    <td>@Model.ListItems[i].MoTa</td>
+                                    <td>
+                                        <ul class="list-inline action">
+                                            <li class="list-inline-item"><a asp-controller="DMPhuongXa" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-edit"></i>Sửa</a></li>
+                                            <li class="list-inline-item"><a asp-controller="DMPhuongXa" asp-action="DeleteItem" asp-route-id="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-12">
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('select[name="IdTinhThanh"]').change(function () {
+        GetListDMQuanHuyen("IdHuyen", $("#SearchData_IdTinhThanh").val());
+        console.log("dsds");
+    });
+    function GetListDMQuanHuyen(flag, IdTinhThanh) {
+        var form = $('#AjaxDeleteForm');
+        var token = jQuery('input[name="__RequestVerificationToken"]', form).val();
+        var id = jQuery("#SearchData_IdQuanHuyen").data("id");
+        console.log(id);
+        var headers = {};
+        headers["RequestVerificationToken"] = token;
+        return $.ajax({
+            type: "POST",
+            url: "/Admin/DMQuanHuyen/GetListByJson?IdTinhThanh="+IdTinhThanh,
+            data: JSON.stringify({ IdTinhThanh: IdTinhThanh }),
+            headers: headers,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                let htmlData = '<option selected="selected" value="0">--- Chọn Quận Huyện ---</option>';
+                if (data != null) {
+                    for (let i = 0; i < data.length; i++) {
+                        htmlData = htmlData + "<option value='" + data[i].Id + "'>" + data[i].Ten + "</option>";
+                    }
+                } else { }
+                $("#SearchData_IdQuanHuyen").html(htmlData);
+                //$("#SearchData_IdQuanHuyen").val(id);
+            },
+            error: function () {
+                $("#loading").addClass("an");
+                $("#loginerr").removeClass("an").text("Kết nối thất bại. Vui lòng chọn đăng nhập lại! errorerrorerror");
+            }
+        });
+    }
+</script>

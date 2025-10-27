@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
+    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+
+
+
+}
+<div class="row">
+    <div class="col-features-right">
+        <div class="card card-style-two border-0 " id="featured-document">
+            <div class="card-header">
+                <h3>
+                    <a asp-controller="Articles" asp-action="Notification"><i class="fas fa-folder-open"></i> @Localizer["Notification"]</a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <div id="marquee_document_right">
+                    <ul>
+                        @if (NotificationList != null && NotificationList.Count() > 0)
+                        {
+
+
+                            @for (int i = 0; i < NotificationList.Count(); i++)
+                            {
+                                <li class="mb-2">
+                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
+                                        @NotificationList[i].Title
+                                        <span>(@NotificationList[i].PublishUp.ToString("dd/MM/yyy, HH:mm"))</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>

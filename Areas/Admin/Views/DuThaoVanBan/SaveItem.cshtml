@@ -1,0 +1,117 @@
+﻿@model API.Areas.Admin.Models.DuThaoVanBan.DuThaoVanBanModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Văn bản dự thảo";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Văn bản dự thảo";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="form-group">
+                <label asp-for="Item.Title">Tên <sup class="text-danger"> (*)</sup></label>
+                <input type="text" class="form-control" asp-for="Item.Title" name="Title">
+            </div>
+            <div class="form-group">
+                <label asp-for="Item.Introtext">Trích Yếu</label>
+                <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-12">
+                    <label asp-for="Item.Link">File Văn bản <sup class="text-danger"> (*)</sup></label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="Item_Images" class="form-control" asp-for="Item.Link" name="Link">
+                        <div class="input-group-prepend">
+                            <a onclick="ShowManagerFile('Item_Images')" class="btn btn-primary">Chọn File</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-12">
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.FieldId">Lĩnh Vực <sup class="text-danger"> (*)</sup></label>
+                        <select asp-for="Item.FieldId" name="FieldId" class="form-control" asp-items="Model.ListDocumentsField"></select>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label>Ngày bắt đầu <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="PublishUpShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.PublishUpShow" name="PublishUpShow" class="form-control datetimepicker-input" data-target="#PublishUpShow" id="PublishUpShow" />
+                            <div class="input-group-append" data-target="#PublishUpShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label>Ngày hết hạn <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="PublishDownShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.PublishDownShow" name="PublishDownShow" class="form-control datetimepicker-input" data-target="#PublishDownShow" id="PublishDownShow" />
+                            <div class="input-group-append" data-target="#PublishDownShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+        </form>
+    </div>
+</div>
+
+
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js"></script>
+
+    <script>
+        $(function () {
+
+            $('#PublishUpShow').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+
+            $('#PublishDownShow').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+    </script>
+
+}

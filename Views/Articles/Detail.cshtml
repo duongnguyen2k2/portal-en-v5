@@ -1,0 +1,260 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inject IViewLocalizer Localizer
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = (Model.Item.Title);
+    ViewData["Description"] = (Model.Item.Metadesc);
+    ViewData["Keywords"] = (Model.Item.Metakey);
+    ViewData["Url"] = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    ViewData["Images"] = Domain + Model.Item.Images;
+    ViewData["Alias"] = Model.Item.Alias;
+    ViewData["Type"] = "article";
+
+    if (Model.Item.CatId == 1)
+    {
+        ViewData["Title"] = (Model.Item.Title + " | "+ ItemCoQuan.Title);
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string bodyMail = Domain + "/" + Model.Item.Alias + "-" + Model.Item.Id.ToString() + ".html";
+    if(Model.Item.AuthorName!=null && Model.Item.AuthorName != "")
+    {
+        Model.Item.Author = Model.Item.AuthorName;
+    }
+    string Culture =  API.Models.MyHelper.StringHelper.ConverLan(CultureInfo.CurrentCulture.Name); 
+
+    string version = DateTime.Now.ToString("yyyyMMddHH");
+}
+@if(ItemCoQuan.MetadataCV.FacebookApp==null || ItemCoQuan.MetadataCV.FacebookApp== "")
+{
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v5.0&appId=1511988695606372&autoLogAppEvents=1"></script>
+}
+<link rel="stylesheet" href="~/lib/fancybox-master/jquery.fancybox.min.css@("?v="+version)">
+
+<div class="row PageDetail PageDetail-@Model.Item.Alias" id="PageDetail">
+    <input type="hidden" value="@Model.Item.Id" id="ArticleId"/>
+    <input type="hidden" value="@Model.Item.Ids" id="ArticleIds"/>
+    <div class="col-lg-8 col-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-white p-0">
+                <li class="breadcrumb-item"><a href="/">@Localizer["Home"]</a></li>
+                @if (!Model.Item.StaticPage)
+                {
+                    
+                    @if (Model.Item.CatId == 1)
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+                    }
+                    else { 
+                        <li class="breadcrumb-item">
+                            <a asp-controller="Articles" asp-action="GetByCat" asp-route-id="@Model.Categories.Id" asp-route-alias="@Model.Categories.Alias">@(Model.Categories.Title)</a>
+                        </li>
+                     }
+                                
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@(@Model.Item.Title)</li>
+                }
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-4 col-4 text-right">
+        <span class="date d-flex justify-content-end" id="publishupshow-right">
+            <span class="d-none d-sm-block" style="">@Localizer["UpdateTime"]:</span> 
+            <span class="d-block d-sm-none detail-publishupshow"><i class="far fa-calendar-alt"></i></span>
+            <span> @Model.Item.PublishUpShow </span>
+            <span class="d-block d-sm-none detail-hit "><i class="fa fa-eye marginleft10"></i></span>
+        </span>
+    </div>
+
+    @if (ItemCoQuan.MetadataCV.SmartVoiceTokenID != null && ItemCoQuan.MetadataCV.SmartVoiceTokenID.Trim() != "")
+    {
+        <div id="smartvoice-text">
+            <a id="btn-play" class="btn-play" onclick="getAudio(@Model.Item.Id,'@Model.Item.Ids')"><i class="fas fa-volume-down"></i> Đọc bài viết </a>
+            <a id="btn-play-loading" style="display:none" class="btn-play">
+                <i class="fas fa-spinner fa-spin"></i> Đọc bài viết
+            </a>
+        </div>
+        <form asp-controller="Articles" asp-action="GetAudio" style="display:none" id="FormArticleSmartVoid">
+            <input type="submit" />
+        </form>
+    }
+    <div class="col-md-12 full-text article-content">
+        @if (Model.Item.CatId != 1)
+        {
+            <h1 class="font-weight-bold heading-title">@Html.Raw(Model.Item.Title)</h1>
+            <p class="text-muted small d-flex justify-content-start" id="publishupshow-bottom" style="display:none;">
+                <span class="d-none d-sm-block" style="">@Localizer["UpdateTime"]:</span>
+                <span class="d-block d-sm-none "><i class="far fa-calendar-alt"></i></span>
+                <span>@Model.Item.PublishUpShow</span>
+                <span class="mx-3">|</span>
+                <span class="detail-hit"><i class="fa fa-eye marginleft10"></i> &nbsp;</span>
+                <span>@Model.Item.Hit lượt xem</span>
+            </p>
+        }
+        
+        @if (Culture == "vi")
+        {
+            if(Model.Item.FileItem!=null && Model.Item.FileItem != "")
+            {
+                <div class="detail-audio-file">
+                    <audio controls>                     
+                      <source src="@Model.Item.FileItem" type="audio/mpeg">                    
+                    </audio>
+                </div>
+            }
+        }
+        @if (Culture == "en")
+        {
+            if(Model.Item.FileItem_EN!=null && Model.Item.FileItem_EN != "")
+            {
+                <div class="detail-audio-file">
+                    <audio controls>                     
+                      <source src="@Model.Item.FileItem_EN" type="audio/mpeg">                    
+                    </audio>
+                </div>
+            }
+            else
+            {
+                <div class="detail-audio-file">
+                    <audio controls>                     
+                      <source src="@Model.Item.FileItem" type="audio/mpeg">                    
+                    </audio>
+                </div>
+            }
+        }
+
+        @Html.Raw(Model.Item.FullText)
+
+        @if(Model.Item.Author!=null && Model.Item.Author != "")
+        {
+            <div class="text-right font-weight-bold AuthorName">
+                    @Model.Item.Author                       
+            </div>
+         }
+    </div>
+    @if (Model.Item.ListFile != null && Model.Item.ListFile.Count() > 0)
+    {
+        <div class="listtailieu">
+            <div class="col-md-12">
+                @for (int j = 0; j < Model.Item.ListFile.Count(); j++)
+                {
+                    string ex = API.Models.ManagerFiles.ManagerFilesService.GetExtension(Model.Item.ListFile[j].FilePath);
+                    string url = "";                    
+                    url = Domain + Model.Item.ListFile[j].FilePath;
+
+                    if (ex == ".pdf")
+                    {
+                        <iframe src="@Domain/pdfviewer/web/viewer.html?file=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else if (ex == ".doc" || ex == ".docx" || ex == ".xls" || ex == ".xlsx" || ex == ".pptx" || ex == ".ppt")
+                    {
+                        <iframe src="https://view.officeapps.live.com/op/view.aspx?src=@url" style="width:100%;height:600px;"></iframe>
+                    }
+                    else
+                    {
+                        <a href="@url" target="_blank" class="">@Model.Item.ListFile[j].FilePath</a>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+    <a class="view-detail-copy" asp-action="DetailView" asp-controller="Articles" asp-area="Api" asp-route-id="@Model.Item.Id" style="color:#fff;">Lấy link copy</a>
+</div>
+<div class="social" style="display:none">
+    <div class="container">
+        <div class="item-social">
+            <div class="fb-icon-bg"><i class="fa fa-facebook" aria-hidden="true"></i></div>
+            <div class="fb-bg"></div>
+        </div>
+        <div class="item-social">
+            <div class="twi-icon-bg"></div>
+            <div class="twi-bg"></div>
+        </div>
+
+    </div>
+</div>
+<a onclick="PrintArticle()" id="article-print"><i class="fa fa-print"></i> @Localizer["Print"]</a>
+<a href="mailto:?subject=@Model.Item.Title&body=@bodyMail" id="article-email"><i class="fa fa-envelope"></i> @Localizer["SendEmail"]</a>
+<div id="social">
+    <div class="fb-share-button" data-href="@ViewData["Url"]" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@ViewData["Url"];src=sdkpreparse" class="fb-xfbml-parse-ignore"> @Localizer["Share"]</a></div>
+</div>
+<div id="social-zalo">
+    <div class="zalo-share-button" data-href="" data-oaid="579745863508352884" data-layout="1" data-color="blue" data-customize=false></div>
+</div>
+
+@if (Model.Item.ListLinkArticle != null && Model.Item.ListLinkArticle.Count() > 0)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="other-list" style="display:block">
+                @if (Configuration["Security:SiteCode"] == "KTTT")
+                {
+                    <h2>@Localizer["RelativeArticles"]</h2>
+                }
+                else
+                {
+                    <h2>Bài viết liên quan</h2>
+                }
+                
+                <ul>
+
+                    @for (int i = 0; i < Model.Item.ListLinkArticle.Count(); i++)
+                    {
+                        <li><a href="@Model.Item.ListLinkArticle[i].Link">@Model.Item.ListLinkArticle[i].Title</a></li>
+                    }
+
+                </ul>
+            </div>
+
+        </div>
+    </div>
+}
+@await Html.PartialAsync("_PartialRelativeArticles", Model)
+
+<div class="modal" tabindex="-1" id="CommentArticleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="comment-title-modal">Gửi bình luận bài viết thành công</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="comment-article-content">Gửi bình luận bài viết thành công.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <!--script src="~/lib/fancybox-master/jquery.fancybox.min.js"></!--script-->
+    <script src="~/js/vue.js@("?v="+version)"></script>
+    <script src="~/js/vuejs-paginate.js@("?v="+version)"></script>
+    <script src="~/js/article-fe.js@("?v="+version)"></script>
+}
+
+
+<link rel="stylesheet" href="~/css/article-detail.css@("?v=" + version)" />

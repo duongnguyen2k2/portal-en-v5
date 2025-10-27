@@ -1,0 +1,143 @@
+﻿@model API.Areas.Admin.Models.Contacts.ContactsModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.USUsers;
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới Hỏi Đáp";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật Thông tin Hỏi Đáp";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    string version = DateTime.Now.ToString("yyyyMMddhh");
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css@("?v="+version )" />
+<div class="card">
+    <div class="card-header">
+        <h4>@ViewData["Title"]</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Fullname">Họ Tên <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Fullname" name="Fullname">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Phone">Điện Thoại</label>
+                        <input type="text" class="form-control" asp-for="Item.Phone" name="Phone">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Address">Địa Chỉ</label>
+                        <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label asp-for="Item.Email">Email</label>
+                        <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Item.TypeId">Loại Thông tin</label>
+                        <select asp-for="Item.TypeId" name="TypeId" class="form-control" asp-items="Model.ListItemsTypes"></select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label>Ngày gửi <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="PublishUpShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.PublishUpShow" name="PublishUpShow" class="form-control datetimepicker-input" data-target="#PublishUpShow" id="PublishUpShow" />
+                            <div class="input-group-append" data-target="#PublishUpShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.Title">Tiêu đề</label>
+                <input type="text" asp-for="Item.Title" name="Title" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.Introtext">Câu Hỏi</label>
+                <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Item.Description">Mô tả</label>
+                <textarea asp-for="Item.Description" id="full-textarea" name="Description" class="form-control"></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+
+        </form>
+    </div>
+</div>
+
+<partial name="_PartialTinymce" />
+
+@section Scripts{
+
+    <script src='~/lib/tinymce/tinymce.min.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js@("?v="+version )' referrerpolicy="origin"></script>
+    <script src="~/lib/js/moment.js@("?v="+version )"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js@("?v="+version )"></script>
+    <script type="text/javascript">
+
+
+        $(function () {
+
+            $('#PublishUpShow').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+
+    </script>
+}
+
+<style>
+    .link-article-item {
+        margin-top: 10px;
+    }
+</style>

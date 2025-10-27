@@ -1,0 +1,25 @@
+﻿@{
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />    
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
+<body id="page-hdsd">
+    @RenderBody()
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        with ((console && console._commandLineAPI) || {}) {
+            console.log('\n %cDừng lại!\n %cĐây là một tính năng của trình duyệt dành cho các nhà phát triển. Nếu ai đó bảo bạn sao chép-dán nội dung nào đó vào đây để bật một tính năng của Hệ thống Website hoặc "hack" tài khoản của người khác, thì đó là hành vi lừa đảo và sẽ khiến họ có thể truy cập vào tài khoản Hệ thống Website của bạn.', 'font: 40pt sans-serif;margin-top:10px; font-weight: bold; color: #F00; text-shadow: 1px 1px #000, -1px -1px #000, -1px 1px #000, 1px -1px #000', 'font: 20pt sans-serif;');
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

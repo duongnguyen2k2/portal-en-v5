@@ -1,0 +1,106 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@inject IViewLocalizer Localizer
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+}
+<div class="footer_wr">
+    <footer>
+        <div class="container-page">
+            <div class="row">
+                <div class="ft-col-left">
+                    <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+                    <div class="list-info">
+                        <div>@Localizer["Address"]: @ItemCoQuan.Address</div>
+                        <div>
+                            @Localizer["Phone"]: @ItemCoQuan.Telephone
+                        @if(@ItemCoQuan.Fax!=null && @ItemCoQuan.Fax != "")
+                        {
+                            <span>; Fax:</span> @ItemCoQuan.Fax
+                        } 
+                        </div>
+                        @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                        {
+                            <div>@Localizer["Email"]: @ItemCoQuan.Email</div>
+                        }
+                        @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                        {
+                            <div>@ItemCoQuan.CTNC</div>
+                        }
+                        @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                        {
+                            <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="ft-col-right vnpt">
+                    <p>
+                        @Localizer["MadeBy"]  <a href="@Model.CopyrightLink" target="_blank" class="font-weight-bold">@Model.CopyrightTitle</a>
+                    </p>
+                    <p>
+                        <img src="/images/vnpt-logo.png" style="margin-top:5px">
+                    </p>
+
+                    <ul class="list-inline menu-select-css">
+                        <li class="list-inline-item">
+                            <ul class="list-inline list-color">
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-2 " href="/Home/SelectCssName?CssName=vnpt-style-2.css"></a>
+                                </li>
+
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-3" href="/Home/SelectCssName?CssName=vnpt-style-3.css"></a>
+                                </li>
+
+                                <li class="list-inline-item">
+                                    <a class="color-item vnpt-style-4" href="/Home/SelectCssName?CssName=vnpt-style-4.css"></a>
+                                </li>
+                               
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>
+<!-- IPv6-test.com button BEGIN -->
+<div class="button-ipv6" id="@(ItemCoQuan.FolderUpload+"-button-ipv6")">
+    <a href='https://ipv6-test.com/validate.php?url=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/button-ipv6-big.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='ipv6 ready' title='ipv6 ready' border='0' />
+    </a>
+</div>
+<!-- IPv6-test.com button END -->
+<!-- https://tinnhiemmang.vn/ button BEGIN -->
+<div class="button-tinnhiemmang" id="@(ItemCoQuan.FolderUpload+"-button-tinnhiemmang")">
+    <a href='https://tinnhiemmang.vn/tim-kiem-theo-ten?type=web&q=@ItemCoQuan.Code' target="_blank">
+        <img src='~/images/handle_cert.png?v=@DateTime.Now.ToString("yyyyMMdd")' alt='Chung nhan Tin Nhiem Mang' title='Chung nhan Tin Nhiem Mang' border='0' />
+    </a>
+</div>
+<!-- https://tinnhiemmang.vn/ button END -->
+
+<div class="modal fade" id="SurveyChart" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="SurveyChartLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SurveyChartLabel">@Localizer["SurveyResult"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="SurveyChartBody">
+            </div>
+
+        </div>
+    </div>
+</div>

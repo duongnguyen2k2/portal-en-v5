@@ -1,0 +1,160 @@
+﻿@model API.Areas.Admin.Models.Products.ProductsModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+
+    ViewData["Title"] = "Danh sách sản phẩm OCOP";
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutProducts";
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    if (Model.CategoriesItem.Metadesc == null || Model.CategoriesItem.Metadesc == "")
+    {
+        Model.CategoriesItem.Metadesc = Model.CategoriesItem.Description;
+    }
+
+    ViewData["Description"] = (Model.CategoriesItem.Metadesc);
+    ViewData["Keywords"] = (Model.CategoriesItem.Metakey);
+    if (Model.CategoriesItem.Images != null && Model.CategoriesItem.Images != "")
+    {
+        ViewData["Images"] = Domain + "/" + Model.CategoriesItem.Images;
+    }
+    else
+    {
+        ViewData["Images"] = Domain + "/images/ocop.jpg";
+    }
+
+    ViewData["Url"] = Domain + "/loai-san-pham/" + Model.CategoriesItem.Alias + "-" + Model.CategoriesItem.Id.ToString() + ".html";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<link rel="stylesheet" href="~/css/products.css" />
+
+<!--====================  breadcrumb area ====================-->
+
+<div class="breadcrumb-area border-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 col-12">
+                <!--=======  breadcrumb content  =======-->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-white pl-0">
+                        <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                    </ol>
+                </nav>
+                <!--=======  End of breadcrumb content  =======-->
+            </div>
+            <div class="col-lg-5 col-12">
+                <form action="/Products/Index" method="GET" id="FormSearchOCOP">
+                    <select asp-for="SearchData.IdCoQuan" name="IdCoQuan" id="SearchIdCoQuanOCOP" class="form-search-ocop" asp-items="Model.ListDMCoQuan"></select>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--====================  End of breadcrumb area  ====================-->
+
+<div class="page-section">
+
+    <div class="row">
+
+        <div class="col-lg-12 order-1 order-lg-2">
+            <!--=======  shop banner  =======-->
+
+            <div class="shop-banner mb-30">
+                <img src="~/Templates/Default/img/banners/shop-banner.jpg" class="img-fluid" alt="">
+            </div>
+
+            <!--=======  End of shop banner  =======-->
+            @if (Model.ListItems != null && Model.ListItems.Count() > 0)
+            {
+
+                <!--=======  shop page content  =======-->
+
+                <div class="row shop-product-wrap list mb-10">
+                    @for (int i = 0; i < Model.ListItems.Count(); i++)
+                    {
+                        <div class="col-12 col-lg-4 col-md-6 col-sm-6 mb-20">
+                            <!--=======  grid view product  =======-->
+
+                            <div class="single-slider-product grid-view-product">
+                                <div class="single-slider-product__image">
+                                    <a asp-controller="Products" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">
+                                        <img src="@Model.ListItems[i].Image" class="img-fluid" alt="@Model.ListItems[i].Title">
+                                    </a>
+
+                                    <div class="hover-icons" style="display:none;">
+                                        <ul>
+                                            <li><a data-toggle="modal" data-target="#quick-view-modal-container" href="javascript:void(0)"><i class="icon-eye"></i></a></li>
+                                            <li><a href="javascript:void(0)"><i class="icon-heart"></i></a></li>
+                                            <li><a href="javascript:void(0)"><i class="icon-sliders"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="single-slider-product__content">
+                                    <p class="product-title"><a asp-controller="Products" asp-action="Detail" asp-route-id="@Model.ListItems[i].Id" asp-route-alias="@Model.ListItems[i].Alias">@Model.ListItems[i].Title</a></p>
+                                    <div class="rating @Model.ListItems[i].Star">
+                                        Chứng nhận:
+                                        @for (int s = 1; s <= 5; s++)
+                                        {
+                                            if (s <= Model.ListItems[i].Star)
+                                            {
+                                                <i class="fas fa-star active"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star"></i>
+                                            }
+
+                                        }
+                                    </div>
+
+                                    <div class="product-manufacture-factory">
+                                        <span><b>Cơ sở sản xuất:</b></span> <span>@Model.ListItems[i].TitleManufacturer</span>
+                                    </div>
+                                    <div class="product-business-address">
+                                        <span><b>Địa chỉ kinh doanh:</b></span> <span>@Model.ListItems[i].AddressManufacturer</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    }
+                </div>
+
+                <!--=======  End of shop page content  =======-->
+                @await Html.PartialAsync("_PartialPagination", Model.Pagination)
+
+            }
+            else
+            {
+                <div class="text-center">Sản phẩm đang được cập nhật</div>
+            }
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+
+    $('#SearchIdCoQuanOCOP').on('change', function () {
+        $("#FormSearchOCOP").submit();
+
+    });
+</script>

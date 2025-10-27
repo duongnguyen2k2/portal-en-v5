@@ -1,0 +1,138 @@
+﻿@model API.Areas.Admin.Models.DocumentForms.DocumentFormsModel
+@{
+    if (Model.Item.Id == 0)
+    {
+        ViewData["Title"] = "Thêm mới mẫu biểu hành chính";
+    }
+    else
+    {
+        ViewData["Title"] = "Cập nhật mẫu biểu hành chính";
+    }
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<link rel="stylesheet" href="~/lib/tinymce/css/tinymce.css" />
+<div class="card">
+    <div class="card-header">
+        <h4>Chi tiết tài liệu tham khảo</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-controller="@ControllerName" asp-action="SaveItem" method="post">
+            <div class="row">
+
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Code">Mã<sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control" asp-for="Item.Code" name="Code">
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="form-group">
+                        <label asp-for="Item.Title">Tiêu đề <sup class="text-danger"> (*)</sup></label>
+                        <input type="text" class="form-control Changetitle namepr" asp-for="Item.Title" name="Title">
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <label asp-for="Item.Link">Mẫu trắng <sup class="text-danger"> (*)</sup></label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="Item_Link" class="form-control" asp-for="Item.Link" name="Link">
+
+                        <div class="input-group-prepend">
+                            <a onclick="ShowManagerFile('Item_Link')" class="btn btn-primary text-white">Chọn File</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-4">
+                    <label asp-for="Item.Link">Mẫu ví dụ </label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="Item_Link2" class="form-control" asp-for="Item.Link2" name="Link2">
+
+                        <div class="input-group-prepend">
+                            <a onclick="ShowManagerFile('Item_Link2')" class="btn btn-primary text-white">Chọn File</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label asp-for="Item.IssuedDateShow">Ngày <sup class="text-danger"> (*)</sup></label>
+                        <div class="input-group date" id="IssuedDateShow" data-target-input="nearest">
+                            <input type="text" asp-for="Item.IssuedDateShow" name="IssuedDateShow" class="form-control datetimepicker-input" data-target="#IssuedDateShow" />
+                            <div class="input-group-append" data-target="#IssuedDateShow" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label asp-for="Item.Status"> &nbsp; &ensp; &ensp;</label>
+                        <div class="custom-control custom-checkbox custom-control">
+                            <input asp-for="Item.Status" name="Status" class="custom-control-input" />
+                            <label class="custom-control-label" asp-for="Item.Status">Trạng Thái</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="form-group">
+                <label asp-for="Item.Introtext">Trích Yếu</label>
+                <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary" name="SaveItem" value="Lưu">
+                        <i class="fas fa-save"></i> Lưu lại
+                    </button>
+                    <a class="btn btn-danger" asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-backward"></i> Quay Lại</a>
+                </div>
+            </div>
+            <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+            <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+
+        </form>
+    </div>
+</div>
+
+
+<div id="roxyCustomPanel2" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content content-set-image">
+            <iframe id="ifrm2" src="" style="width:100%;height:100%" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+<partial name="_PartialTinymce" />
+@section Scripts{
+    <script src='~/lib/tinymce/tinymce.min.js' referrerpolicy="origin"></script>
+    <script src='/lib/tinymce/js/tinymce_config.js' referrerpolicy="origin"></script>
+
+    <script src="~/lib/js/moment.js"></script>
+    <script src="~/lib/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/lib/js/jquery.binarytransport.js"></script>
+
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            $('#IssuedDateShow').datetimepicker({ format: 'DD/MM/YYYY', });
+
+        });
+
+
+    </script>
+}

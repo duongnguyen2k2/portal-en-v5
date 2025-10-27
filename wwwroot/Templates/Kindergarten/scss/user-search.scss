@@ -1,0 +1,23 @@
+#app_users {
+    .card {
+        border-radius: 0px;
+        margin-bottom: 15px;
+    }
+
+    .card-title {
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .card-body {
+        line-height: 25px;
+        padding-bottom: 0px;
+
+        .app-info {
+            font-weight: bold;
+        }
+
+        .app-info-content {
+        }
+    }
+}

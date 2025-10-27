@@ -1,0 +1,49 @@
+﻿@using API.Areas.Admin.Models.Survey;
+@using Microsoft.Extensions.Configuration
+@using Microsoft.AspNetCore.Http
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Newtonsoft.Json;
+@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization;
+@inject IViewLocalizer Localizer
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    Survey DetailItem = SurveyService.GetSurveyHome(Configuration["Security:SecretId"] + "HomeController", ItemCoQuan.Id);
+}
+@if (DetailItem != null && DetailItem.Id > 0)
+{
+    <div id="vm_survey">
+        <div class="alert alert-primary" role="alert" id="msgSuccessSurvey" style="display:none;">@Localizer["SurveySuccess"]</div>
+        <div class="alert alert-danger" role="alert" id="msgErrSurvey" style="display:none;">@Localizer["SurveyError"]</div>
+        <form method="post" asp-controller="Home" asp-action="SendQuesion">
+
+            <div class="survey-item">
+                <div class="survey-title">@DetailItem.Title</div>
+                <div class="survey-question">
+                    @if (DetailItem.ListQuestion != null && DetailItem.ListQuestion.Count > 0)
+                    {
+                        for (int i = 0; i < DetailItem.ListQuestion.Count(); i++)
+                        {
+
+                            <div class="form-check">
+                                <input class="form-check-input" name="question_customer" type="radio" id="flexRadioDefault_@DetailItem.ListQuestion[i].Id" value="@DetailItem.ListQuestion[i].Id">
+                                <label class="form-check-label" for="flexRadioDefault_@DetailItem.ListQuestion[i].Id">
+                                    @DetailItem.ListQuestion[i].Title
+                                </label>
+                            </div>
+                        }
+
+                    }
+
+                </div>
+                <div class="survey-footer text-center">
+                    <button type="button" class="btn btn-primary btn-sm me-2" style="display:none;">@Localizer["Survey"] ...</button>
+                    <button type="button" onclick="SendQuestion(@DetailItem.Id, '@DetailItem.Ids')" class="btn btn-primary btn-sm me-2">@Localizer["Survey"]</button>
+
+
+                </div>
+            </div>
+        </form>
+    </div>
+}

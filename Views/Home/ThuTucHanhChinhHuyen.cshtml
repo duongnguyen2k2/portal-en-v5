@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+    ViewData["Title"] = "Thủ tục hành chính Cấp Huyện";
+    ViewData["Url"] = Domain+"/Home/ThuTucHanhChinhHuyen";
+    ViewData["Images"] = Domain + ItemCoQuan.MetadataCV.UrlImage;
+    ViewData["Alias"] = ItemCoQuan.Title;
+    ViewData["Description"] = ItemCoQuan.Metadesc;
+    ViewData["Keywords"] = ItemCoQuan.Metakey;
+    ViewData["Placename"] = ItemCoQuan.MetadataCV.Placename;
+    ViewData["Type"] = "website";
+}
+
+<iframe src="@ItemCoQuan.MetadataCV.ThuTucHanhChinhHuyen" title="Thủ tục hành chính cấp Huyện" style="width: 100%; overflow: hidden; min-height: 1500px; border: 0px;"></iframe>

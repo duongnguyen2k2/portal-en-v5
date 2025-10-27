@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    Layout = "Templates/" + Context.Session.GetString("TemplateName") + "/_LayoutNone";
+
+    string Domain = "";
+    if (Context.Request.IsHttps)
+    {
+        Domain = "https://" + Context.Request.Host;
+    }
+    else
+    {
+        Domain = "http://" + Context.Request.Host;
+    }
+
+    string StrThongTinCoQuan = Context.Session.GetString("ThongTinCoQuan");
+    API.Areas.Admin.Models.DMCoQuan.DMCoQuan ItemCoQuan = new API.Areas.Admin.Models.DMCoQuan.DMCoQuan();
+    ItemCoQuan = JsonConvert.DeserializeObject<API.Areas.Admin.Models.DMCoQuan.DMCoQuan>(StrThongTinCoQuan);
+
+    ViewData["Title"] = ItemCoQuan.Title;
+    ViewData["Url"] = Domain;
+    ViewData["Images"] = Domain + ItemCoQuan.MetadataCV.UrlImage;
+    ViewData["Alias"] = ItemCoQuan.Title;
+    ViewData["Description"] = ItemCoQuan.Metadesc;
+    ViewData["Keywords"] = ItemCoQuan.Metakey;
+    ViewData["Placename"] = ItemCoQuan.MetadataCV.Placename;
+    ViewData["Type"] = "website";
+}
+
+
+<div class="error-page">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>
+                    Oops!</h1>
+                <h2>
+                    404 Không tìm thấy trang</h2>
+                <div class="error-details">
+                    Xin lỗi, đã xảy ra lỗi, không tìm thấy trang được yêu cầu!
+                </div>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary btn-lg"><i class="fas fa-home"></i> Trang chủ </a>
+                    <a href="/lien-he.html" class="btn btn-default btn-lg"><i class="fas fa-envelope"></i> Liên hệ </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/css/error.css" />

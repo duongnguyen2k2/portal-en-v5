@@ -1,0 +1,8 @@
+﻿@model API.Areas.Admin.Models.Articles.Articles
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@{
+    Layout = "_LayoutAPI";
+}
+<h1>@Model.Title</h1>
+@Html.Raw(Model.FullText)

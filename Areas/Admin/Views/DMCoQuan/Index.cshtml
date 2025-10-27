@@ -1,0 +1,152 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuanModel
+@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Cơ Quan";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+}
+
+<div class="card">
+    <div class="card-header">
+
+        <h4><i class="fas fa-table"></i> Danh mục cơ quan</h4>
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+        <form asp-controller="@ControllerName" asp-action="Index" method="get">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <input asp-for="SearchData.Keyword" name="Keyword" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <select asp-for="SearchData.CategoryId" name="CategoryId" class="form-control" asp-items="Model.ListItemsLoaiCoQuan"></select>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+                    <button style="display:none;" type="button" class="btn btn-primary" onclick="ExportExcel()"><i class="fas fa-download"></i> Xuất excel</button>
+                </div>
+                <div class="col-lg-2 text-right">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Tìm kiếm"><i class="fas fa-search"></i></button>
+                        @if (IdGroup == 1)
+                        {
+                            <a href="/Admin/ImportExcel/ImportDMCoQuan" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Đổ dữ liệu từ excel" style="color:#fff;"><i class="fas fa-file-import"></i> Import</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">STT</th>
+                            <th width="250px">Tên cơ quan</th>
+                            <th>Giao Diện</th>
+                            <th>Folder Upload</th>
+                            <th width="130px">Loại</th>
+                            <th width="100px">Trạng Thái</th>
+                            <th width="170px" class="btn-contain">
+                                <a asp-action="SaveItem" asp-route-CategoryId="@Model.SearchData.CategoryId" class="btn btn-primary">THÊM MỚI</a>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <label>Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@Model.ListItems[i].Id</td>
+
+                                    <td>                                        
+                                    <small>@Model.ListItems[i].Code</small>
+                                </td>
+                                <td>
+                                    @Model.ListItems[i].TemplateName
+                                    <small>@Model.ListItems[i].CodeMotCua, @Model.ListItems[i].CodeVanBan</small>
+                                </td>
+                                <td>
+                                    @Model.ListItems[i].FolderUpload
+                                    @if (Model.ListItems[i].CssName != null && Model.ListItems[i].CssName != "")
+                                    {
+                                        <small>@Model.ListItems[i].CssName</small>
+                                    }
+                                </td>
+                                <td>@Model.ListItems[i].TitleCategory</td>
+                                <td class="text-center">
+                                    @if (@Model.ListItems[i].Status == true)
+                                    {
+                                        <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',false)" class="fas fa-check-circle text-primary" aria-hidden="true"></a>
+                                    }
+                                    else
+                                    {
+                                        <a onclick="UpdateStatus('@ControllerName','@Model.ListItems[i].Ids',true)" class="far fa-times-circle text-danger" aria-hidden="false"></a>
+                                    }
+                                </td>
+                                <td>
+                                    <ul class="list-inline action">
+                                        <li class="list-inline-item"><a asp-controller="@ControllerName" asp-action="SaveItem" asp-route-id="@Model.ListItems[i].Ids" asp-route-CategoryId="@Model.ListItems[i].CategoryId" asp-route-ParentId="@Model.ListItems[i].ParentId"><i class="fa fa-edit"></i>Sửa</a></li>
+                                            <li class="list-inline-item"><a target="_blank" asp-controller="USUsers" asp-action="SaveItem" asp-route-IdCoQuan="@Model.ListItems[i].Id" asp-route-TenCoQuan="@Model.ListItems[i].CompanyName" asp-route-UserName="@Model.ListItems[i].FolderUpload"><i class="fas fa-user-plus"></i> User</a></li>
+                                        <li class="list-inline-item"><a data-toggle="modal" data-target="#DeleteModal" data-whatever="@Model.ListItems[i].Title" data-ids="@Model.ListItems[i].Ids"><i class="fa fa-trash"></i>Xóa</a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                    </tbody>
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<!--div class="modal fade" id="CreateUserModal" tabindex="-1" role="dialog" aria-labelledby="CreateUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body text-center">
+				<div class="p-3 text-center">
+                    <i class="fas fa-user-plus text-info icon-create-user"></i>
+					<div class="text-3xl mt-3"> Tạo tài khoản ?</div>
+					<p class="text-slate-500 mt-2 create-user-title">Bạn muốn tạo tài khoản ?</p>
+                    <div class="form-create-user">
+                        <div class="form-group">
+                            <label for="usernameFormControlInput">Vui lòng nhập tài khoản.</label>
+                            <input type="text" class="form-control" id="usernameFormControlInput" placeholder="Vui lòng nhập tài khoản.">
+                        </div>
+                    </div>
+				</div>
+				<div class="px-3 pb-8 text-center">
+                    <button class="btn btn-info" data-ids="" data-title="" data-folderupload="" id="CreateUserItemTrue" onclick="CreateUserItem()"><i class="fas fa-user-check"></i> Đồng ý</button>
+                    <button class="btn btn-info" id="CreateUserItemLoading" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i> Đang tạo</button>
+					<button class="btn btn-primary" data-dismiss="modal">Thoát</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div-->
+
+
+<script type="text/javascript" src="~/TemplatesAdmin/Default/js/admin-dmcoquan.js"></script>
+
+
+
+

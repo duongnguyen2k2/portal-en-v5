@@ -1,0 +1,79 @@
+﻿@model API.Areas.Admin.Models.Banners.BannersModel
+@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    int indicators = 0;
+    int carousel = 0;
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string str = "active";
+
+    string str_2 = "active";
+    string SlideshowMB = "/uploads/" + Context.Session.GetString("DomainFolderUpload") + "/banners/slideshow_mobile_img.jpg?v=" + DateTime.Now.ToString("yyyyMMddhh");
+
+    List<API.Areas.Admin.Models.Banners.Banners> ListSlideshow = new List<API.Areas.Admin.Models.Banners.Banners>();
+    if(Model.ListItems != null && Model.ListItems.Count() > 0)
+    {
+        foreach (API.Areas.Admin.Models.Banners.Banners item in Model.ListItems)
+        {
+            if (item.CatId == 1)
+            {
+                ListSlideshow.Add(item);
+            }
+        }
+    }
+}
+
+@if (ListSlideshow != null && ListSlideshow.Count() > 0)
+{
+<div class="row">
+    <div id="block-slideshow">
+        @if (Configuration["Security:SiteCode"] == "DLK-EDU-EHL")
+        {
+              <img id="slideshow_mobile_img" style="display:none;" src="@SlideshowMB" alt="@ItemCoQuan.CompanyName" />
+
+        }
+        <div id="carousel-example-generic" class="carousel slide carousel-fade" data-ride="carousel">
+            @if(ListSlideshow.Count()>1){
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    @for (int i = 0; i < Model.ListItems.Count(); i++)
+                    {
+                        if (Model.ListItems[i].CatId == 1)
+                        {
+                            indicators = indicators + 1;
+                            @if (indicators > 1) { str_2 = ""; }
+                            <li data-target="#carousel-example-generic" data-slide-to="@indicators" class="@str_2"></li>
+
+                        }
+
+                    }
+                </ol>
+            }
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                @for (int i = 0; i < Model.ListItems.Count(); i++)
+                {
+
+                    if (Model.ListItems[i].CatId == 1)
+                    {
+                        carousel = carousel + 1;
+                        @if (carousel > 1) { str = ""; }
+                        <div class="carousel-item  @str">
+                            <a href="@Model.ListItems[i].Link">
+                                <img src="@Model.ListItems[i].Image" class="d-block w-100" alt="@Model.ListItems[i].Title" />
+                            </a>
+                        </div>
+
+                    }
+
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+    
+}

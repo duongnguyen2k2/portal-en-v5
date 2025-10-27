@@ -1,0 +1,174 @@
+﻿@model API.Areas.Admin.Models.Articles.ArticlesModel
+@using Microsoft.AspNetCore.Http
+
+@{
+    Layout = "_layoutAdmin";
+    ViewData["Title"] = "Lịch sử tin";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    int IdCoQuan = int.Parse(Context.Session.GetString("IdCoQuan"));
+    int IdGroup = int.Parse(Context.Session.GetString("IdGroup"));
+    string TenCoQuan = Context.Session.GetString("TenCoQuan");
+    string web = "VPUBND";
+}
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-lg-8">
+                <h4><i class="fas fa-table"></i> @ViewData["Title"] </h4>
+            </div>
+            <div class="col-lg-4 text-right">
+                <span><a asp-controller="@ControllerName" asp-action="Index"><i class="fas fa-arrow-alt-circle-left"></i> Quay Lại</a></span>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+
+    </div>
+    <div class="card-body">
+        <partial name="_PartialMsgInfoAdmin" />
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <table class="table table-bordered table-striped table-hover ">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">ID</th>
+                            <th>Tên bài viết</th>
+                            <th width="90px">Ngày Sửa</th>
+                            <th width="150px">Người Sửa</th>
+                            <th width="70px">Nổi Bật</th>
+                            <th width="80px">Đã duyệt</th>
+                            <th width="70px" class="text-center">Xem</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.ListItems == null || Model.ListItems.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <label *ngIf="flagListitems==2">Không có dữ liệu!</label>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Model.ListItems.Count(); i++)
+                            {
+                                <tr>
+                                    <td width="50px" class="text-center">@Model.ListItems[i].Id</td>
+                                    <td>
+                                        @Model.ListItems[i].Title <br />
+                                        (<span>Alias</span>: @Model.ListItems[i].Alias)
+                                    </td>
+                                    <td>@Model.ListItems[i].CreatedDate</td>
+                                    <td>@Model.ListItems[i].CreatedByFullName</td>
+
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].Featured)
+                                        {
+                                            <span class="fas fa-check-circle text-primary" aria-hidden="true"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="far fa-times-circle text-danger" aria-hidden="false"></span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (@Model.ListItems[i].Status)
+                                        {
+                                            <span class="fas fa-check text-primary" aria-hidden="true"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="far fa-times-circle text-danger" aria-hidden="false"></span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <a onclick="GetItemDetail('@Model.ListItems[i].Ids',@IdGroup)"><i class="fas fa-eye"></i></a>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+                <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailArticle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="article-title">Chi Tiết Bài Viết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="article-content"><div class="text-center"><div class="lds-dual-ring"></div></div></div>
+            </div>
+            <div class="modal-footer " id="footer-detail-article">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/moment.js"></script>
+    <script src="~/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.base64.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.binarytransport.js"></script>
+    <script type="text/javascript">
+        function GetItemDetail(Ids, IdGroup) {
+            $('#DetailArticle').modal('show');
+            //$("#ytuongchuaduyet_mota_content").html(DataYTuong[IdYTuong].MOTA);
+            $.ajax({
+                url: "/Admin/Articles/GetItemLogArticle?Id=" + Ids,
+                method: 'GET',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    $("#article-title").html(result.Title);
+                    $("#article-content").html(result.FullText);
+                    var str = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>';
+                    $("#footer-detail-article").html(str);
+                }
+            });
+        }
+        $(function () {
+            $('#ShowStartDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+
+            });
+            $('#ShowEndDate').datetimepicker({
+                format: 'DD/MM/YYYY',
+            });
+        });
+
+        $('document').ready(function () {
+
+            $('#DetailArticle').on('hidden.bs.modal', function (e) {
+                $("#article-title").html("Chi Tiết Bài Viết");
+                $("#article-content").html('<div class="text-center"><div class="lds-dual-ring"></div></div>');
+                var str = '<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>';
+                $("#footer-detail-article").html(str);
+            });
+
+
+        });
+
+    </script>
+
+}

@@ -1,0 +1,53 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@inject IViewLocalizer Localizer
+@{
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuanHTT"));
+}
+
+<footer class="container">
+    <div class="row">
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 footer-left">
+            <h3 class="text-uppercase font-weight-bold">@ItemCoQuan.Title</h3>
+            <div class="list-info">
+                <div>@Localizer["Address"]: @ItemCoQuan.Address</div>
+                <div>
+                    @Localizer["Phone"]: @ItemCoQuan.Telephone
+                    @if (@ItemCoQuan.Fax != null && @ItemCoQuan.Fax != "")
+                    {
+                        <span>; Fax:</span> @ItemCoQuan.Fax
+                    }
+                </div>
+                @if (ItemCoQuan.Email != null && ItemCoQuan.Email != "")
+                {
+                    <div>@Localizer["Email"]: @ItemCoQuan.Email</div>
+                }
+                @if (ItemCoQuan.CTNC != null && ItemCoQuan.CTNC != "")
+                {
+                    <div>@ItemCoQuan.CTNC</div>
+                }
+                @if (ItemCoQuan.MetadataCV.DescFooter != null && ItemCoQuan.MetadataCV.DescFooter != "")
+                {
+                    <div>@ItemCoQuan.MetadataCV.DescFooter</div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-12 footer-right">
+            <div><a href="@Model.CopyrightLink" target="_blank">@Localizer["MadeBy"]: <span class="font-weight-bold">@Model.CopyrightTitle</span> </a></div>
+            <div>@Localizer["Phone"]: @Model.CopyrightPhone</div>
+            <p>
+                <img src="/images/vnpt-logo.png" style="margin-top:5px">
+            </p>
+        </div>
+    </div>
+</footer>
+
+<div class="font-zoom">
+    <a id="decfont" title=""></a>
+    <a id="incfont" title=""></a>
+</div>
+
+<a id="scrollToTop" style="display: block;"><i class="fa fa-lg fa-chevron-up"></i></a>

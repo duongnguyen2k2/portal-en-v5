@@ -1,0 +1,89 @@
+﻿@model API.Areas.Admin.Models.DMCoQuan.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject IViewLocalizer Localizer
+@{
+    Boolean flagShow = false;
+    string Link = "https://motcua.daklak.gov.vn/";
+    if (Configuration["Security:SiteCode"] == "DNO")
+    {
+        Link = "https://dichvucong.daknong.gov.vn/";
+    }
+    Link = Link + "public/linkto/thongketatca&ma-co-quan";
+    if (Model.CodeMotCua != null && Model.CodeMotCua != "")
+    {
+        Link = Link + "=" + Model.CodeMotCua;
+    }
+    List<string>
+    arrCode = Configuration["Security:SiteCode"].ToString().Split('-').ToList();
+
+    if (arrCode.Count() > 1)
+    {
+        if (arrCode[1] == "EDU") { flagShow = true; }
+    }
+
+    List<API.Areas.Admin.Models.Documents.Documents> ListDocumentsHot = API.Areas.Admin.Models.Documents.DocumentsService.GetListNew(8, Model.Id);
+    List<API.Areas.Admin.Models.HopTrucTuyen.HopTrucTuyen> ListHopTrucTuyenHot = API.Areas.Admin.Models.HopTrucTuyen.HopTrucTuyenService.GetListNew(8, Model.Id);
+}
+@if (flagShow) {
+    <div class="row" id="partial-lich-ke-hoach">
+        <div class="col-lg-6">
+            <div class="partial-lich-ke-hoach-card">
+                <div class="partial-lich-ke-hoach-title">
+                    <a asp-controller="Documents" asp-action="Index"><i class="far fa-calendar-check"></i> @Localizer["NewText"]</a>
+                </div>
+                <div class="partial-lich-ke-hoach-body" id="home-van-ban-moi">
+                    <ul class="list-unstyled scrollWrap">
+                        @if (ListDocumentsHot != null && ListDocumentsHot.Count() > 0)
+                        {
+                            @for (int j = 0; j < ListDocumentsHot.Count(); j++)
+                            {
+                                <li class="d-flex">
+                                    <i class="far fa-calendar-alt"></i> 
+                                    <a asp-controller="Documents" asp-action="Detail" asp-route-id="@ListDocumentsHot[j].Id" asp-route-alias="@ListDocumentsHot[j].Alias">
+                                        @API.Models.MyHelper.StringHelper.StringReadmore(ListDocumentsHot[j].Title,150)
+                                        <br />
+                                        <span class="date">@ListDocumentsHot[j].IssuedDateShow</span>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="partial-lich-ke-hoach-card">
+                <div class="partial-lich-ke-hoach-title">
+                    <a asp-controller="Account" asp-action="HopTrucTuyen"><i class="fas fa-headset"></i> @Localizer["OnlineMeeting"]</a>
+                </div>
+                <div class="partial-lich-ke-hoach-body" id="home-hop-truc-tuyen">
+                    <ul class="list-unstyled scrollWrap">
+                        @if (ListHopTrucTuyenHot != null && ListHopTrucTuyenHot.Count() > 0)
+                        {
+                            @for (int j = 0; j < ListHopTrucTuyenHot.Count(); j++)
+                            {
+                                <li class="d-flex"><i class="far fa-calendar-alt"></i> 
+                                    <a href="@ListHopTrucTuyenHot[j].Link" >@API.Models.MyHelper.StringHelper.StringReadmore(ListHopTrucTuyenHot[j].Title,150) <br /> 
+                                        <span class="date">@ListHopTrucTuyenHot[j].PublishUpShow</span> 
+                                        <span class="cat">
+                                            <i class="fab fa-connectdevelop"></i>
+                                            @if (@ListHopTrucTuyenHot[j].CatId == 1)
+                                            {
+                                                <span>Google Meet</span>
+                                            }
+                                            else if (@ListHopTrucTuyenHot[j].CatId == 2)
+                                            {
+                                                <span>Zoom</span>
+                                            }
+                                        </span> 
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}

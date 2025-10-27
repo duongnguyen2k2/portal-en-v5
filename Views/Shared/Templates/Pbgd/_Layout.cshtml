@@ -1,0 +1,397 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+	int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+	int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+	string DomainFolderUpload = Context.Session.GetString("DomainFolderUpload").ToString();
+	string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+	string ActionName = this.ViewContext.RouteData.Values["action"].ToString();
+	List<SelectListItem> listLink = new List<SelectListItem>();//API.Areas.Admin.Models.Banners.BannersService.GetListItemsByCat(2, IdCoQuan);
+	List<API.Areas.Admin.Models.Videos.Videos> ListItemVideos = API.Areas.Admin.Models.Videos.VideosService.GetListFeatured(IdCoQuan);
+
+	DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+	var ItemConfig = API.Areas.Admin.Models.SYSParams.SYSParamsService.GetItemConfigByHome(ItemCoQuan, Context);
+
+	// ************* ListBanners **************
+	string KeySessionBanners = "Banners_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+	string StrListBanners = Context.Session.GetString(KeySessionBanners);
+
+	List<API.Areas.Admin.Models.Banners.Banners> ListBanners = new List<API.Areas.Admin.Models.Banners.Banners>();
+
+	if (StrListBanners != null && StrListBanners != "" && ItemCoQuan.MetadataCV.FlagSession == 1)
+	{
+		ListBanners = JsonConvert.DeserializeObject<List<API.Areas.Admin.Models.Banners.Banners>>(StrListBanners);
+	}
+	else
+	{
+		ListBanners = API.Areas.Admin.Models.Banners.BannersService.GetList(IdCoQuan, ParentId, DomainFolderUpload);
+
+		if (ItemCoQuan.MetadataCV.FlagSession == 1)
+		{
+			Context.Session.SetString(KeySessionBanners, JsonConvert.SerializeObject(ListBanners));
+		}
+		else
+		{
+			Context.Session.Remove(KeySessionBanners);
+		}
+
+	}
+
+	// ************* End ListBanners **************
+
+	List<SelectListItem> ListWebXa = new List<SelectListItem>();
+	if (Configuration["Security:SiteCode"] == "DLK")
+	{
+		ListWebXa.Add(new SelectListItem() { Value = "", Text = "DANH SÁCH WEBSITE CẤP XÃ" });
+	}
+
+	else if (Configuration["Security:SiteCode"] == "DLK-TINHDOAN")
+	{
+		ListWebXa.Add(new SelectListItem() { Value = "", Text = "DANH SÁCH WEBSITE HUYỆN ĐOÀN" });
+	}
+
+
+
+	if (ListBanners != null && ListBanners.Count() > 0)
+	{
+		for (int bn = 0; bn < ListBanners.Count(); bn++)
+		{
+			if (ListBanners[bn].CatId == 11)
+			{
+				ListWebXa.Add(new SelectListItem() { Value = ListBanners[bn].Link, Text = ListBanners[bn].Title });
+			}
+
+			if (ListBanners[bn].CatId == 2)
+			{
+				listLink.Add(new SelectListItem() { Value = ListBanners[bn].Link, Text = ListBanners[bn].Title });
+			}
+		}
+	}
+
+
+
+	// ************* Menu Dọc **************
+	string KeySessionMenuDoc = "MenuDoc_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+	string StrListMenuDoc = Context.Session.GetString(KeySessionMenuDoc);
+	List<API.Areas.Admin.Models.Menus.Menus> ListMenuDoc = new List<API.Areas.Admin.Models.Menus.Menus>();
+
+	if (StrListMenuDoc != null && StrListMenuDoc != "" && ItemCoQuan.MetadataCV.FlagSession == 1)
+	{
+		ListMenuDoc = JsonConvert.DeserializeObject<List<API.Areas.Admin.Models.Menus.Menus>>(StrListMenuDoc);
+	}
+	else
+	{
+		ListMenuDoc = API.Areas.Admin.Models.Menus.MenusService.GetListByParrent(0, IdCoQuan, 1, ParentId);
+		if (ItemCoQuan.MetadataCV.FlagSession == 1)
+		{
+			Context.Session.SetString(KeySessionMenuDoc, JsonConvert.SerializeObject(ListMenuDoc));
+		}
+		else
+		{
+			Context.Session.Remove(KeySessionMenuDoc);
+		}
+
+	}
+	// ************* End Menu Dọc **************
+
+
+
+	string linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainFolderUpload") + ".css";
+	if (Context.Session.GetString("DomainCssName") != null && Context.Session.GetString("DomainCssName") != "")
+	{
+		linkCss = "/Templates/" + Context.Session.GetString("TemplateName") + "/css/" + Context.Session.GetString("DomainCssName") + "?v=" + DateTime.Now.ToString("yyyyMMddhh");
+	}
+
+	List<API.Areas.Admin.Models.Articles.Articles> NotificationList = new List<API.Areas.Admin.Models.Articles.Articles>();
+	List<API.Areas.Admin.Models.Documents.Documents> NotificationListDocument = new List<API.Areas.Admin.Models.Documents.Documents>();
+	if (ItemCoQuan.ThongBao.ToLower() == "documents")
+	{
+
+		NotificationListDocument = API.Areas.Admin.Models.Documents.DocumentsService.GetListNew(8, IdCoQuan);
+	}
+	else
+	{
+		NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
+	}
+
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"]</title>
+	@await Html.PartialAsync("_PartialSEO", ItemConfig)
+
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700&amp;display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700|Roboto:300,400,500,700&amp;display=swap&amp;subset=vietnamese" rel="stylesheet">
+	<link rel="stylesheet" href="~/fonts/fonts.css" />
+	<link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
+	<link rel="stylesheet" href="~/lib/owl-carousel/css/owl.carousel.min.css" />
+	<link rel="stylesheet" href="~/lib/owl-carousel/css/owl.theme.default.min.css" />
+	<link rel="stylesheet" href="@linkCss" />
+	<link rel="stylesheet" href="~/lib/mCustomScrollbar/jquery.mCustomScrollbar.min.css" />
+	<link rel="stylesheet" href="~/css/@(ItemCoQuan.FolderUpload+".css?v="+DateTime.Now.ToString("yyyyMMddhh"))" />
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+		window.Site = {
+			CODE: "@ItemCoQuan.Code",
+		}
+	</script>
+	@if (ItemCoQuan.MetadataCV.FlagVideosHome == 1)
+	{
+		<style>
+			.module-videos-right {
+				display: none;
+			}
+		</style>
+	}
+	@Html.Raw(ItemCoQuan.DataHeader)
+</head>
+
+<body id="main-one">
+	<partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialHeaderTop" />
+	<section id="section-slideshow">
+		@await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialSlideshows", new API.Areas.Admin.Models.Banners.BannersModel() { ListItems = ListBanners })
+	</section>
+	<partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialMenu" />
+	<partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialCatMobile" />
+	<div class="container-wapper page-home">
+
+		<div class="container-page">
+
+			@await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialKhauHieu", ItemConfig)
+
+			<div class="row">
+				<div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 ">
+					@RenderBody()
+					@if (Configuration["Security:SiteCode"] == "DLK-PBGDPL")
+					{
+						<section class="section-home section-menufooter">
+							<div class="container bg-white">
+								@await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuFooterPBGDPL", ItemConfig)
+							</div>
+						</section>
+					}
+				</div>
+
+				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-120">
+
+					<div class="card card-style-two border-0 " id="featured-document">
+						<div class="card-header">
+							<h3>
+								<a asp-controller="Articles" asp-action="Notification">THÔNG BÁO</a>
+							</h3>
+						</div>
+						<div class="card-body">
+							<div id="marquee_document_right">
+								<ul>
+									@if (NotificationList != null && NotificationList.Count() > 0)
+									{
+
+
+										@for (int i = 0; i < NotificationList.Count(); i++)
+										{
+											<li class="mb-2">
+												<a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
+													@NotificationList[i].Title
+													<span>(@NotificationList[i].PublishUp.ToString("dd/MM/yyy"))</span>
+												</a>
+											</li>
+										}
+									}
+								</ul>
+							</div>
+						</div>
+					</div>
+
+
+					<!---------Banner Right Bottom ---------->
+					@if (ListBanners != null && ListBanners.Count() > 0)
+					{
+						@for (int i = 0; i < ListBanners.Count(); i++)
+						{
+							if (ListBanners[i].CatId == 7)
+							{
+								<div class="banner-item">
+									<a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+										<img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+									</a>
+								</div>
+							}
+
+						}
+					}
+
+					<partial name="Templates/@Context.Session.GetString("TemplateName")/_PartialSiteVisit" />
+
+					<!---------Banner Right Bottom ---------->
+					@if (ListBanners != null && ListBanners.Count() > 0)
+					{
+						@for (int i = 0; i < ListBanners.Count(); i++)
+						{
+							if (ListBanners[i].CatId == 8)
+							{
+								<div class="banner-item">
+									<a href="@ListBanners[i].Link" target="@ListBanners[i].Target">
+										<img src="@ListBanners[i].Image" class="d-block w-100" title="@ListBanners[i].Title" />
+									</a>
+								</div>
+							}
+
+						}
+					}
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	
+
+	@await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuFooter", ItemConfig)
+	@await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialFooter", ItemConfig)
+
+	<script src="~/lib/js/jquery.marquee.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script src="~/lib/js/jquery.easing.js"></script>
+	<script src="~/lib/js/popper.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script src="~/lib/js/bootstrap.min.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+	<script src="~/lib/stellarnav/js/stellarnav.min.js"></script>
+	<script src="~/lib/owl-carousel/js/owl.carousel.min.js"></script>
+	<script src="~/lib/mCustomScrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script src="~/js/site.js?v=@DateTime.Now.ToString("yyyyMMddhh")"></script>
+
+
+	<script src="https://sp.zalo.me/plugins/sdk.js"></script>
+
+	<script type="text/javascript">
+		jQuery('.stellarnav').stellarNav({
+
+			breakpoint: 991,
+			position: 'right',
+			phoneBtn: '@ItemCoQuan.Telephone',
+			closeLabel: 'Đóng'
+		});
+		$('.scrollWrap').mCustomScrollbar({
+			theme: 'dark-3'
+		});
+		$('#banner-lienket-anh-body').owlCarousel({
+			loop: true,
+			margin: 6,
+			autoplay: true,
+			nav: true,
+			responsive: {
+				0: {
+					items: 3
+				},
+				600: {
+					items: 3
+				},
+				1000: {
+					items: 5
+				}
+			}
+		});
+	</script>
+
+	<script>
+		$('#RedirectLink').on('change', function () {
+			var url = $(this).val();
+			console.log(url);
+			if (url) {
+				window.open(url, '_blank');
+			}
+			return false;
+		});
+		$('#RedirectLinkXa').on('change', function () {
+			var url = $(this).val();
+			console.log(url);
+			if (url) {
+				window.open(url, '_blank');
+			}
+			return false;
+		});
+
+		$('.marquee').marquee({
+			speed: 100,
+			gap: 500,
+			direction: 'left',
+			duplicated: true,
+			pauseOnHover: true
+		});
+		$('#marquee_document_right').marquee({
+			duration: 15000,
+			gap: 13,
+			delayBeforeStart: 0,
+			direction: 'up',
+			duplicated: true,
+			startVisible: true
+		});
+
+		$('#marquee_articles_right').marquee({
+			duration: 15000,
+			gap: 13,
+			delayBeforeStart: 0,
+			direction: 'up',
+			duplicated: true,
+			startVisible: true
+		});
+
+		$('#marquee_videos').marquee({
+			duration: 15000,
+			gap: 13,
+			delayBeforeStart: 0,
+			direction: 'up',
+			duplicated: true,
+			startVisible: true
+		});
+
+		$(document).ready(function () {
+			$('#incfont').click(function () {
+				curSize = parseInt($('body').css('font-size')) + 2;
+				if (curSize <= 20)
+					$('body').css('font-size', curSize);
+			});
+			$('#decfont').click(function () {
+				curSize = parseInt($('body').css('font-size')) - 2;
+				if (curSize >= 12)
+					$('body').css('font-size', curSize);
+			});
+		});
+
+		function SubmitSearch() {
+			$('form#search-top').submit();
+		}
+
+		jQuery(document).ready(function () {
+			jQuery('#scrollToTop').fadeOut();
+			jQuery(window).scroll(function () {
+				if (jQuery(window).scrollTop() != 0) {
+					jQuery('#scrollToTop').fadeIn();
+				} else {
+					jQuery('#scrollToTop').fadeOut();
+				}
+			});
+			jQuery('#scrollToTop').click(function () {
+				jQuery('html, body').animate({ scrollTop: 0 }, 500);
+			});
+		});
+
+		$("#body-scroll-nav").mCustomScrollbar({
+			axis: "x",
+			setWidth: false,
+			alwaysShowScrollbar: 2,
+			theme: 'dark-3'
+		});
+
+
+	</script>
+
+
+	@RenderSection("Scripts", required: false)
+</body>
+</html>

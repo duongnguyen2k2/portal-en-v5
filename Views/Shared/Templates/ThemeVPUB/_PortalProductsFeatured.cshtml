@@ -1,0 +1,38 @@
+﻿@{
+    List<API.Areas.Admin.Models.Products.Products> ListItems = API.Areas.Admin.Models.Products.ProductsService.GetListFeature(6);
+}
+
+
+@if (ListItems != null && ListItems.Count() > 0)
+{
+    <div id="product-featured-home">
+        <h1 class="title">
+            <a>Sản phẩm Khởi nghiệp</a>
+        </h1>
+        <div class="product-items-home">
+            <div class="owl-carousel owl-theme albums-item" id="product-item-home-body">
+            @for (int i = 0; i < ListItems.Count(); i++)
+                {
+                
+                            <div class="card">
+                                <img src="@ListItems[i].Image" class="card-img-top" alt="@ListItems[i].Title">
+                                <div class="card-body">
+                                @if (ListItems[i].Sku != null && ListItems[i].Sku != "")
+                                {
+                                    <a href="@ListItems[i].Sku" class="card-title">@ListItems[i].Title</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Products" asp-action="Detail" asp-route-id="@ListItems[i].Id" asp-route-alias="@ListItems[i].Alias" class="card-title">@ListItems[i].Title</a>
+                                }
+
+                                </div>
+                            </div>
+                    
+            
+            }
+            </div>
+        </div>
+    </div>
+
+}

@@ -1,0 +1,26 @@
+﻿@model API.Areas.Admin.Models.Banners.BannersModel
+
+
+<div class="chuyen-muc-khac" data-id="4">
+    <div class="chuyen-muc-khac-header">
+        <h3>CÁC CHUYÊN MỤC KHÁC</h3>
+    </div>
+    <div class="chuyen-muc-khac-body">
+        <!---------Banner Right Bottom ---------->
+        @if (Model.ListItems != null && Model.ListItems.Count() > 0)
+        {
+            @for (int i = 0; i < Model.ListItems.Count(); i++)
+            {
+                if (Model.ListItems[i].CatId == 4)
+                {
+                    <div class="banner-item">
+                        <a href="@Model.ListItems[i].Link" target="@Model.ListItems[i].Target">
+                            <img src="@Model.ListItems[i].Image" class="d-block w-100" title="@Model.ListItems[i].Title" />
+                        </a>
+                    </div>
+                }
+
+            }
+        }
+    </div>
+</div>

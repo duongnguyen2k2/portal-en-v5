@@ -1,0 +1,20 @@
+﻿@model API.Areas.Admin.Models.SYSParams.SYSConfig;
+@using Microsoft.AspNetCore.Http
+@{
+
+}
+@if (Model.Slogan != null && Model.Slogan.Trim() != "")
+{
+    <div class="slogan-section-silver" id="khauhieu">
+        <div class="container-page-slogan">
+            <div class="slogan-marquee-container">
+                <div class="slogan-icon-left">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="slogan-marquee-wrapper">
+                    <div class="slogan-marquee">@Context.Session.GetString("Slogan")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

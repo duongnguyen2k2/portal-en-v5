@@ -1,0 +1,82 @@
+﻿@model API.Areas.Admin.Models.AnToanThongTin.AnToanThongTinModel
+@using Microsoft.Extensions.Options
+
+@{
+    ViewData["Title"] = "Tiếp nhận Ứng cứu sự cố an toàn thông tin mạng";
+    string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<div class="row">
+    <div class="col-lg-12">
+        <ul class="list-inline navigation nlist">
+            <li>
+                <a href="/">Trang chủ</a> <i class="fa fa-angle-right"></i>
+                <a href="#">@ViewData["Title"]</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    
+    <div class="col-lg-12">
+        <div class="white-box mb-4">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <partial name="_PartialMsgInfo" />
+            <form asp-controller="@ControllerName" asp-action="Index" method="post">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Fullname">Họ Tên <sup class="text-danger"> (*)</sup></label>
+                            <input type="text" class="form-control" asp-for="Item.Fullname" name="Fullname">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Phone">Điện Thoại</label>
+                            <input type="text" class="form-control" asp-for="Item.Phone" name="Phone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Address">Địa Chỉ</label>
+                            <input type="text" class="form-control" asp-for="Item.Address" name="Address">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="Item.Email">Email</label>
+                            <input type="text" class="form-control" asp-for="Item.Email" name="Email">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Item.Title">Tiêu đề <sup class="text-danger"> (*)</sup></label>
+                    <input type="text" asp-for="Item.Title" name="Title" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Item.Introtext">Mô tả ngắn <sup class="text-danger"> (*)</sup></label>
+                    <textarea asp-for="Item.Introtext" name="Introtext" class="form-control"></textarea>
+                </div>
+                <div class="row">                    
+                    <div class="col-lg-12 col-12 text-center">
+                        
+                        <button type="submit" class="btn btn-primary" name="SaveItem">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            Gửi ứng cứu
+                        </button>
+                        <a class="btn btn-info text-white" asp-controller="Home" asp-action="Index"><i class="fa fa-home" aria-hidden="true"></i> Trang Chủ</a>
+                    </div>
+                </div>
+
+
+                <input type="hidden" class="form-control" asp-for="Item.Id" name="Id">
+                <input type="hidden" class="form-control" asp-for="Item.Ids" name="Ids">
+                <input type="hidden" class="form-control" name="Token" id="token_recaptcha">
+            </form>
+        </div>
+
+    </div>
+</div>
+

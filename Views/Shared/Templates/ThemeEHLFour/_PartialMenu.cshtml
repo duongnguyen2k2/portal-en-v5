@@ -1,0 +1,91 @@
+﻿@using API.Areas.Admin.Models.Menus;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using API.Areas.Admin.Models.DMCoQuan;
+@using System.Globalization;
+@{
+    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
+    int ParentId = int.Parse(Context.Session.GetString("ParentId").ToString());
+    DMCoQuan ItemCoQuan = JsonConvert.DeserializeObject<DMCoQuan>(Context.Session.GetString("ThongTinCoQuan"));
+    string KeySession = "Menu_" + IdCoQuan.ToString() + "-" + ParentId.ToString() + DateTime.Now.ToString("yyyyMMddhh");
+
+    string StrListMenu = Context.Session.GetString(KeySession);
+    List<Menus> ListMenu = new List<Menus>();
+
+    if(StrListMenu!=null && StrListMenu != "" && ItemCoQuan.MetadataCV.FlagSession==1)
+    {
+        ListMenu = JsonConvert.DeserializeObject<List<Menus>>(StrListMenu);
+    }
+    else
+    {
+        ListMenu = MenusService.GetListByParrent(0, IdCoQuan,0, ParentId, CultureInfo.CurrentCulture.Name.ToLower());
+        if (ItemCoQuan.MetadataCV.FlagSession == 1)
+        {
+            Context.Session.SetString(KeySession,JsonConvert.SerializeObject(ListMenu));
+        }
+
+    }
+    List<Menus> ListMenuLeft = new List<Menus>();
+    if (Model != null && Model.ListMenus != null)
+    {
+        ListMenuLeft = Model.ListMenus;
+    }
+    
+
+}
+<div id="line-main-nav"></div>
+<nav id="main-nav">
+    <div class="container p-0">
+        <div class="stellarnav">
+            <ul class="text-left">
+                <li id="menu-chil-home">
+                    <a href="/"><i class="fas fa-home"></i></a>
+                </li>
+                @for (int i = 0; i < ListMenu.Count(); i++)
+                {
+                    if (ListMenu[i].ChildCount > 0)
+                    {
+                        @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuChild", ListMenu[i])
+                    }
+                    else
+                    {
+                        <li>                            
+                            @if (ListMenu[i].Icon != null && ListMenu[i].Icon != "")
+                            {
+                                <i class="@(ListMenu[i].Icon)"></i>
+                            }
+                            <a href="@ListMenu[i].Link" @if (ListMenu[i].Target != null && ListMenu[i].Target != "") {  @("target='_blank'")} >@ListMenu[i].Title</a>
+                        </li>
+                    }
+
+                }
+
+                @if (ListMenuLeft != null && ListMenuLeft.Count>0){
+                    @for (int i = 0; i < ListMenuLeft.Count(); i++)
+                    {
+                        if (ListMenuLeft[i].ChildCount > 0)
+                        {
+                            @await Html.PartialAsync("Templates/" + @Context.Session.GetString("TemplateName") + "/_PartialMenuChild", ListMenuLeft[i])                        
+                        }
+                        else
+                        {
+                            <li class="item-menu-left" style="display:none;">
+                                @if (ListMenuLeft[i].Icon != null && ListMenuLeft[i].Icon != "")
+                                {
+                                    <i class="@(ListMenuLeft[i].Icon)"></i>
+                                }
+                                <a href="@ListMenuLeft[i].Link" @if (ListMenuLeft[i].Target != null && ListMenuLeft[i].Target != "") {
+                                @("target='_blank'")
+                               }
+                                >@ListMenuLeft[i].Title</a>
+                            </li>
+                        }
+
+                    }
+                 }
+            </ul>
+
+           
+        </div>
+    </div>
+</nav>

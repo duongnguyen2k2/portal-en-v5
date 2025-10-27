@@ -1,0 +1,130 @@
+﻿@model API.Models.Import.ImportModel
+@using API.Areas.Admin.Models.CategoriesArticles
+@{
+    ViewData["Title"] = "Đỗ dữ liệu";
+ Layout = "~/Views/Shared/_Layout.cshtml";
+ string ControllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+ 
+}
+
+
+<div class="container" id="app-import-articles" style="display:none">
+    <form asp-controller="@ControllerName" asp-action="DeleteItem" id="AjaxDeleteForm"></form>
+    <form>
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2>Import</h2>
+            </div>
+           
+
+            <div class="col-lg-4">
+                <select class="form-control " id="status-select" v-model="SearchItems.CatId">
+                    <option value="-1">
+                        <template v-if="flagLoadingCat==true">
+                            Đang lấy dữ liệu ...
+                        </template>
+                        <template v-if="flagLoadingCat==false">
+                            Danh mục
+                        </template>
+                    </option>
+
+                    <template v-for="(item, index) in ListCat" v-bind:key="item.Id">
+                        <option v-bind:value="item.Id">{{item.Title}}</option>
+                    </template>
+                </select>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-6">
+                        <input type="number" class="form-control" v-model="SearchItems.PageStart" id="SearchItems_PageStart" placeholder="Từ trang">                    
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="form-control" v-model="SearchItems.PageEnd" id="SearchItems_PageEnd" placeholder="Tới trang">                    
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <a class="btn btn-primary float-right text-white" v-on:click="getListCat()" v-if="!flagLoading">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                        </svg> Lấy dữ liệu
+                    </a>
+
+                    <a class="btn btn-primary float-right text-white" v-on:click="ImportDB" v-if="flagLoading"><i class="fas fa-spinner fa-pulse"></i> Đang dữ liệu</a>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label class="show-group-all">Link</label>
+                    <input type="text" class="form-control" v-model="SearchItems.LinkRoot" id="SearchItems_LinkRoot" placeholder="Nhập Link cần lấy dữ liệu">                    
+                </div>
+            </div>
+
+            
+        </div>
+
+
+
+    </form>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="dsds">
+
+                <table class="table table-striped table-centered mb-0">
+                    <thead>
+                        <tr>
+                            <th width="50px" class="text-center">Id</th>
+                            <th class="text-center" width="80px">Ảnh </th>
+                            <th>Tên</th>
+                            <th>Mo ta</th>
+                            <th>File</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <template v-if="flagLoading">
+                            <tr v-for="(item,index) in ListSkeleton" :key="item">
+                                <td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+                                <td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+                                <td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+                                <td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+                                <td class="skeleton-loading"><div class="skeleton-bar"></div></td>
+                                
+                            </tr>
+                        </template>
+                        <template v-if="!flagLoading">
+                            <tr v-if="ListItems.length==0">
+                                <td colspan="5" class="text-center">không có dữ liệu</td>
+                            </tr>
+                            <tr v-for="(item, index) in ListItems" v-bind:key="item.Id" v-bind:data-id="item.ID">
+                                <th class="text-center">{{(index+1)}}</th>
+                                <td class="text-center">
+                                    <img v-bind:src="item.Image" style="width:50px;" />
+                                </td>
+                                <td>
+                                    {{item.Title}}
+                                </td>
+                                <td>{{item.IntroText}}</td>
+                                <td>{{item.DataFile}}</td>                                                                
+                            </tr>
+
+                        </template>
+                    </tbody>
+
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/lib/js/vuejs.js"></script>
+    <script src="~/lib/js/vuejs-paginate.js"></script>
+    <script src="~/lib/toast-jquery/jquery.toast.min.js"></script>
+    <script src="~/TemplatesAdmin/js-app/import-app.js"></script>
+}

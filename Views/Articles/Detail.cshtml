@@ -199,9 +199,9 @@
 <div id="social">
     <div class="fb-share-button" data-href="@ViewData["Url"]" data-layout="button" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=@ViewData["Url"];src=sdkpreparse" class="fb-xfbml-parse-ignore"> @Localizer["Share"]</a></div>
 </div>
-<div id="social-zalo">
+@* <div id="social-zalo">
     <div class="zalo-share-button" data-href="" data-oaid="579745863508352884" data-layout="1" data-color="blue" data-customize=false></div>
-</div>
+</div>*@
 
 @if (Model.Item.ListLinkArticle != null && Model.Item.ListLinkArticle.Count() > 0)
 {
@@ -218,10 +218,16 @@
                 }
                 
                 <ul>
-
-                    @for (int i = 0; i < Model.Item.ListLinkArticle.Count(); i++)
+                    @if (Model.Item.ListLinkArticle.Count() <= 1)
                     {
-                        <li><a href="@Model.Item.ListLinkArticle[i].Link">@Model.Item.ListLinkArticle[i].Title</a></li>
+                        <li>Không có bài viết liên quan</li>
+                    }
+                    else
+                    {
+                        @for (int i = 0; i < Model.Item.ListLinkArticle.Count(); i++)
+                        {
+                            <li><a href="@Model.Item.ListLinkArticle[i].Link">@Model.Item.ListLinkArticle[i].Title</a></li>
+                        }
                     }
 
                 </ul>

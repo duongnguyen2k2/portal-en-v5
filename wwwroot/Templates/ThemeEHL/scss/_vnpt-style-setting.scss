@@ -1,25 +1,25 @@
-﻿$color-main: #033775;
-$color-main-2: #fce38f;
-$khauhieu: #fce38f;
+﻿$color-main: #006994; // Xanh biển đậm - màu chủ đạo cho chủ đề thủy sản và biển đảo
+$color-main-2: #20c997; // Xanh ngọc/turquoise - màu phụ nhấn nhá
+$khauhieu: #20c997; // Xanh ngọc cho khẩu hiệu
 $bg-main: #fff;
-$bg-footer: #fff0d0;
-$bg-menu: #d42f3c;
+$bg-footer: #e6f3f8; // Xanh nhạt cho footer
+$bg-menu: #006994; // Xanh biển đậm cho menu
 $color-menu: #fff;
-$bg-header-cat: #e04d58;
+$bg-header-cat: #0085b3; // Xanh biển vừa cho header
 $color-header-cat: #fff;
 $bg-menu-mobile: #fff;
 $icon-header: '../images/icon-tin-noi-bat.png';
 $bg-footer-image: '../images/bg-fotter.png';
 $bg-image: '../images/bg.jpg';
 $zoom-img: '../images/zoom.png';
-$bg-leftmenu:#e04d58;
-$home-cat-dot-circle: #e04d58;
-$home-cat-dot-circle-hover: #033775;
+$bg-leftmenu: #0085b3; // Xanh biển vừa cho menu trái
+$home-cat-dot-circle: #20c997; // Xanh ngọc cho chấm tròn
+$home-cat-dot-circle-hover: #006994; // Xanh biển đậm khi hover
 $bg-webxa:'../images/danh-sach-website-xa.png';
-$thongbao-tieudeh1: #e04d58;
-$thongkevanban-tieudeh1: #e04d58;
-$bg-stellarnav-mobile: #c05100;
-$bg-emc: #EC3237;
+$thongbao-tieudeh1: #006994; // Xanh biển đậm cho tiêu đề thông báo
+$thongkevanban-tieudeh1: #006994; // Xanh biển đậm cho tiêu đề thống kê văn bản
+$bg-stellarnav-mobile: #006994; // Xanh biển đậm cho menu mobile
+$bg-emc: #0085b3; // Xanh biển vừa cho EMC
 .menu-select-css {
     .list-color {
         .color-item {
@@ -32,11 +32,11 @@ $bg-emc: #EC3237;
         }
 
         .vnpt-style {
-            background: #e04d58;
+            background: #006994; // Xanh biển đậm
         }
 
         .vnpt-style-2 {
-            background: #0a68dc;
+            background: #20c997; // Xanh ngọc/turquoise
         }
     }
 }

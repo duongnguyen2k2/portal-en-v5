@@ -1,4 +1,10 @@
 ﻿
+.stellarnav.mobile {
+    .item-menu-left {
+        display: block !important;
+    }
+}
+
 @media only screen and (max-width: 991px) {
     .font-zoom {
         bottom: 60px;
@@ -13,7 +19,6 @@
     .col-center {
         padding-left: 15px;
     }
-    
 
     .banner-item {
         img {
@@ -22,13 +27,13 @@
     }
 
     #main-one {
-        .col-left, .col-right, .col-center, .col-features-right, .col-features-left {
+        .col-left, .col-center, .col-features-right, .col-features-left {
             -webkit-box-flex: 0;
             -ms-flex: 0 0 100%;
             flex: 0 0 100%;
             max-width: 100%;
             margin: 0px;
-            padding: 0px 15px;
+            padding: 0px 7px;
         }
 
         .col-center {
@@ -38,13 +43,14 @@
 
 
     #block-slideshow {
+        background: url(../images/bg-header-easup.png);
 
         img {
-            width: 80%;
+            width: 100%;
         }
 
         .carousel-item {
-            background-size: 100% 100%;
+            background: none !important;
         }
 
         .carousel-indicators {
@@ -52,11 +58,18 @@
         }
     }
 
+
+
     #marquee_document_right {
         height: 150px;
         overflow: hidden;
     }
+
+    .lmenu {
+        display: none;
+    }
 }
+
 @media only screen and (max-width: 1140px) {
     #features-wrap {
 
@@ -69,10 +82,20 @@
         }
     }
 }
+
 @media only screen and (max-width: 500px) {
-    #search-top{
-        width:100%;
+    .topbar {
+        .nav-scroller {
+            background: none !important;
+            overflow: hidden;
+            margin-right: 0px;
+        }
     }
+
+    #search-top {
+        width: 45%;
+    }
+
     #banner-bottom-featured {
         padding-bottom: 15px;
         padding-top: 15px;
@@ -98,11 +121,12 @@
     }
 
     #ban-do-hanh-chinh {
-        margin-top:10px;
+        margin-top: 10px;
+
         .card-body {
             display: flex;
 
-           
+
             a {
                 img {
                     width: 100%;
@@ -110,8 +134,9 @@
             }
         }
     }
-    #dao-duc-hcm{
-        margin-top:10px;
+
+    #dao-duc-hcm {
+        margin-top: 10px;
     }
 
     #wrap-scroll-nav {
@@ -147,6 +172,7 @@
             }
         }
     }
+
     #main-one {
         footer {
             font-size: 12px;
@@ -158,12 +184,12 @@
                 text-align: center;
             }
 
-            .vnpt{
-                text-align:center;
+            .vnpt {
+                text-align: center;
             }
         }
     }
-    
+
 
     .other-list {
         h2 {
@@ -182,6 +208,7 @@
             height: 100% !important;
         }
     }
+
     #khauhieu {
         padding: 0px;
 
@@ -194,12 +221,56 @@
             font-size: 11px;
         }
     }
+
     .category-list {
         .card-header {
             a {
                 .hoc-tap-va-lam-theo-tam-guong-dao-duc-ho-chi-minh {
                     font-size: 10px;
                 }
+            }
+        }
+    }
+}
+
+#main-nav {
+    .call-btn-mobile {
+        text-align: left !important;
+    }
+
+    .close-menu {
+        text-align: right !important;
+    }
+}
+
+.box-title {
+    position: fixed;
+    top: 60%;
+    left: 10px;
+    z-index: 99;
+
+    .box-title__item {
+        margin-bottom: 3px;
+
+        .btn {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-zalo {
+            img {
+                width: 100%;
+            }
+        }
+
+        a {
+            width: 45px;
+            padding: 5px;
+
+            i {
+                color: #fff;
+                font-size: 20px;
             }
         }
     }

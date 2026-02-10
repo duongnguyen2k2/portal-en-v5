@@ -237,7 +237,7 @@ namespace API.Controllers
                                 item.FileItem = API.Models.MyHelper.SmartVoiceService.GetTextId(ItemCoQuan, item);
                             }
 
-                            if (item.FullText_EN.Length > 10)
+                            if ( !string.IsNullOrEmpty(item.FullText_EN) && item.FullText_EN.Length > 10)
                             {
                                 item.FileItem_EN = API.Models.MyHelper.SmartVoiceService.GetTextIdEN(ItemCoQuan, item);
                             }

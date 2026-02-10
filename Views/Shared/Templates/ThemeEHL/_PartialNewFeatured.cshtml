@@ -1,128 +1,213 @@
-﻿@model API.Models.Home.PartialNewFeatured;
-@using Microsoft.AspNetCore.Http;
+﻿@model API.Models.Home.PartialNewFeatured
+@using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Mvc.Localization
-@using System.Globalization;
+@using System.Globalization
 @inject IViewLocalizer Localizer
-@{
-    int IdCoQuan = int.Parse(Context.Session.GetString("DomainId").ToString());
-    List<API.Areas.Admin.Models.Articles.Articles> ListArticlesHot = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(IdCoQuan);
-    List<API.Areas.Admin.Models.Articles.Articles> NotificationList = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(IdCoQuan);
-    
 
-   
+@{
+    // Get organization ID from session
+    var domainId = Context.Session.GetString("DomainId");
+    if (string.IsNullOrEmpty(domainId))
+    {
+        <div class="alert alert-warning">Session expired. Please log in again.</div>
+        return;
+    }
+
+    int organizationId = int.Parse(domainId);
+
+    // Fetch data
+    var hotArticles = API.Areas.Admin.Models.Articles.ArticlesService.GetListHot(organizationId)
+                      ?? new List<API.Areas.Admin.Models.Articles.Articles>();
+    var notifications = API.Areas.Admin.Models.Articles.ArticlesService.GetListNotification(organizationId)
+                        ?? new List<API.Areas.Admin.Models.Articles.Articles>();
+
+    bool hasHotArticles = hotArticles.Any();
+    bool hasNotifications = notifications.Any();
 }
 
-<div class="row">
-    <div class="col-features-left">
-        <section id="features-wrap">
-            <div class="card card-style-two border-0 features-header">
-                <h4 class="featured-news-home">
-                    <a class="text-uppercase font-weight-bold" asp-controller="Articles" asp-action="Featured">@Localizer["HotNews"]</a>
-                </h4>
+<div class="modern-features-wrapper">
+    <div class="features-grid">
+        <!-- Hot News Section -->
+        <div class="hot-news-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i class="fas fa-fire-alt header-icon"></i>
+                    <h2 class="section-title">
+                        <a asp-controller="Articles" asp-action="Featured">
+                            @Localizer["HotNews"]
+                        </a>
+                    </h2>
+                </div>
+                <div class="header-decoration"></div>
             </div>
-            <div class="row">
-                <div class="col-md-6 col-7">
-                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner" role="listbox">
-                            @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
-                            {
-                                @for (int i = 0; i < ListArticlesHot.Count(); i++)
-                                {
 
-                                    <div class="carousel-item @(i == 0 ? "active" : "")">
-                                        <div class="features-item">
-                                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
-                                                <img src="@ListArticlesHot[i].Images" alt="@ListArticlesHot[i].Title" class="d-block w-100" style="height:195px" />
+            @if (hasHotArticles)
+            {
+                <div class="hot-news-content">
+                    <!-- Featured Article Carousel -->
+                    <div class="featured-carousel-wrapper">
+                        <div id="featuredCarousel" class="carousel slide carousel-fade" data-ride="carousel" data-interval="5000">
+                            <div class="carousel-inner">
+                                @foreach (var (article, index) in hotArticles.Select((a, i) => (a, i)))
+                                {
+                                    <div class="carousel-item @(index == 0 ? "active" : "")">
+                                        <div class="featured-article-card">
+                                            <a asp-controller="Articles"
+                                               asp-action="Detail"
+                                               asp-route-id="@article.Id"
+                                               asp-route-alias="@article.Alias"
+                                               class="featured-image-link">
+                                                <div class="image-container">
+                                                    <img src="@article.Images"
+                                                         alt="@article.Title"
+                                                         class="featured-image"
+                                                         loading="lazy" />
+                                                    <div class="image-overlay">
+                                                        <span class="read-more-badge">
+                                                            <i class="fas fa-arrow-right"></i> Read More
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </a>
-                                            <div class="features-item-body">
-                                                <h1 class="title">
-                                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
-                                                        @ListArticlesHot[i].Title
+                                            <div class="featured-content">
+                                                <span class="featured-badge">
+                                                    <i class="fas fa-star"></i> Featured
+                                                </span>
+                                                <h3 class="featured-title">
+                                                    <a asp-controller="Articles"
+                                                       asp-action="Detail"
+                                                       asp-route-id="@article.Id"
+                                                       asp-route-alias="@article.Alias">
+                                                        @article.Title
                                                     </a>
-                                                </h1>
-                                                <p class="overview">
-                                                    @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(ListArticlesHot[i].IntroText, 200))
+                                                </h3>
+                                                <p class="featured-excerpt">
+                                                    @Html.Raw(API.Models.MyHelper.StringHelper.StringReadmore(article.IntroText, 180))
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 }
+                            </div>
+
+                            @if (hotArticles.Count > 1)
+                            {
+                                <div class="carousel-indicators-custom">
+                                    @for (int i = 0; i < hotArticles.Count; i++)
+                                    {
+                                        <button type="button"
+                                                data-target="#featuredCarousel"
+                                                data-slide-to="@i"
+                                                class="@(i == 0 ? "active" : "")"
+                                                aria-label="Slide @(i + 1)"></button>
+                                    }
+                                </div>
+
+                                <button class="carousel-control-prev" type="button" data-target="#featuredCarousel" data-slide="prev">
+                                    <span class="carousel-control-icon"><i class="fas fa-chevron-left"></i></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-target="#featuredCarousel" data-slide="next">
+                                    <span class="carousel-control-icon"><i class="fas fa-chevron-right"></i></span>
+                                </button>
                             }
-
                         </div>
+                    </div>
 
+                    <!-- Articles List -->
+                    <div class="articles-list-wrapper">
+                        <div class="articles-list-scroll">
+                            @foreach (var (article, index) in hotArticles.Select((a, i) => (a, i)))
+                            {
+                                <div class="article-list-item @(index == 0 ? "featured-item" : "")">
+                                    <a asp-controller="Articles"
+                                       asp-action="Detail"
+                                       asp-route-id="@article.Id"
+                                       asp-route-alias="@article.Alias"
+                                       class="article-list-link">
+                                        @if (index == 0)
+                                        {
+                                            <div class="article-thumbnail">
+                                                <img src="@article.Images" alt="@article.Title" loading="lazy" />
+                                                <div class="thumbnail-overlay">
+                                                    <i class="fas fa-play-circle"></i>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="article-list-content">
+                                            <span class="article-number">@(index + 1)</span>
+                                            <h4 class="article-list-title">@article.Title</h4>
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-5">
-                    <ul class="list-group features-list scrollWrap">
-                        @if (ListArticlesHot != null && ListArticlesHot.Count() > 0)
-                        {
-                        <li class="features-list-item">
-                            <img src="@ListArticlesHot[0].Images" style="height:70px; width:115px;" />
-                            <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[0].Id" asp-route-alias="@ListArticlesHot[0].Alias" title="@ListArticlesHot[0].Title">
-                                @ListArticlesHot[0].Title
-                            </a>
-                            <span class="clearfix"></span>
-                        </li>
-
-                        @if (ListArticlesHot.Count() > 1) {                                                            
-                                @for (int i = 1; i < ListArticlesHot.Count(); i++)
-                                {
-                                    <li class="features-list-item">
-                                        <a asp-controller="Articles" asp-action="Detail" asp-route-id="@ListArticlesHot[i].Id" asp-route-alias="@ListArticlesHot[i].Alias" title="@ListArticlesHot[i].Title">
-                                            @ListArticlesHot[i].Title
-                                        </a>
-                                    </li>
-
-                                }
-                            }
-                        }
-
-                    </ul>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fas fa-inbox empty-icon"></i>
+                    <p>@Localizer["NoHotNewsAvailable"]</p>
                 </div>
-            </div>
-        </section>
+            }
+        </div>
 
-
-
-        
-    </div>
-
-    <div class="col-features-right">
-        <div class="card card-style-two border-0 " id="featured-document">
-            <div class="card-header">
-                <h3>
-                    <a asp-controller="Articles" asp-action="Notification"><i class="fas fa-folder-open"></i> @Localizer["Notification"]</a>
-                </h3>
-            </div>
-            <div class="card-body">
-                <div id="marquee_document_right" >
-                    <ul>
-                        @if (NotificationList != null && NotificationList.Count() > 0)
-                        {
-
-
-                            @for (int i = 0; i < NotificationList.Count(); i++)
-                            {
-                                <li class="mb-2">
-                                    <a asp-controller="Articles" asp-action="Detail" asp-route-id="@NotificationList[i].Id" asp-route-alias="@NotificationList[i].Alias" title="@NotificationList[i].Title">
-                                        @NotificationList[i].Title
-                                        <span>(@NotificationList[i].PublishUp.ToString("dd/MM/yyy, HH:mm"))</span>
-                                    </a>
-                                </li>
-                            }
-                        }
-                    </ul>
+        <!-- Notifications Section -->
+        <div class="notifications-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i class="fas fa-bell header-icon"></i>
+                    <h2 class="section-title">
+                        <a asp-controller="Articles" asp-action="Notification">
+                            @Localizer["Notification"]
+                        </a>
+                    </h2>
                 </div>
+                <div class="header-decoration"></div>
             </div>
 
-            
-
+            <div class="notifications-content">
+                @if (hasNotifications)
+                {
+                    <div class="notifications-scroll">
+                        @foreach (var (notification, index) in notifications.Select((n, i) => (n, i)))
+                        {
+                            <div class="notification-card" style="animation-delay: @(index * 0.1)s">
+                                <div class="notification-indicator"></div>
+                                <a asp-controller="Articles"
+                                   asp-action="Detail"
+                                   asp-route-id="@notification.Id"
+                                   asp-route-alias="@notification.Alias"
+                                   class="notification-link">
+                                    <div class="notification-content">
+                                        <h4 class="notification-title">@notification.Title</h4>
+                                        <div class="notification-meta">
+                                            <span class="notification-date">
+                                                <i class="far fa-clock"></i>
+                                                @notification.PublishUp.ToString("dd/MM/yyyy")
+                                            </span>
+                                            <span class="notification-time">
+                                                @notification.PublishUp.ToString("HH:mm")
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="notification-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-inbox empty-icon"></i>
+                        <p>@Localizer["NoNotificationsAvailable"]</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
-
 </div>
-
-
